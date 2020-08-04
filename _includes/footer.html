@@ -21,17 +21,17 @@
 </footer>
 
 <!-- jQuery -->
-<script src="{{ "/js/jquery.min.js " | prepend: site.baseurl }}"></script>
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
 <!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
-<script src="{{ "/js/bootstrap.min.js " | prepend: site.baseurl }}"></script>
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 <!-- Custom Theme JavaScript -->
 <script src="{{ "/js/hux-blog.min.js " | prepend: site.baseurl }}"></script>
 
 <!-- Simple Jekyll Search -->
-<script src="{{ "/js/simple-jekyll-search.min.js" | prepend: site.baseurl }}"></script>
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
 
 <!-- Service Worker -->
 {% if site.service-worker %}
@@ -197,7 +197,7 @@
      * Doc: https://github.com/davist11/jQuery-One-Page-Nav
      * Fork by Hux to support padding
      */
-    async("{{ '/js/jquery.nav.js' | prepend: site.baseurl }}", function () {
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
         $('.catalog-body').onePageNav({
             currentClass: "active",
             changeHash: !1,
