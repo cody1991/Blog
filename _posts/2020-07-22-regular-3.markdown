@@ -57,7 +57,7 @@ I love Regular Expression
 
 它们在可视化的工具下会多了 `Group` 的提示，比如上面的 `Group #1` `Group #2` `Group #3`
 
-![https://regexper.com/#%2F%28%5Cd%7B4%7D%29-%28%5Cd%7B2%7D%29-%28%5Cd%7B2%7D%29%2F](/images/posts/reg-16.svg)
+![https://regexper.com/#%2F%28%5Cd%7B4%7D%29-%28%5Cd%7B2%7D%29-%28%5Cd%7B2%7D%29%2F](/img/posts/reg-16.svg)
 
 在匹配的过程中正则会给分组开辟一个空间，存储每次匹配到的数据
 
@@ -148,7 +148,7 @@ console.log(RegExp.$3);
 
 `/\d{4}(-|\/|\.)\d{2}\1\d{2}/`
 
-![https://regexper.com/#%2F%5Cd%7B4%7D%28-%7C%5C%2F%7C%5C.%29%5Cd%7B2%7D%5C1%5Cd%7B2%7D%2F](/images/posts/reg-17.svg)
+![https://regexper.com/#%2F%5Cd%7B4%7D%28-%7C%5C%2F%7C%5C.%29%5Cd%7B2%7D%5C1%5Cd%7B2%7D%2F](/img/posts/reg-17.svg)
 
 这里的 `\1` 表示引用前面的 `(-|\/|\.)` 分组，不管它匹配到什么， `\1` 都匹配到它真实匹配的字符
 
@@ -168,7 +168,7 @@ console.log(RegExp.$3); // 23
 console.log(RegExp.$4); // 3
 ```
 
-![https://regexper.com/#%2F%5E%28%28%5Cd%29%28%5Cd%28%5Cd%29%29%29%5C1%5C2%5C3%5C4%24%2F](/images/posts/reg-18.svg)
+![https://regexper.com/#%2F%5E%28%28%5Cd%29%28%5Cd%28%5Cd%29%29%29%5C1%5C2%5C3%5C4%24%2F](/img/posts/reg-18.svg)
 
 我们按顺序看，前三个数字就是 `1` `2` `3`，然后就是 `\1\2\3\4`
 
@@ -372,7 +372,7 @@ unescapeHTML("&lt;div&gt;Blah blah blah&lt;/div&gt;");
 
 需要前后匹配 `/<([^>]+)>[\d\D]*<\/\1>/`
 
-![https://regexper.com/#%2F%3C%28%5B%5E%3E%5D%2B%29%3E%5B%5Cd%5CD%5D*%3C%5C%2F%5C1%3E%2F](/images/posts/reg-19.svg)
+![https://regexper.com/#%2F%3C%28%5B%5E%3E%5D%2B%29%3E%5B%5Cd%5CD%5D*%3C%5C%2F%5C1%3E%2F](/img/posts/reg-19.svg)
 
 `<([^>]+)>` 是前面的闭合标签，并且选出了 `([^>]+)` 分组
 

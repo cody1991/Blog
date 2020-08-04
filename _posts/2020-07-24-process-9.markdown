@@ -118,7 +118,7 @@ b();
 - 作用域链(Scope chain)
 - this
 
-![执行上下文](/images/posts/process-8.png)
+![执行上下文](/img/posts/process-8.png)
 
 ### VO 和 AO
 
@@ -143,7 +143,7 @@ AO（activation object)，当函数被调用者激活，AO 就被创建了
 4. 如果父级中没找到，继续往上找
 5. 直到全局上下文中也没找到就报错
 
-![作用域链](/images/posts/process-9.png)
+![作用域链](/img/posts/process-9.png)
 
 ### this 指针
 

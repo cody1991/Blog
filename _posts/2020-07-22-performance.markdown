@@ -43,11 +43,11 @@ LCP
 2. 持续 5s 内无长任务（时间大于 50ms 的），无两次以上的 GET 请求
 3. 往前回溯到 5s 以前最后一个长任务结束的时间
 
-![](/images/posts/performace-2.png)
+![](/img/posts/performace-2.png)
 
 为什么是 50ms：谷歌的 RAIL 模型，对于用户的交互要在 100ms 以内响应，那么推荐在空闲时间里面执行的任务不超过 50ms，可以无感知响应用户的操作
 
-![](/images/posts/performace-3.png)
+![](/img/posts/performace-3.png)
 
 这个性能指标代表着页面真正可用的状态，光页面渲染块，但是不能快速响应用户的交互也不行。
 
@@ -62,11 +62,11 @@ total blocking time ，阻塞总时间，计算 FCP 和 TTI 之间有长任务�
 
 比如 FCP 到 TTI 之间有下面的长短任务
 
-![](/images/posts/performace-4.png)
+![](/img/posts/performace-4.png)
 
 每个长任务的阻塞时间等于它的时间减去 50ms
 
-![](/images/posts/performace-5.png)
+![](/img/posts/performace-5.png)
 
 上图一共就是 345ms，他也会影响 TTI 的时间
 
@@ -74,7 +74,7 @@ total blocking time ，阻塞总时间，计算 FCP 和 TTI 之间有长任务�
 
 Cumulative Layout Shift 累计位置偏移：突然插入一个巨大图片或者按钮动态插入一段内容，影响用户体验：位移影响面积 \* 位移距离
 
-![](/images/posts/performace-1.png)
+![](/img/posts/performace-1.png)
 
 上图移动了 25%的位置，影响了 75%的面积， 0.25\*0.75 = 0.1875
 

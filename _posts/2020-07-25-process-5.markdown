@@ -181,4 +181,4 @@ CR => Mac Style
 
 之后所有的 `http` 请求，使用前面的 `session key` 进行对称加密算法加密
 
-![SSL/TLS握手](/images/posts/process-2.png)
+![SSL/TLS握手](/img/posts/process-2.png)

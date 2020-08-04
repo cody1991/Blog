@@ -7,12 +7,12 @@ top: true
 
 跑步记录，坚持坚持
 
-![2020-08-01](/images/posts/running-5.jpeg)
+![2020-08-01](/img/posts/running-5.jpeg)
 
-![2020-07-30](/images/posts/running-4.jpeg)
+![2020-07-30](/img/posts/running-4.jpeg)
 
-![2020-07-29](/images/posts/running-3.jpeg)
+![2020-07-29](/img/posts/running-3.jpeg)
 
-![2020-07-27](/images/posts/running-2.jpeg)
+![2020-07-27](/img/posts/running-2.jpeg)
 
-![2020-07-26](/images/posts/running-1.jpeg)
+![2020-07-26](/img/posts/running-1.jpeg)

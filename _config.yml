@@ -24,7 +24,7 @@ facebook_username:  zexiong.tang
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 highlighter: rouge
 permalink: pretty
-paginate: 15
+paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","README.zh.md"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 # If you have timezone issue (e.g. #68) in China, uncomment to use this:
@@ -62,18 +62,6 @@ disqus_username: codytang
 # Netease settings
 netease_comment: false
 
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-174490217-1"></script>
-  <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-174490217-1');
-  </script>
-
-
 # Analytics settings
 # Baidu Analytics 
 # ba_track_id: [your track id]
@@ -109,6 +97,6 @@ page-mathjax: false
 
 
 # Friends
-friends: [
-
-]
+#friends: [
+#
+#]

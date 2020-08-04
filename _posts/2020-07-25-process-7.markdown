@@ -19,7 +19,7 @@ from [从输入 URL 到页面加载的过程？如何由一道题完善自己的
 5. 绘制 `render` 树 (`paint`)，绘制页面像素信息
 6. 浏览器会把各层的信息发给 `GPU`，`GPU` 会把各层的信息合成 `composite`，最终显示屏幕上
 
-![解析页面流程](/images/posts/process-3.png)
+![解析页面流程](/img/posts/process-3.png)
 
 ## `html` 解析，构建 `dom` 树
 
@@ -43,7 +43,7 @@ from [从输入 URL 到页面加载的过程？如何由一道题完善自己的
 
 浏览器的处理过程
 
-![DOM树构建过程](/images/posts/process-4.png)
+![DOM树构建过程](/img/posts/process-4.png)
 
 其中的重要流程有
 
@@ -80,19 +80,19 @@ img {
 
 最终生成下面的树
 
-![css规则树](/images/posts/process-5.png)
+![css规则树](/img/posts/process-5.png)
 
 ## 构建渲染树
 
 一般渲染树和 `dom` 树一一对应，但是也不一定，一些不可见的元素不会出现在渲染树，比如 `head` 标签，和 `display:none` 等不可见的元素
 
-![渲染树](/images/posts/process-6.png)
+![渲染树](/img/posts/process-6.png)
 
 ## 渲染
 
 有了渲染树就可以开始渲染了，基本流程如下图
 
-![渲染树](/images/posts/process-7.jpg)
+![渲染树](/img/posts/process-7.jpg)
 
 - 计算 `css` 样式
 - 构建渲染树
