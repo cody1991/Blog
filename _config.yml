@@ -5,8 +5,8 @@ header-img: img/home-bg.jpg
 email: 476490767@qq.com
 description: "cody1991的博客"
 keyword: "cody1991, blog"
-url: "https://cody1991.netlify.app" # your host, for absolute URL
-baseurl: "" # for example, '/blog' if your blog hosted on 'host/blog'
+url: "https://cody1991.cn" # your host, for absolute URL
+baseurl: "/" # for example, '/blog' if your blog hosted on 'host/blog'
 
 # Publish posts or collection documents with a future date.
 future: true
