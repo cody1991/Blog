@@ -1,0 +1,7 @@
+---
+layout: post
+title: 《JS 正则迷你书》笔记4 - 回溯法
+tags: [blog, regular]
+---
+
+from [https://github.com/qdlaoyao/js-regex-mini-book](https://juejin.im/post/59cc61176fb9a00a437b290b)

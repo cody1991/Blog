@@ -1,0 +1,53 @@
+---
+layout: post
+title: LeetCode 66. 加一
+tags: [LeetCode]
+---
+
+简单思路：就是简单的加法运算，另外也可以先把数组变成数字 + 1 以后变回数组，但是会有测试用例的报错，主要是大数字的问题，改成用 BigInt 可以解决（不太推荐）
+
+[66. 加一](https://leetcode-cn.com/problems/plus-one/)
+
+```js
+var plusOne = function (digits) {
+  return (BigInt(digits.join("")) + 1n).toString().split("");
+};
+
+console.log(plusOne([9, 9, 9]));
+```
+
+```js
+/**
+ * @param {number[]} digits
+ * @return {number[]}
+ */
+var plusOne = function (digits) {
+  let flag = 0;
+  for (let index = digits.length - 1; index >= 0; index--) {
+    if (index === digits.length - 1) {
+      // 最后一个的情况
+
+      if (digits[index] === 9) {
+        digits[index] = 0;
+        flag = 1;
+      } else {
+        digits[index] += 1;
+      }
+    } else {
+      digits[index] += flag;
+      if (digits[index] === 10) {
+        digits[index] = 0;
+        flag = 1;
+      } else {
+        flag = 0;
+      }
+    }
+  }
+
+  if (flag === 1) digits.unshift(1);
+
+  return digits;
+};
+
+console.log(plusOne([9, 9, 9]));
+```

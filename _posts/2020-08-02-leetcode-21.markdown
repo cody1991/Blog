@@ -1,0 +1,47 @@
+---
+layout: post
+title: LeetCode 21. 合并两个有序链表
+tags: [LeetCode]
+---
+
+简单思路：设定一个哨兵指针指向开头，设定一个 cur 指针指向现在遍历的位置，判断两个链表第一个元素的大小，小的加入到 cur 中。最后还有剩下的 cur.next 直接指向它，得到最后的结果
+
+[21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/submissions/)
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */
+var mergeTwoLists = function (l1, l2) {
+  const result = new ListNode(0);
+  let cur = result;
+  while (l1 !== null && l2 !== null) {
+    const v1 = l1.val;
+    const v2 = l2.val;
+    if (v1 < v2) {
+      cur.next = l1;
+      l1 = l1.next;
+    } else {
+      cur.next = l2;
+      l2 = l2.next;
+    }
+    cur = cur.next;
+  }
+  if (l1 !== null) {
+    cur.next = l1;
+  }
+  if (l2 !== null) {
+    cur.next = l2;
+  }
+  return result.next;
+};
+```

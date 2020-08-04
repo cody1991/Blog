@@ -1,0 +1,45 @@
+---
+layout: post
+title: LeetCode 14. 最长公共前缀
+tags: [LeetCode]
+---
+
+思路：每次对比两个字符串，因为找的是最长公共前缀，我们通过 长字符.indexOf(短字符)，看返回的结果是不是 0，如果不是的话，我们去掉短字符最后一个字符继续比较，最终获取到最长公共前缀，或者返回 ''(代表无公共前缀)
+
+[14. 最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/)
+
+```js
+/**
+ * @param {string[]} strs
+ * @return {string}
+ */
+var longestCommonPrefix = function (strs) {
+  if (!strs || strs.length === 0) return "";
+  let res = strs[0];
+
+  for (let index = 1; index < strs.length; index++) {
+    const str = strs[index];
+
+    res = prefix(res, str);
+  }
+  return res;
+};
+
+function prefix(res, str) {
+  const resLen = res.length;
+  const strLen = str.length;
+
+  if (resLen > strLen) {
+    [res, str] = [str, res];
+  }
+
+  while (res.length > 0) {
+    if (str.indexOf(res) === 0) return res;
+    res = res.slice(0, res.length - 1);
+  }
+
+  return res;
+}
+
+console.log(longestCommonPrefix(["flower", "flow", "flight"]));
+```

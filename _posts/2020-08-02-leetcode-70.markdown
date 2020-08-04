@@ -1,0 +1,30 @@
+---
+layout: post
+title: LeetCode 70. 爬楼梯
+tags: [LeetCode]
+---
+
+简单思路：动态规划的简单问题，我们爬楼梯到三楼的可能次数是到一楼和到二楼的可能次数，以此类推
+
+[70. 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var climbStairs = function (n) {
+  if (n === 1 || n === 2) return n;
+  let i = 1;
+  let j = 2;
+  let sum = 0;
+  for (let index = 3; index <= n; index++) {
+    sum = i + j;
+    i = j;
+    j = sum;
+  }
+  return sum;
+};
+
+console.log(climbStairs(6));
+```

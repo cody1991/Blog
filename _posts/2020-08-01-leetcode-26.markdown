@@ -1,0 +1,31 @@
+---
+layout: post
+title: LeetCode 26. 删除排序数组中的重复项
+tags: [LeetCode]
+---
+
+简单思路：这里的 count 代表的是结果数组的当前长度。遍历整个数组，如果我们发现 count 指向的数字和当前遍历的数字不相同的时候，就把当前遍历的数字赋值给 count 的下一个位置
+
+[26. 删除排序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var removeDuplicates = function (nums) {
+  let count = 0;
+
+  for (let index = 1; index < nums.length; index += 1) {
+    const cur = nums[count];
+    const next = nums[index];
+    if (cur !== next) {
+      count += 1;
+      nums[count] = next;
+    }
+  }
+  return count + 1;
+};
+
+console.log(removeDuplicates([0, 0, 1, 1, 1, 2, 2, 3, 3, 4]));
+```

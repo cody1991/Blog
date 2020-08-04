@@ -1,0 +1,39 @@
+---
+layout: post
+title: LeetCode 141. 环形链表
+tags: [LeetCode]
+---
+
+简单思路：这题其实也很简单，一个快慢指针然后看是否有相同的情况。（另外 js 也可以用 JSON.stringify 来判断是否有环形，也可以标记每个指针，如果遍历过加个 flag ，下次再遍历到的话就是环形的）
+
+[141. 环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function (head) {
+  if (!head) return false;
+  let slow = head;
+  let fast = head.next;
+  let has = false;
+  while (slow !== null && fast !== null && fast.next !== null) {
+    if (slow === fast) {
+      has = true;
+      break;
+    }
+    slow = slow.next;
+    fast = fast.next.next;
+  }
+  return has;
+};
+```

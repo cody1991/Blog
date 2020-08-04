@@ -1,0 +1,116 @@
+---
+layout: post
+title: 从输入URL到页面加载的过程（1） - 大纲
+tags: [blog, process]
+---
+
+from [从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！](http://www.dailichun.com/2018/03/12/whenyouenteraurl.html)
+
+作为进阶回头再来看看：[从输入 URL 到页面加载完成的过程中都发生了什么事情？](http://fex.baidu.com/blog/2014/05/what-happen/)
+
+# 整体框架
+
+## 脉络
+
+- 浏览器接收 `url` 到开启网络请求线程
+  - 多进程的浏览器
+  - 多线程的浏览器内核
+  - 解析 `url`
+  - 网络请求都是单独的线程
+- 开启网络线程发出完整的 `http` 请求
+  - `DNS` 查询得到 `IP`
+  - `TCP/IP` 请求
+  - 五层因特网协议栈
+- 服务器接收到请求到后台接收到请求
+  - 负载均衡
+  - 后台处理
+- 后台与前台的 `http` 交互
+  - `http` 报文结构
+  - `cookie` 以及优化
+  - `gzip` 压缩
+  - 长链接和短链接
+  - `http 2.0`
+  - `https`
+- 缓存问题
+  - 强缓存和弱缓存
+  - 缓存头部简介
+  - 头部的区别
+- 解析页面流程
+  - 流程介绍
+  - `html` 解析，构建 `dom`
+  - 生成 `css` 规则
+  - 构建渲染树
+  - 渲染
+  - 简单层和复合层
+  - `Chrome` 中的调试
+  - 资源外链的下载
+  - `loaded` 和 `domcontentloaded`
+- `css` 可视化格式模型
+  - 包含块 `containing block`
+  - 控制框 `controlling box`
+  - `BFC` `block formatting context`
+  - `IFC` `inline formatting context`
+- `js` 引擎解析过程
+  - 解释阶段
+  - 预处理阶段
+  - 执行阶段
+  - 回收机制
+
+## 例子
+
+一些简单的例子，希望可能更加系统的回答问题
+
+```
+如何理解 getComputedStyle
+
+普通版本：getComputedStyle 获取当前元素最终使用的 css 属性值，通过 window.getComputedStyle 等价于 document.defaultView.getComputedStyle 的调用
+
+详细版本：window.getComputedStyle(elem, null).getPropertyValue('height') 可能值为 100px，就算是 inherit 它也会计算出来。但是如果元素背景是透明，获取的也是透明背景，不是父节点的背景，所以和展示的颜色不一定一样
+
+更加详细：getComputedStyle 会引起回流，因为要获取祖先节点的信息进行计算，比如宽高，进一步导致性能问题。然后讲一些回流重绘的问题，还有浏览器渲染原理等等，也有其他会引起回流的操作，比如获取 offsetXXX scrollXXX clientXXX currentStyle 等等
+```
+
+```
+visibility: hidden和display: none的区别
+
+普通回答：一个隐藏占据位置，一个隐藏不占据位置
+
+进一步：display: none 隐藏后不占据位置，引起 dom 树变化，引起回流，代价更大
+
+进一步：某个元素需要频繁切换 display 的化，使用复合层优化，或者要求低一点用 absolute 让它脱离文档流，然后引导到 普通文档流，absolute 文档流，复合图层的区别
+
+进一步：描述浏览器渲染原理和复合图层与普通图层的绘制区别（复合图层单独分配资源，独立绘制，性能提升，但是不能太多，还有隐式合成等等）
+```
+
+## 知识分类
+
+- 核心知识，必须掌握，也是最基础的，作为骨架承载知识体系
+  - 浏览器模型，渲染原理，`js`解析过程，`js`运行机制
+- 重要知识
+  - `http` 相关，`web` 安全相关，跨域处理
+- 扩展知识
+  - 五层因特网协议，`hybrid` 模式，移动原生开发，后台相关
+
+## 主干流程
+
+1. 从浏览器接收 `url` 到开启网络请求线程 (这一部分可以展开浏览器的机制，以及线程和进程的关系)
+2. 开启网络线程到发出一个完整的 `http` 请求（这一部分涉及到 `dns` 查询，`tcp/ip` 请求，五层因特网协议等知识）
+3. 从服务器接收到请求到后台接收到请求 （这一部分涉及到负载均衡，安全拦截和后台内部的处理）
+4. 后台和前台的 `http` 交互（这一部分包括 `http` 头部，响应码，报文结构，`cookie` 等知识，可以提下静态自由的 `cookie` 优化，编码解码，比如 `gzip` 压缩）
+5. 单独拎出来的缓存问题，`http` 缓存（包括 `http` 缓存头部，`etag` `cache-control` 等）
+6. 浏览器接收到 `http` 数据包后的解析流程 （解析 `html` - 词法分析然后解析成 `DOM` 树，解析 `css` 生成 `css` 规则树，合成 `render` 树，然后 `layout` `painting`渲染 复合图层生成 `GPU`绘制，外链资源的处理，`loaded` `contentloaded`）
+7. `CSS` 的可视化模型 （渲染规则，包括块，控制框，`BFC` `IFC` 等概念）
+8. `js` 解析过程（`js`的解析阶段，预处理阶段，执行阶段生成执行上下文，`VO`，作用域链，回收机制等等）
+9. 其他（跨域，`web` 安全，`hybrid`模式等等）
+
+下面一步步来讲这一部分的内容
+
+## 看文章遗留的问题
+
+- `dns-prefetch` 优化
+- [从浏览器多进程到 JS 单线程，JS 运行机制最全面的一次梳理](https://segmentfault.com/a/1190000012925872)
+- 三次握手和四次挥手更加详细的看下
+- [深入理解 JavaScript 系列](https://www.cnblogs.com/TomXu/archive/2011/12/15/2288411.html#!comments])
+- [V8 内存浅析](https://zhuanlan.zhihu.com/p/33816534)
+- [ajax 跨域，这应该是最全的解决方案了](https://segmentfault.com/a/1190000012469713)
+- [AJAX 请求真的不安全么？谈谈 Web 安全与 AJAX 的关系。](https://segmentfault.com/a/1190000012693772)

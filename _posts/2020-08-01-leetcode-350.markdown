@@ -1,0 +1,36 @@
+---
+layout: post
+title: LeetCode 350. 两个数组的交集 II
+tags: [LeetCode]
+---
+
+简单思路：先遍历第一个数组，使用 map 记录出现的数字和次数，然后遍历第二个数组，当存在相同数字的时候把对应的 map 上的次数 - 1，推入到结果数组中，就是我们需要的答案了
+
+[350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
+
+```js
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number[]}
+ */
+var intersect = function (nums1, nums2) {
+  const map = {};
+  const res = [];
+
+  for (let item of nums1) {
+    map[item] = map[item] ? map[item] + 1 : 1;
+  }
+
+  for (let item of nums2) {
+    if (map[item]) {
+      map[item]--;
+      res.push(item);
+    }
+  }
+
+  return res;
+};
+
+intersect([1, 2, 2, 1], [2, 2]);
+```

@@ -1,0 +1,45 @@
+---
+layout: post
+title: LeetCode 19. 删除链表的倒数第N个节点
+tags: [LeetCode]
+---
+
+简单思路：快慢指针，第一个先往前走，然后两个指针齐步走，快指针到末尾的时候，满指针指向了要删除的元素，我们还保存了删除元素的前一个元素的指针，这个时候 pre.next = pre.next.next 就可以删除了
+
+[19. 删除链表的倒数第 N 个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+var removeNthFromEnd = function (head, n) {
+  const result = new ListNode(null);
+  result.next = head;
+
+  let cur = head;
+  let pre = result;
+
+  while (n--) {
+    head = head.next;
+  }
+
+  while (head) {
+    head = head.next;
+    cur = cur.next;
+    pre = pre.next;
+  }
+
+  pre.next = pre.next.next;
+
+  return result.next;
+};
+```

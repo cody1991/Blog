@@ -1,0 +1,24 @@
+---
+layout: post
+title: LeetCode 189. 旋转数组
+tags: [LeetCode]
+---
+
+思路：观察反转后的数组就好了，发现只要把 k 位置后面的移到数组头部就完成了（这个需要注意的是 k 可能比数组长，所以做一下取余），当然还有其他的方法
+
+[189. 旋转数组](https://leetcode-cn.com/problems/rotate-array/)
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var rotate = function (nums, k) {
+  k = k % nums.length;
+  nums.unshift(...nums.splice(-k));
+  return nums;
+};
+
+console.log(rotate([1, 2, 3, 4, 5, 6, 7], 3));
+```

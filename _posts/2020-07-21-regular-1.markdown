@@ -1,0 +1,203 @@
+---
+layout: post
+title: 《JS 正则迷你书》笔记1 - 字符匹配
+tags: [blog, regular]
+---
+
+from [https://github.com/qdlaoyao/js-regex-mini-book](https://juejin.im/post/59cc61176fb9a00a437b290b)
+
+`正则要么匹配字符，要么匹配位置`
+
+# 字符匹配
+
+## 两种模糊匹配：横向和纵向
+
+### 横向
+
+匹配长度不固定，使用量词 `{m,n}`
+
+比如 `/ab{2,5}c/`，匹配 1 个 a,2~5 个 b,1 个 c
+
+![https://regexper.com/#%2Fab%7B2%2C5%7Dc%2F](/images/posts/reg-1.svg)
+
+```javascript
+const reg = /ab{2,5}c/g;
+const str = "abc abbc abbbc abbbbc abbbbbc abbbbbbc";
+str.match(reg);
+// (4) ["abbc", "abbbc", "abbbbc", "abbbbbc"]
+```
+
+### 纵向
+
+具体到某一个字符到时候，可以是多个字符里面到某一个
+
+使用数组来实现，比如 `[abc]`，这个位置有可能是 `a` `b` `c`
+
+比如 `a[123]b` 可以匹配 `a1b` `a2b` `a3b`
+
+![https://regexper.com/#%2Fa%5B123%5Db%2F](/images/posts/reg-2.svg)
+
+```javascript
+const reg = /a[123]b/g;
+const str = "a0b a1b a2b a3b a4b";
+str.match(reg);
+// (3) ["a1b", "a2b", "a3b"]
+```
+
+### 范围表示法
+
+比如 `[123456abcdefGHIJKLM]` 可以表示成 `[1-6a-fG-M]`
+
+如果要表示 `a` `-` `z` 的话要写成 `[-az]` `[az-]` `[a\-z]`，要么再开头要么在结尾要么转义
+
+### 排除字符组
+
+比如 `[^abc]`，除了 `a` `b` `c` 的都符合条件
+
+### 常见简写
+
+| 字符组   | 含义                                                                              |
+| -------- | --------------------------------------------------------------------------------- |
+| \d       | `[0-9]`                                                                           |
+| \D       | `[^0-9]`                                                                          |
+| \w       | `[0-9a-zA-Z_]`                                                                    |
+| \W       | `[^0-9a-zA-Z_]`                                                                   |
+| \s       | `[\t\v\n\r\f]` 空白字符，包括空格、水平制表符、垂直制表符、换行符、回车符、换页符 |
+| \S       | `[^\t\v\n\r\f]` 非空白字符                                                        |
+| .        | [^\n\r\u2028\u2029] 所有字符，换行符、回车符、行分隔符和段分隔符除外              |
+| 匹配所有 | `[\d\D]` `[\w\W]` `[\s\S]` `[^]`                                                  |
+
+### 量词
+
+| 字符组  | 含义                 |
+| ------- | -------------------- |
+| `{m,}`  | 至少 `m` 次          |
+| `{m,n}` | `m` 到 `n` 次        |
+| `{m}`   | `m` 次               |
+| `?`     | `{0,1}` 没有或者一次 |
+| `+`     | `{1,}` 一次或者更多  |
+| `*`     | `{0,}` 任意次数      |
+
+比如
+
+`/a{1,}b{2,4}c{2}d?e+f*/`
+
+![https://regexper.com/#%2Fa%7B1%2C%7Db%7B2%2C4%7Dc%7B2%7Dd%3Fe%2Bf*%2F](/images/posts/reg-3.svg)
+
+### 贪婪和惰性匹配
+
+```javascript
+const reg = /\d{2,5}/g;
+const str = "123 1234 12345 123456";
+console.log(str.match(reg));
+// (4) ["123", "1234", "12345", "12345"]
+```
+
+它是贪婪的，尽可能匹配更多的数字
+
+```javascript
+const reg = /\d{2,5}?/g;
+const str = "123 1234 12345 123456";
+console.log(str.match(reg));
+// (8) ["12", "12", "34", "12", "34", "12", "34", "56"]
+```
+
+可以在量词后面加上 `?` 表示惰性的，尽可能少匹配
+
+| 贪婪量词 | 惰性量词 |
+| -------- | -------- |
+| `{m,}`   | `{m,}?`  |
+| `{m,n}`  | `{m,n}?` |
+| `?`      | `??`     |
+| `+`      | `+?`     |
+| `*`      | `*?`     |
+
+`/a{1,}?b{2,4}?d??e+?f*?/`
+
+![https://regexper.com/#%2Fa%7B1%2C%7D%3Fb%7B2%2C4%7D%3Fd%3F%3Fe%2B%3Ff*%3F%2F](/images/posts/reg-4.svg)
+
+### 多选分支
+
+选择多个子模式中的一个
+
+`(p1|p2|p3)`，这里是三个子模式，用 `|` 管道符分开，表示其中任意一个，比如要匹配 `good` 和 `nice`，使用 `(good|nice)`
+
+另外如果我们用 `/good|goodbye/` 匹配 `goodbye` 得到的是 `good`，用 `/goodbye|good/` 匹配 `goodbye` 得到的是 `goodbye`，所以它也是惰性的，匹配到了就停止
+
+### 案例分析
+
+#### 匹配 16 进制颜色值
+
+要求匹配：
+
+```
+#ffbbad
+#Fc01DF
+#FFF
+#ffE
+```
+
+`/#([0-9a-zA-Z]{3}|[0-9a-zA-Z]{6})/`
+
+![https://regexper.com/#%2F%23%28%5B0-9a-zA-Z%5D%7B3%7D%7C%5B0-9a-zA-Z%5D%7B6%7D%29%2F](/images/posts/reg-5.svg)
+
+#### 匹配时间
+
+要求匹配：
+
+```
+23:59
+02:07
+7:9
+```
+
+`/^(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])$/`
+
+![https://regexper.com/#%2F%5E%280%3F%5B0-9%5D%7C1%5B0-9%5D%7C2%5B0-3%5D%29%3A%280%3F%5B0-9%5D%7C%5B1-5%5D%5B0-9%5D%29%24%2F](/images/posts/reg-6.svg)
+
+#### 匹配日期
+
+要求匹配：
+
+```
+2017-06-10
+```
+
+`/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/`
+
+![https://regexper.com/#%2F%5E%5B0-9%5D%7B4%7D-%280%5B1-9%5D%7C1%5B0-2%5D%29-%280%5B1-9%5D%7C%5B12%5D%5B0-9%5D%7C3%5B01%5D%29%24%2F](/images/posts/reg-7.svg)
+
+#### window 操作系统文件路径
+
+要求匹配：
+
+```
+F:\study\javascript\regex\regular expression.pdf
+F:\study\javascript\regex\
+F:\study\javascript
+F:\
+```
+
+`/^[a-zA-Z]:\\([^\\:*<>|"?\r\n/]+\\)*([^\\:*<>|"?\r\n/]+)?$/`
+
+一开始代表的是 `[a-zA-Z]` 中的一个单词，配上 `:\\`
+
+接下来是一些不能作为文件夹名的单词 `[^\\:*<>|"?\r\n/]` ,我们给它加上 `+` 代表 1 个或多个这样的字符，在后面跟上 `\\` ，前面这一串可以出现 0 次或者更多，所有包起来加个 `*`
+
+最后可以不是文件夹，所以不会有 `\`，所以我们在最后再补上 `([^\\:*<>|"?\r\n/]+)?`，它是可选的，所以用 `?`
+
+![https://regexper.com/#%2F%5E%5Ba-zA-Z%5D%3A%5C%5C%28%5B%5E%5C%5C%3A*%3C%3E%7C%22%3F%5Cr%5Cn%2F%5D%2B%5C%5C%29*%28%5B%5E%5C%5C%3A*%3C%3E%7C%22%3F%5Cr%5Cn%2F%5D%2B%29%3F%24%2F](/images/posts/reg-8.svg)
+
+#### 匹配 ID
+
+要求从
+
+```
+<div id="container" class="main"></div>
+```
+
+提取出 id="container"。
+
+`/id="[^"]*"/`
+
+![https://regexper.com/#%2Fid%3D%22%5B%5E%22%5D*%22%2F](/images/posts/reg-9.svg)

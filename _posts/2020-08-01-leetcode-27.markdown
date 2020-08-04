@@ -1,0 +1,26 @@
+---
+layout: post
+title: LeetCode 27. 移除元素
+tags: [LeetCode]
+---
+
+简单思路：for 循环不使用第三个表达式，我们在找到需要去掉的值的时候去掉，否则遍历的 index++
+
+[27. 移除元素](https://leetcode-cn.com/problems/remove-element/)
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+var removeElement = function (nums, val) {
+  for (let index = 0; index < nums.length; ) {
+    const cur = nums[index];
+    if (cur !== val) index++;
+    else nums.splice(index, 1);
+  }
+};
+
+console.log(removeElement([0, 1, 2, 2, 3, 0, 4, 2], 2));
+```

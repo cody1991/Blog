@@ -1,0 +1,90 @@
+---
+layout: post
+title: 现代 JavaScript 教程
+tags: [blog, javascript]
+---
+
+学习 list，有需要的话会开新的日志
+
+- [ ] JavaScript 编程语言 - 在这儿我们将从头开始学习 JavaScript，也会学习 OOP 等相关高级概念。
+  - [x] 简介
+    - [x] JavaScript 简介
+    - [x] 手册与规范
+    - [x] 代码编辑器 - 考虑要不要用 webstorm
+    - [x] 开发者控制台
+  - [x] JavaScript 基础知识
+    - [x] Hello, world!
+    - [x] 代码结构
+    - [x] 现代模式，"use strict"
+    - [x] 变量
+    - [x] 数据类型
+    - [x] 交互：alert、prompt 和 confirm
+    - [x] 类型转换
+    - [x] 基础运算符，数学
+    - [x] 值的比较
+    - [x] 条件分支：if 和 '?'
+    - [x] 逻辑运算符
+    - [x] 空值合并运算符 '??'
+    - [x] 循环：while 和 for
+    - [x] "switch" 语句
+    - [x] 函数
+    - [x] 函数表达式
+    - [x] 箭头函数，基础知识
+    - [x] JavaScript 特性
+  - [x] 代码质量
+    - [x] 在 Chrome 中调试
+    - [x] 代码风格
+    - [x] 注释
+    - [x] 忍者代码
+    - [x] 使用 Mocha 进行自动化测试
+    - [x] Polyfill
+  - [x] Object（对象）：基础知识
+    - [x] 对象
+    - [x] 对象拷贝，引用
+    - [x] 垃圾回收
+    - [x] 对象方法，"this"
+    - [x] 构造器和操作符 "new"
+    - [x] 可选链 "?."
+    - [x] Symbol 类型
+    - [x] 对象 — 原始值转换
+  - [x] 数据类型
+    - [x] 原始类型的方法
+    - [x] 数字类型 (这里最后一道练习题不错)
+    - [x] 字符串
+    - [x] 数组
+    - [x] 数组方法 (这里 shuffle 练习题不错)
+    - [x] Iterable object（可迭代对象）
+    - [x] Map and Set（映射和集合）
+    - [x] WeakMap and WeakSet（弱映射和弱集合）
+    - [x] Object.keys，values，entries
+    - [x] 解构赋值
+    - [x] 日期和时间
+    - [x] JSON 方法，toJSON
+  - [x] 函数进阶内容
+    - [x] 递归和堆栈
+    - [x] Rest 参数与 Spread 语法
+    - [x] 闭包
+    - [x] 旧时的 "var"
+    - [x] 全局对象
+    - [x] 函数对象，NFE
+    - [x] "new Function" 语法
+    - [x] 调度：setTimeout 和 setInterval
+    - [x] 装饰者模式和转发，call/apply
+    - [x] 函数绑定
+    - [x] 深入理解箭头函数
+  - [x] 对象属性配置
+    - [x] 属性标志和属性描述符
+    - [x] 属性的 getter 和 setter
+  - [x] 原型，继承
+    - [x] 原型继承
+    - [x] F.prototype
+    - [x] 原生的原型
+    - [x] 原型方法，没有 `__proto__` 的对象
+  - [ ] 类
+    - [ ] Class 基本语法
+    - [ ] 类继承
+    - [ ] 静态属性和静态方法
+    - [ ] 私有的和受保护的属性和方法
+    - [ ] 扩展内建类
+    - [ ] 类检查："instanceof"
+    - [ ] Mixin 模式

@@ -1,0 +1,28 @@
+---
+layout: post
+title: LeetCode 122. 买卖股票的最佳时机 II
+tags: [LeetCode]
+---
+
+思路：其实很简单可以发现相邻两个数组如果是递增的，把差值加上就是最后的结果了
+
+[122. 买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+```js
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function (prices) {
+  if (prices < 2) return 0;
+  let sum = 0;
+  for (let index = 0; index < prices.length - 1; index += 1) {
+    const cur = prices[index];
+    const next = prices[index + 1];
+    if (next > cur) sum += next - cur;
+  }
+  return sum;
+};
+
+console.log(maxProfit([7, 1, 5, 3, 6, 4]));
+```

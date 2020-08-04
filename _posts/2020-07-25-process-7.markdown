@@ -1,0 +1,199 @@
+---
+layout: post
+title: 从输入URL到页面加载的过程（7） - 解析页面流程
+tags: [blog, process]
+---
+
+from [从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！](http://www.dailichun.com/2018/03/12/whenyouenteraurl.html)
+
+作为进阶回头再来看看：[从输入 URL 到页面加载完成的过程中都发生了什么事情？](http://fex.baidu.com/blog/2014/05/what-happen/)
+
+# 解析页面流程
+
+## 流程简介
+
+1. 解析 `html`，生成 `DOM` 树
+2. 解析 `css`，生成 `css` 规则树
+3. 合并 `dom` 树 和 `css` 规则树，生成 `render` 树
+4. 布局 `render` 树 (`layout`/`relow`) ，负责各尺寸和位置的计算
+5. 绘制 `render` 树 (`paint`)，绘制页面像素信息
+6. 浏览器会把各层的信息发给 `GPU`，`GPU` 会把各层的信息合成 `composite`，最终显示屏幕上
+
+![解析页面流程](/images/posts/process-3.png)
+
+## `html` 解析，构建 `dom` 树
+
+`bytes` -> `characters` -> `tokens` -> `node` -> `dom`
+
+比如下面一段 `html` 代码
+
+```html
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link href="style.css" rel="stylesheet" />
+    <title>Critical Path</title>
+  </head>
+  <body>
+    <p>Hello <span>web performance</span> students!</p>
+    <div><img src="awesome-photo.jpg" /></div>
+  </body>
+</html>
+```
+
+浏览器的处理过程
+
+![DOM树构建过程](/images/posts/process-4.png)
+
+其中的重要流程有
+
+- `Conversion` 转换: 浏览器把获取到的 `html` 内容 (`bytes`) 基于它的编码转成各个字符
+- `Tokenizing` 分词: 浏览器按照`html`规范把这些分词转换成不同的标记`token`，每个`token`都有自己独特的含义和规则集
+- `Lexing` 词法分析: 分词得到一堆的 `token`，此时把它们转成对象，这些对象有他们的属性和规则
+- `dom` 构建: 由于 `html` 标记定义的就是不同标签之间的关系，这个关系就像属性结构一样（比如 `body` 对象的父节点就是 `HTML` 对象，然后段落 `p` 对象的父节点就是 `body` 对象）
+
+## 生成 `css` 规则树
+
+类似也是
+
+`Bytes` → `characters` → `tokens` → `nodes` → `CSSOM`
+
+比如
+
+```css
+body {
+  font-size: 16px;
+}
+p {
+  font-weight: bold;
+}
+span {
+  color: red;
+}
+p span {
+  display: none;
+}
+img {
+  float: right;
+}
+```
+
+最终生成下面的树
+
+![css规则树](/images/posts/process-5.png)
+
+## 构建渲染树
+
+一般渲染树和 `dom` 树一一对应，但是也不一定，一些不可见的元素不会出现在渲染树，比如 `head` 标签，和 `display:none` 等不可见的元素
+
+![渲染树](/images/posts/process-6.png)
+
+## 渲染
+
+有了渲染树就可以开始渲染了，基本流程如下图
+
+![渲染树](/images/posts/process-7.jpg)
+
+- 计算 `css` 样式
+- 构建渲染树
+- 布局，主要定位坐标和大小，是否换行，各种 `position` `overflow` `z-index`属性
+- 绘制，把图像绘制出来
+
+`js` 动态修改了 `dom` 和 `css` 的话，会导致重新布局 `layout` 或者 渲染`repaint`
+
+他们是有区别的
+
+- layout，也叫做 `reflow` ，就是回流，意味着元素的内容，结构，位置，尺寸发生了变化，需要重新计算样式和渲染树
+- repaint，重绘，以为发生了一些影响外观的变化，比如背景颜色，边框颜色，文字颜色等，只要应用新的样式就好了
+
+回流成本更加高，一个节点的回流经常导致子节点和同级节点的回流，所以优化的方案一般包含了避免回流
+
+什么会引起回流
+
+- 改变字体大小
+- 页面初始化渲染
+- `dom` 结构变化
+- `render` 树变化，比如 `padding` 变少了
+- 窗口 `resize`
+- 获取某些属性，也会
+
+很多浏览器做了优化，会等到一定量才统一处理
+
+但是除了 `render` 树的直接变化，获取一些属性的时候，浏览器为了获取到正确的值也会触发回流，这样浏览器的优化也无效了
+
+比如
+
+- `offset(Top/Left/Width/Height)`
+- `scroll(Top/Left/Width/Height)`
+- `cilent(Top/Left/Width/Height)`
+- `width,height`
+- 调用了 `getComputedStyle()` 或者 `IE` 的 `currentStyle`
+
+回流一定伴随着重绘，重绘却可以单独出现
+
+优化方案有下面几个
+
+- 减少逐项更改样式，最好一次性更改 `style`，或者将样式定义为 `class` 并一次性更新
+- 避免循环操作 `dom`，创建一个 `documentFragment` 或 `div`，在它上面应用所有 `DOM` 操作，最后再把它添加进去
+- 避免多次读取 `offset` 等属性，无法避免则将它们缓存到变量
+- 将复杂的元素绝对定位或固定定位，使得它脱离文档流，否则回流代价会很高
+
+最后看看一个案例
+
+```javascript
+const s = document.body.style;
+s.padding = "2px"; // 回流 + 重绘
+s.border = "1px solid red"; // 再一次 回流 + 重绘
+s.color = "blue"; // 再一次重绘
+s.backgroundColor = "#ccc"; // 再一次 重绘
+s.fontSize = "14px"; // 再一次 回流 + 重绘
+// 添加node，再一次 回流 + 重绘
+document.body.appendChild(document.createTextNode("abc!"));
+```
+
+## 简单层与复合层
+
+上面止步于绘制，但是其实这一步没那么简单，简单介绍下 简单层和复合层
+
+- 可以认为默认只有一个复合层，所有的 `dom` 都是在这个复合层里面
+- 如果开启了硬件加速功能，可以把某个节点变成复合层
+- 复合层之间的绘制互不干扰，由 `gpu` 控制
+- 简单图层中，就算是 `absolute` 等布局，变化时不影响整体的回流，但是在同一个图层中，仍然会影响绘制的，因此做动画的性能很低，复合层是独立的，所以动画一般推荐使用复合层
+
+## 资源外链的下载
+
+`html` 解析的过程会遇到一些外链，需要单独处理
+
+遇到的资源举例有下面三种
+
+- `CSS` 样式资源
+- `JS` 脚本资源
+- `img` 图片类资源
+
+当遇到上述的外链时，会单独开启一个下载线程去下载资源（`http1.1` 中是每一个资源的下载都要开启一个 `http` 请求，对应一个 `tcp/ip` 链接）
+
+### 遇到 `CSS` 样式资源
+
+- `CSS` 下载时异步，不会阻塞浏览器构建 `DOM` 树
+- 但是会阻塞渲染，也就是在构建 `render` 时，会等到 `css` 下载解析完毕后才进行（这点与浏览器优化有关，防止 `css` 规则不断改变，避免了重复的构建）
+- 有例外，`media query` 声明的 `CSS` 是不会阻塞渲染的
+
+### 遇到 `JS` 脚本资源
+
+- 阻塞浏览器的解析，也就是说发现一个外链脚本时，需等待脚本下载完成并执行后才会继续解析 `HTML`
+- 浏览器的优化，一般现代浏览器有优化，在脚本阻塞时，也会继续下载其它资源（当然有并发上限），但是虽然脚本可以并行下载，解析过程仍然是阻塞的，也就是说必须这个脚本执行完毕后才会接下来的解析，并行下载只是一种优化而已
+- `defer` 与 `async`，普通的脚本是会阻塞浏览器解析的，但是可以加上 `defer` 或 `async` 属性，这样脚本就变成异步了，可以等到解析完毕后再执行
+
+`defer` 是延迟执行，而 `async` 是异步执行
+
+- `async` 是异步执行，异步下载完毕后就会执行，不确保执行顺序，一定在 `onload` 前，但不确定在 `DOMContentLoaded` 事件的前或后
+- `defer` 是延迟执行，在浏览器看起来的效果像是将脚本放在了 `body` 后面一样（虽然按规范应该是在 `DOMContentLoaded` 事件前，但实际上不同浏览器的优化效果不一样，也有可能在它后面）
+
+### 遇到 `img` 图片类资源
+
+遇到图片等资源时，直接就是异步下载，不会阻塞解析，下载完毕后直接用图片替换原有 `src` 的地方
+
+## `loaded` 和 `domcontentloaded`
+
+- `DOMContentLoaded` 事件触发时，仅当 `DOM` 加载完成，不包括样式表，图片(譬如如果有 `async` 加载的脚本就不一定完成)
+- `load` 事件触发时，页面上所有的 `DOM`，样式表，脚本，图片都已经加载完成了

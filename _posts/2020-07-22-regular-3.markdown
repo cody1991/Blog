@@ -1,0 +1,381 @@
+---
+layout: post
+title: 《JS 正则迷你书》笔记3 - 括号
+tags: [blog, regular]
+---
+
+from [https://github.com/qdlaoyao/js-regex-mini-book](https://juejin.im/post/59cc61176fb9a00a437b290b)
+
+对括号的使用是否得心应手，是衡量对正则的掌握水平的一个侧面标准
+
+括号提供了分组，便于我们引用他
+
+# 括号学习
+
+## 分组
+
+我们知道 `/a+/g` 代表连续出现 `a`，而 `/(ab)+/g` 代表连续出现 `ab`
+
+```javascript
+"ababa abbb ababab".match(/(ab)+/g);
+// ["abab", "ab", "ababab"]
+```
+
+## 分支
+
+多选结构中 `(p1|p2)`,提供分组表达式所有的可能
+
+比如匹配下面的字符
+
+```
+I love JavaScript
+I love Regular Expression
+```
+
+可以使用
+
+```javascript
+/I love (JavaScript|Regular Expression)/.test("I love JavaScript");
+// true
+/I love (JavaScript|Regular Expression)/.test("I love Regular Expression");
+// true
+```
+
+如果去掉括号，匹配的就是 `I love JavaScript` 和 `Regular Expression`
+
+## 分组引用
+
+假设日期的格式为 `yyyy-mm-dd`
+
+我们写一个简单的正则
+
+`/\d{4}-\d{2}-\d{2}/`
+
+再修改成括号版本
+
+`/(\d{4})-(\d{2})-(\d{2})/`
+
+它们在可视化的工具下会多了 `Group` 的提示，比如上面的 `Group #1` `Group #2` `Group #3`
+
+![https://regexper.com/#%2F%28%5Cd%7B4%7D%29-%28%5Cd%7B2%7D%29-%28%5Cd%7B2%7D%29%2F](/images/posts/reg-16.svg)
+
+在匹配的过程中正则会给分组开辟一个空间，存储每次匹配到的数据
+
+比如我们运行下下面的代码
+
+```javascript
+"2020-07-22".match(/(\d{4})-(\d{2})-(\d{2})/g);
+
+// ["2020-07-22", "2020", "07", "22", index: 0, input: "2020-07-22", groups: undefined]
+```
+
+返回的数组第一个是匹配的整个结果，然后是各个分组匹配的结果，然后是匹配的下标，最后是输入的文本
+
+```javascript
+"2020-07-22".match(/(\d{4})-(\d{2})-(\d{2})/g);
+// ["2020-07-22"]
+```
+
+上面看了下加了 `g` 的输出
+
+我们也可以使用 `exec`，输出的结果是一样的
+
+```javascript
+/(\d{4})-(\d{2})-(\d{2})/.exec("2020-07-22");
+
+// ["2020-07-22", "2020", "07", "22", index: 0, input: "2020-07-22", groups: undefined]
+```
+
+另外我们可以通过全局属性 `$1` ~ `$9`来获取
+
+```javascript
+"2020-07-22".match(/(\d{4})-(\d{2})-(\d{2})/g);
+
+console.log(RegExp.$1);
+console.log(RegExp.$2);
+console.log(RegExp.$3);
+// 2020
+// 07
+// 22
+```
+
+## 替换
+
+我们如何 把 `yyyy-mm-dd` 格式，替换成 `mm/dd/yyyy`
+
+```javascript
+"2017-06-12".replace(/(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1");
+// "06/12/2017"
+```
+
+等价于
+
+```javascript
+"2017-06-12".replace(
+  /(\d{4})-(\d{2})-(\d{2})/,
+  () => `${RegExp.$2}/${RegExp.$3}/${RegExp.$1}`
+);
+// "06/12/2017"
+```
+
+也等价于
+
+```javascript
+"2017-06-12".replace(
+  /(\d{4})-(\d{2})-(\d{2})/,
+  (match, year, month, day) => `${month}/${day}/${year}`
+);
+// "06/12/2017"
+```
+
+## 反向引用
+
+除了在正则的 `Api`里面引用分组，正则本身也可以，不过之前引用前面出现过的分组，即反向引用
+
+比如正则要支持
+
+```
+2016-06-12
+2016/06/12
+2016.06.12
+```
+
+我们最简单想到的是
+
+`/\d{4}(-|\/|\.)\d{2}[-\/\.]\d{2}/`
+
+但是会匹配到 `2016-06/12` 这些情况，正常肯定希望分隔符是一样的，所以我们修改下
+
+`/\d{4}(-|\/|\.)\d{2}\1\d{2}/`
+
+![https://regexper.com/#%2F%5Cd%7B4%7D%28-%7C%5C%2F%7C%5C.%29%5Cd%7B2%7D%5C1%5Cd%7B2%7D%2F](/images/posts/reg-17.svg)
+
+这里的 `\1` 表示引用前面的 `(-|\/|\.)` 分组，不管它匹配到什么， `\1` 都匹配到它真实匹配的字符
+
+`\1` `\2` 的含义以此类推
+
+## 嵌套括号
+
+我们看一下这个情况
+
+`/^((\d)(\d(\d)))\1\2\3\4$/`
+
+```javascript
+/^((\d)(\d(\d)))\1\2\3\4$/.test(1231231233);
+console.log(RegExp.$1); // 123
+console.log(RegExp.$2); // 1
+console.log(RegExp.$3); // 23
+console.log(RegExp.$4); // 3
+```
+
+![https://regexper.com/#%2F%5E%28%28%5Cd%29%28%5Cd%28%5Cd%29%29%29%5C1%5C2%5C3%5C4%24%2F](/images/posts/reg-18.svg)
+
+我们按顺序看，前三个数字就是 `1` `2` `3`，然后就是 `\1\2\3\4`
+
+现在的情况是
+`\1` => `123`
+
+`\2` => `1`
+
+`\3` => `23`
+
+`\4` => `3`
+
+去看可视化试图会更加清楚
+
+其实我们可以发现它是从左到右，匹配到的括号来决定分组的值是什么的
+
+一开始匹配到最外层的左括号，得出 `\1` => `123`
+
+然后匹配到第二个左括号，其实就是 `\2` => `1`
+
+之后再匹配到一个左括号，得出 `\3` => `23`
+
+最后就是单独的一个 `\4` => `3`
+
+## \10 是什么呢
+
+测试一下
+
+```javascript
+/(1)(2)(3)(4)(5)(6)(7)(8)(9)(#) \10+/.test("123456789# ######");
+// true
+```
+
+表示的是第十组，如果非要匹配 `\1` 和 `0` 的话，用 `(?:\1)0` 或者 `\1(?:0)`
+
+## 引用不存在的分组
+
+如果不存在则是表示他的转义，比如 `\2` 匹配 `"\2"`，表示对它的转义
+
+```javascript
+/\1\2\3\4\5\6\7\8\9/.test("\1\2\3\4\5\6\789");
+// true
+"\1\2\3\4\5\6\789".split("");
+// ["", "", "", "", "", "", "", "8", "9"]
+```
+
+## 分组后面有量词怎么办
+
+捕获的是最后一次匹配到的数据
+
+```javascript
+/(\d)+/.exec("12345");
+// ["12345", "5", index: 0, input: "12345", groups: undefined]
+```
+
+看到捕获的确实是 `5`
+
+```javascript
+/(\d)+ \1/.test("12345 1");
+// false
+/(\d)+ \1/.test("12345 5");
+// true
+```
+
+## 非捕获括号
+
+如果只想要括号最原始的捕获功能，但是不去引用他，不在 正则 引用，也不在 Api 内引用，可以使用 `(?:p)` 和 `(?:p1|p2|p3)`
+
+比如
+
+```javascript
+"ababa abbb ababab".match(/(?:ab)+/g);
+// ["abab", "ab", "ababab"]
+```
+
+# 案例
+
+## 字符串 trim 方法模拟
+
+去掉头尾的空格，替换成空字符
+
+```javascript
+function trim(str) {
+  return str.replace(/^\s+|\s+$/g, "");
+}
+
+trim(" hello world ");
+// "hello world"
+```
+
+第二种匹配整个字符串，提取需要的
+
+```javascript
+function trim(str) {
+  return str.replace(/^\s+(.*?)\s+$/g, "$1");
+}
+
+trim(" hello world ");
+// "hello world"
+```
+
+第一种效率高
+
+## 把每个单词的首字母换成大写的
+
+```javascript
+function titleize(str) {
+  return str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+titleize("my name is cody");
+// "My Name Is Cody"
+```
+
+## 驼峰化
+
+```javascript
+function camelize(str) {
+  return str.replace(/[-_\s]+(.)?/g, (match, c) => {
+    console.log(match, c);
+    return c ? c.toUpperCase() : "";
+  });
+}
+
+camelize("-moz-transform");
+// "MozTransform"
+
+camelize("_moz_transform");
+// "MozTransform"
+```
+
+## 中划线化
+
+```javascript
+function dasherize(str) {
+  return str
+    .replace(/([A-Z])/g, "-$1")
+    .replace(/[-_\s]+/g, "-")
+    .toLowerCase();
+}
+
+dasherize("MozTransform");
+// "-moz-transform"
+```
+
+## HTML 转义和反转义
+
+```javascript
+function escapeHTML(str) {
+  const escapeChars = {
+    "<": "lt",
+    ">": "gt",
+    '"': "quote",
+    "&": "amp",
+    "'": "#39",
+  };
+
+  return str.replace(
+    new RegExp(`[${Object.keys(escapeChars).join("")}]`, "g"),
+    (match) => `&${escapeChars[match]};`
+  );
+}
+
+escapeHTML("<div>Blah blah blah</div>");
+// "&lt;div&gt;Blah blah blah&lt;/div&gt;"
+
+function unescapeHTML(str) {
+  const htmlEntities = {
+    nbsp: " ",
+    lt: "<",
+    gt: ">",
+    qupt: '"',
+    amp: "&",
+    apos: "'",
+  };
+  return str.replace(/\&([^;]+);/g, (match, key) =>
+    key in htmlEntities ? htmlEntities[key] : match
+  );
+}
+unescapeHTML("&lt;div&gt;Blah blah blah&lt;/div&gt;");
+// "<div>Blah blah blah</div>"
+```
+
+## 匹配成对的标签
+
+要求匹配：
+
+```
+<title>regular expression</title>
+<p>laoyao bye bye</p>
+```
+
+不匹配：
+
+```
+<title>wrong!</p>
+```
+
+匹配开标签 `/<[^>]+/`
+
+匹配闭标签 `/\/[^>]+>/`
+
+需要前后匹配 `/<([^>]+)>[\d\D]*<\/\1>/`
+
+![https://regexper.com/#%2F%3C%28%5B%5E%3E%5D%2B%29%3E%5B%5Cd%5CD%5D*%3C%5C%2F%5C1%3E%2F](/images/posts/reg-19.svg)
+
+`<([^>]+)>` 是前面的闭合标签，并且选出了 `([^>]+)` 分组
+
+然后是 `[\d\D]*` 任意字符
+
+最好是 `<\/\1>` 代表闭合标签，使用了 反向引用
