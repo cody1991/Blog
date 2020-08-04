@@ -16,13 +16,21 @@
         <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </expand>
-    <select />
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:master" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f21e5835-1802-457e-98fd-d01be93c3439" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rakefile" beforeDir="false" afterPath="$PROJECT_DIR$/Rakefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/_config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/_config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/img/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,8 +79,16 @@
       <workItem from="1596518855080" duration="1984000" />
       <workItem from="1596520856484" duration="33000" />
       <workItem from="1596520939953" duration="189000" />
-      <workItem from="1596521161427" duration="1092000" />
+      <workItem from="1596521161427" duration="1921000" />
     </task>
+    <task id="LOCAL-00001" summary="refactor: 重构部分代码">
+      <created>1596522652856</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1596522652856</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -83,7 +99,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -92,11 +120,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="refactor: 重构部分代码" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: 重构部分代码" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596522362657">
+    <state x="440" y="265" key="Vcs.Push.Dialog.v2" timestamp="1596522666772">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="430" y="201" width="1005" height="676" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1596522362657" />
+    <state x="440" y="265" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1596522666772" />
+    <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596522981670">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="430" y="201" width="1005" height="676" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1596522981670" />
   </component>
 </project>
