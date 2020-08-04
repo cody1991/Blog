@@ -1,0 +1,12 @@
+---
+layout: post
+title: LeetCode
+tags: [LeetCode]
+---
+
+简单思路：
+
+[]()
+
+```js
+```
