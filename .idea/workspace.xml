@@ -26,31 +26,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f21e5835-1802-457e-98fd-d01be93c3439" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-20-check-list.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-20-check-list.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-20-hello-world.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-20-hello-world.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-20-self-function.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-20-self-function.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-21-regular-1.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-21-regular-1.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-21-regular-2.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-21-regular-2.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-22-performance.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-22-performance.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-22-regular-3.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-22-regular-3.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-23-regular-4.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-23-regular-4.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-24-process-1.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-24-process-1.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-24-process-10.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-24-process-10.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-24-process-2.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-24-process-2.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-24-process-9.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-24-process-9.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-paradise.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-paradise.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-3.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-3.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-4.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-4.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-5.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-5.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-6.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-6.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-7.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-7.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-8.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-8.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-26-modern-javascript.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-26-modern-javascript.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-26-running.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-26-running.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-26-webpack.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-26-webpack.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-27-web-performance-resources.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-27-web-performance-resources.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-28-plan.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-28-plan.markdown" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pwa/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/pwa/manifest.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +76,7 @@
       <workItem from="1596520856484" duration="33000" />
       <workItem from="1596520939953" duration="189000" />
       <workItem from="1596521161427" duration="2049000" />
-      <workItem from="1596523497995" duration="218000" />
+      <workItem from="1596523497995" duration="533000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: 重构部分代码">
       <created>1596522652856</created>
@@ -116,7 +92,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596523308518</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="docs: update tags">
+      <created>1596523751093</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1596523751093</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -149,16 +132,21 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="refactor: 重构部分代码" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: 重构部分代码" />
+    <MESSAGE value="docs: update tags" />
+    <option name="LAST_COMMIT_MESSAGE" value="docs: update tags" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="440" y="265" key="Vcs.Push.Dialog.v2" timestamp="1596523314312">
+    <state x="168" y="94" key="DiffContextDialog" timestamp="1596523759447">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="440" y="265" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1596523314312" />
-    <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596522981670">
+    <state x="168" y="94" key="DiffContextDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1596523759447" />
+    <state x="440" y="265" key="Vcs.Push.Dialog.v2" timestamp="1596523760594">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="430" y="201" width="1005" height="676" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1596522981670" />
+    <state x="440" y="265" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1596523760594" />
+    <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596523933897">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="430" y="201" width="1005" height="676" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1596523933897" />
   </component>
 </project>
