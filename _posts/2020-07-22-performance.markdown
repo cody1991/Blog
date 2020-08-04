@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 前端性能优化相关
-tags: [blog]
+tags: [Performance]
 ---
 
 # 性能指标文档

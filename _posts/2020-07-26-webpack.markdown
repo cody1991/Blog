@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 手写webpack核心原理
-tags: [blog, webpack]
+tags: [WebPack]
 ---
 
 # 核心打包原理

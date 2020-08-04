@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 奔跑吧（已跑8.38公里，累计用时01:15:59）
-tags: [running]
+tags: [Running]
 ---
 
 跑步记录，坚持坚持

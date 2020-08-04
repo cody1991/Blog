@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 手动实现一些函数
-tags: [blog]
+tags: [JavaScript]
 ---
 
 这里主要是动手去实现一些常见的函数，也是面试题经常考的

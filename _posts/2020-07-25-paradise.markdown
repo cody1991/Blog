@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 前端乐园
-tags: [blog, paradise]
+tags: [Paradise]
 ---
 
 from [前端乐园](https://share.aoping.club/#%E7%9B%AE%E5%BD%95)

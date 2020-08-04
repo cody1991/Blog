@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 一名【合格】前端工程师的自检清单
-tags: [blog]
+tags: [List]
 ---
 
 一边看文章，一边记录

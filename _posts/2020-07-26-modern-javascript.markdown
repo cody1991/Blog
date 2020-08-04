@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 现代 JavaScript 教程
-tags: [blog, javascript]
+tags: [JavaScript]
 ---
 
 学习 list，有需要的话会开新的日志
