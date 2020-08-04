@@ -26,18 +26,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f21e5835-1802-457e-98fd-d01be93c3439" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/_config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/_config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-20-check-list.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-20-check-list.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-21-regular-1.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-21-regular-1.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-21-regular-2.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-21-regular-2.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-22-performance.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-22-performance.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-22-regular-3.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-22-regular-3.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-24-process-2.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-24-process-2.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-24-process-9.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-24-process-9.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-5.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-5.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-25-process-7.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-25-process-7.markdown" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_posts/2020-07-26-running.markdown" beforeDir="false" afterPath="$PROJECT_DIR$/_posts/2020-07-26-running.markdown" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +76,7 @@
       <workItem from="1596520856484" duration="33000" />
       <workItem from="1596520939953" duration="189000" />
       <workItem from="1596521161427" duration="2049000" />
-      <workItem from="1596523497995" duration="1768000" />
+      <workItem from="1596523497995" duration="2103000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: 重构部分代码">
       <created>1596522652856</created>
@@ -124,7 +113,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596524799740</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="refactor: 更新博客图片路径">
+      <created>1596525478433</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1596525478433</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,17 +156,18 @@
     <MESSAGE value="docs: update tags" />
     <MESSAGE value="docs: update" />
     <MESSAGE value="refactor: 增加置顶功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: 增加置顶功能" />
+    <MESSAGE value="refactor: 更新博客图片路径" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: 更新博客图片路径" />
   </component>
   <component name="WindowStateProjectService">
     <state x="168" y="94" key="DiffContextDialog" timestamp="1596523759447">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="168" y="94" key="DiffContextDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1596523759447" />
-    <state x="440" y="265" key="Vcs.Push.Dialog.v2" timestamp="1596524804599">
+    <state x="440" y="265" key="Vcs.Push.Dialog.v2" timestamp="1596525480291">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="440" y="265" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1596524804599" />
+    <state x="440" y="265" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1596525480291" />
     <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596525422838">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
