@@ -2,6 +2,7 @@
 layout: post
 title: 规划
 tags: [Plan]
+top: true
 ---
 
 最近学习有点杂乱，感觉不是一个好的势头
