@@ -1,5 +1,5 @@
 # Site settings
-title: Blog
+title: cody1991
 SEOTitle: cody1991的博客 | cody1991 Blog
 header-img: img/home-bg.jpg
 email: 476490767@qq.com
@@ -13,13 +13,11 @@ future: true
 
 # SNS settings
 RSS: false
-#weibo_username:     huxpro
-#zhihu_username:     huxpro
+weibo_username:     cody1991
+zhihu_username:     cody1991
 github_username:    cody1991
-#twitter_username:   huxpro
-#facebook_username:  huxpro
-#linkedin_username:  firstname-lastname-idxxxx
-
+twitter_username:   cody19910828
+facebook_username:  zexiong.tang
 
 
 # Build settings
