@@ -26,8 +26,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f21e5835-1802-457e-98fd-d01be93c3439" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/CNAME" beforeDir="false" afterPath="$PROJECT_DIR$/CNAME" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_includes/head.html" beforeDir="false" afterPath="$PROJECT_DIR$/_includes/head.html" afterDir="false" />
     </list>
+    <list id="37a505ff-a0e2-4b69-a33d-f935ea05f24d" name="refactor: 替换CSS CDN地址" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,6 +37,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="PackageJsonUpdateNotifier">
     <dismissed value="$PROJECT_DIR$/package.json" />
@@ -176,9 +179,9 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="440" y="265" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1596526006114" />
-    <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596525422838">
+    <state x="430" y="201" width="1005" height="676" key="find.popup" timestamp="1596591724171">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="430" y="201" width="1005" height="676" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1596525422838" />
+    <state x="430" y="201" width="1005" height="676" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1596591724171" />
   </component>
 </project>
