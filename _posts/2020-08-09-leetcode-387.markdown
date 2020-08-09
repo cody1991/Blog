@@ -1,0 +1,35 @@
+---
+layout: post
+title: LeetCode 387. 字符串中的第一个唯一字符
+tags: [LeetCode]
+---
+
+简单思路：这道题很简单，主要想想怎么降低时间复杂度和空间复杂度吧
+
+[387. 字符串中的第一个唯一字符](https://leetcode-cn.com/problems/first-unique-character-in-a-string/)
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var firstUniqChar = function (s) {
+  const map = {};
+  for (let index = 0; index < s.length; index += 1) {
+    const c = s[index];
+    if (map[c] === undefined) map[c] = index;
+    else map[c] = -1;
+  }
+  let result = Infinity;
+  let flag = 0;
+  for (let key in map) {
+    if (map[key] != -1) {
+      result = Math.min(result, map[key]);
+      flag = 1;
+    }
+  }
+  return flag ? result : -1;
+};
+
+console.log(firstUniqChar("cc"));
+```
