@@ -1,6 +1,6 @@
 ---
 layout: post
-title: LeetCode
+title: LeetCode 700. 二叉搜索树中的搜索
 tags: [LeetCode]
 ---
 
