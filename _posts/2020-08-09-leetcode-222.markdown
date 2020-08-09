@@ -1,0 +1,27 @@
+---
+layout: post
+title: LeetCode 222. 完全二叉树的节点个数
+tags: [LeetCode]
+---
+
+简单思路：直接 DFS 计算就好了，当然这题目是完全二叉树，有更好的计算方式
+
+[222. 完全二叉树的节点个数](https://leetcode-cn.com/problems/count-complete-tree-nodes/)
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var countNodes = function (root) {
+  if (!root) return 0;
+  return 1 + countNodes(root.left) + countNodes(root.right);
+};
+```
