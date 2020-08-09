@@ -1,0 +1,39 @@
+---
+layout: post
+title: LeetCode 120. 三角形最小路径和
+tags: [LeetCode]
+---
+
+简单思路：画个简单的草稿就知道怎么算出来最小值了，也是一个动态规划的问题
+
+[120. 三角形最小路径和](https://leetcode-cn.com/problems/triangle/)
+
+```js
+/**
+ * @param {number[][]} triangle
+ * @return {number}
+ */
+var minimumTotal = function (triangle) {
+  const dp = [];
+  dp[0] = [];
+  dp[0][0] = triangle[0][0];
+
+  for (let i = 1; i < triangle.length; i += 1) {
+    const rows = triangle[i];
+    dp[i] = [];
+    for (let j = 0; j < rows.length; j += 1) {
+      const cur = rows[j];
+      if (j === 0) {
+        dp[i][j] = dp[i - 1][0] + cur;
+      } else if (i === j) {
+        dp[i][j] = dp[i - 1][j - 1] + cur;
+      } else {
+        dp[i][j] = Math.min(dp[i - 1][j - 1], dp[i - 1][j]) + cur;
+      }
+    }
+  }
+  return Math.min(...dp[dp.length - 1]);
+};
+
+console.log(minimumTotal([[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]));
+```
