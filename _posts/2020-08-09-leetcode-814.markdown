@@ -1,0 +1,42 @@
+---
+layout: post
+title: LeetCode 814. 二叉树剪枝
+tags: [LeetCode]
+---
+
+简单思路：遍历所有节点处理它们，如果该节点的左节点和右节点都为空且值为 0 则进行剪枝 (node = null)
+
+[814. 二叉树剪枝](https://leetcode-cn.com/problems/binary-tree-pruning/)
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var pruneTree = function (root) {
+  return deal(root);
+};
+
+function deal(root) {
+  if (!root) return null;
+  if (root.left) {
+    root.left = deal(root.left);
+  }
+  if (root.right) {
+    root.right = deal(root.right);
+  }
+
+  if (!root.left && !root.right && root.val === 0) {
+    root = null;
+  }
+  return root;
+}
+```
