@@ -1,0 +1,32 @@
+---
+layout: post
+title: LeetCode 125. 验证回文串
+tags: [LeetCode]
+---
+
+简单思路：循环查看左右两边，看是否相等就好了
+
+[125. 验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
+
+```js
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var isPalindrome = function (s) {
+  s = s.toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, "");
+  let result = true;
+
+  for (let i = 0; i < s.length / 2; i++) {
+    const left = s[i];
+    const right = s[s.length - i - 1];
+    if (left !== right) {
+      result = false;
+      break;
+    }
+  }
+  return result;
+};
+
+console.log(isPalindrome("A man, a plan, a canal: Panama"));
+```
