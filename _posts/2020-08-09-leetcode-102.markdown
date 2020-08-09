@@ -4,9 +4,11 @@ title: LeetCode 102. 二叉树的层序遍历
 tags: [LeetCode]
 ---
 
-简单思路：BFS
+简单思路：层序遍历
 
 [102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+
+DFS 解法
 
 ```js
 /**
