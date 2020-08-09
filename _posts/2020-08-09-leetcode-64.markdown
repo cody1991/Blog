@@ -1,0 +1,47 @@
+---
+layout: post
+title: LeetCode 64. 最小路径和
+tags: [LeetCode]
+---
+
+简单思路：也是一道动态规划的题目，我们顺着矩阵走到右下角就知道怎么处理这道题目了
+
+[64. 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)
+
+```js
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minPathSum = function (grid) {
+  for (let i = 0; i < grid.length; i++) {
+    const rows = grid[i];
+    for (let j = 0; j < rows.length; j++) {
+      const cur = rows[j];
+      if (i === 0) {
+        if (j === 0) {
+          grid[0][0] = cur;
+        } else {
+          grid[i][j] = grid[i][j - 1] + cur;
+        }
+      } else {
+        if (j === 0) {
+          grid[i][j] = grid[i - 1][j] + cur;
+        } else {
+          grid[i][j] = Math.min(grid[i - 1][j], grid[i][j - 1]) + cur;
+        }
+      }
+    }
+  }
+
+  return grid[grid.length - 1][grid[grid.length - 1].length - 1];
+};
+
+console.log(
+  minPathSum([
+    [1, 2],
+    [5, 6],
+    [1, 1],
+  ])
+);
+```
