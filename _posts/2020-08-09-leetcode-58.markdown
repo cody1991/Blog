@@ -1,0 +1,48 @@
+---
+layout: post
+title: LeetCode 58. 最后一个单词的长度
+tags: [LeetCode]
+---
+
+简单思路：
+
+[58. 最后一个单词的长度](https://leetcode-cn.com/problems/length-of-last-word/)
+
+下面是正则表达式的方法
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLastWord = function (s) {
+  const list = s.replace(/^\s+|\s+$/g, "").split(" ");
+  return list[list.length - 1].length;
+};
+
+console.log(lengthOfLastWord("Hello World "));
+```
+
+下面是字符串遍历判断
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLastWord = function (s) {
+  let count = 0;
+  let flag = false;
+  for (let i = s.length - 1; i >= 0; i--) {
+    const c = s[i];
+    if (c !== " ") flag = true;
+    if (flag && c === " ") break;
+    if (flag) {
+      count += 1;
+    }
+  }
+  return count;
+};
+
+console.log(lengthOfLastWord("Hello World "));
+```

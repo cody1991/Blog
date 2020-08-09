@@ -1,0 +1,22 @@
+---
+layout: post
+title: LeetCode 796. 旋转字符串
+tags: [LeetCode]
+---
+
+简单思路：abc 一直旋转可以组成一个 abcab 的字符串，看看是否包含另外一个字符串就好了（代码中做一个 slice(0,-1) 就是为了去掉最后一个字符串，因为是重复的）
+
+[796. 旋转字符串](https://leetcode-cn.com/problems/rotate-string/)
+
+```js
+/**
+ * @param {string} A
+ * @param {string} B
+ * @return {boolean}
+ */
+var rotateString = function (A, B) {
+  return A.length === B.length && (A + A).slice(0, -1).indexOf(B) >= 0;
+};
+
+console.log(rotateString("abcde", "cdeab"));
+```
