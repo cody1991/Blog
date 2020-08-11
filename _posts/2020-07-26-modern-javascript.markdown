@@ -88,6 +88,6 @@ tags: [JavaScript]
     - [x] 扩展内建类
     - [x] 类检查："instanceof"
     - [x] Mixin 模式
-  - [ ] 错误处理
-    - [ ] 错误处理，"try..catch"
-    - [ ] 自定义 Error，扩展 Error
+  - [x] 错误处理
+    - [x] 错误处理，"try..catch"
+    - [x] 自定义 Error，扩展 Error
