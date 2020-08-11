@@ -1,0 +1,38 @@
+---
+layout: post
+title: LeetCode 3. 无重复字符的最长子串
+tags: [LeetCode]
+date: 2020-08-11 13:24:00
+---
+
+[3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+
+下面的方法是简单，但是效率有点低下
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLongestSubstring = function (s) {
+  const map = {};
+  let max = 0;
+
+  for (let left = 0, right = 0; right < s.length; right += 1) {
+    const c = s[right];
+
+    if (map[c] !== undefined) {
+      left = Math.max(left, map[c] + 1);
+    }
+
+    map[c] = right;
+    max = Math.max(max, right - left + 1);
+
+    console.log(max, left, right);
+  }
+
+  return max;
+};
+
+console.log(lengthOfLongestSubstring('abba'));
+```
