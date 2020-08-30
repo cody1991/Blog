@@ -1,11 +1,13 @@
 ---
 layout: post
-title: 奔跑吧（已跑11.91公里，累计用时01:45）
+title: 奔跑吧（已跑14.24公里，累计用时02:05）
 tags: [Running]
 top: true
 ---
 
 跑步记录，坚持坚持
+
+![2020-08-25](/img/posts/running-8.jpg)
 
 ![2020-08-10](/img/posts/running-7.jpeg)
 
