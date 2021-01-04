@@ -22,7 +22,6 @@ top: true
       - [大秦帝国之纵横 (2013)](https://movie.douban.com/subject/4858790/)
     - 想看
       - [中国 (2020)](https://movie.douban.com/subject/35268248/)
-      - [忽而今夏 (2018)](https://movie.douban.com/subject/27041389/)
     - 看完
       - [甜蜜家园 스위트홈 (2020)](https://movie.douban.com/subject/34858078/)
       - [大秦帝国之裂变 (2009)](https://movie.douban.com/subject/3114220/)
@@ -30,6 +29,7 @@ top: true
   - 书籍
 
     - 在看
+      - [经济学原理(第7版)](https://book.douban.com/subject/26435630/)
       - 龙血战神 (微信读书)
       - [labuladong 的算法小抄](https://book.douban.com/subject/35252621/)
     - 想看
@@ -38,6 +38,5 @@ top: true
   - 听书
     - 在听
       - 蒋勋说红楼梦 (微信读书)
-      - 5 分钟心理学 (企鹅 FM)
     - 想听
     - 听完
