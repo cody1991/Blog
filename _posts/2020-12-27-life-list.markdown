@@ -19,6 +19,7 @@ top: true
 
     - 在看
       - [大秦帝国之纵横 (2013)](https://movie.douban.com/subject/4858790/)
+      - [想见你 想見你 (2019)](https://movie.douban.com/subject/30468961/)
     - 想看
       - [中国 (2020)](https://movie.douban.com/subject/35268248/)
     - 看完
@@ -30,10 +31,11 @@ top: true
 
     - 在看
       - [经济学原理(第7版)](https://book.douban.com/subject/26435630/)
-      - 龙血战神 (微信读书)
       - [labuladong 的算法小抄](https://book.douban.com/subject/35252621/)
     - 想看
     - 看完
+    - 不看咯
+      - 龙血战神 (微信读书)
 
   - 听书
     - 在听
