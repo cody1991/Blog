@@ -19,10 +19,10 @@ top: true
 
     - 在看
       - [大秦帝国之纵横 (2013)](https://movie.douban.com/subject/4858790/)
-      - [想见你 想見你 (2019)](https://movie.douban.com/subject/30468961/)
-    - 想看
       - [中国 (2020)](https://movie.douban.com/subject/35268248/)
+    - 想看
     - 看完
+      - [想见你 想見你 (2019)](https://movie.douban.com/subject/30468961/) 这一部真的非常好看
       - [百岁之好，一言为定 (2020)](https://movie.douban.com/subject/34822374/) 喜欢这份甜甜的爱情哈哈哈
       - [甜蜜家园 스위트홈 (2020)](https://movie.douban.com/subject/34858078/)
       - [大秦帝国之裂变 (2009)](https://movie.douban.com/subject/3114220/)
