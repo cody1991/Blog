@@ -1,11 +1,13 @@
 ---
 layout: post
-title: 现代 JavaScript 教程阅读进度
+title: 《现代 JavaScript 教程》阅读进度
 tags: [JavaScript]
 top: true
 ---
 
 始于 2021 年 01 月 18 号
+
+来自 [现代 JavaScript 教程](https://zh.javascript.info/)
 
 - JavaScript 编程语言
 
