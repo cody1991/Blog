@@ -66,3 +66,6 @@ top: true
     - 字符串 (01.21)
     - 数组 (01.21)
     - 数组方法 (01.21)
+    - Iterable object（可迭代对象） (01.25)
+    - Map and Set（映射和集合） (01.25)
+    - WeakMap and WeakSet（弱映射和弱集合） (01.25)
