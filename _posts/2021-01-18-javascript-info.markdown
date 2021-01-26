@@ -69,3 +69,7 @@ top: true
     - Iterable object（可迭代对象） (01.25)
     - Map and Set（映射和集合） (01.25)
     - WeakMap and WeakSet（弱映射和弱集合） (01.25)
+    - Object.keys，values，entries (01.26)
+    - 解构赋值 (01.26)
+    - 日期和时间 (01.26)
+    - JSON 方法，toJSON (01.26)
