@@ -114,3 +114,14 @@ top: true
     
     - 错误处理，"try..catch" (01.30)
     - 自定义 Error，扩展 Error (01.30)
+    
+  - Promise，async/await
+  
+    - 简介：回调 (02.01)
+    - Promise (02.01)
+    - Promise 链 (02.01)
+    - 使用 promise 进行错误处理 (02.01)
+    - Promise API (02.01)
+    - Promisification (02.01)
+    - 微任务（Microtask） (02.01)
+    - Async/await (02.01)
