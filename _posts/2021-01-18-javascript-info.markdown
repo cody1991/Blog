@@ -9,7 +9,7 @@ top: true
 
 来自 [现代 JavaScript 教程](https://zh.javascript.info/)
 
-- JavaScript 编程语言
+- JavaScript 编程语言 (02.02读完第一部分～)
 
   - 简介
 
@@ -136,3 +136,11 @@ top: true
     - 模块 (Module) 简介 (02.02)
     - 导出和导入 (02.02)
     - 动态导入 (02.02)
+    
+  - 杂项
+  
+    - Proxy 和 Reflect (02.02)
+    - Eval：执行代码字符串 (02.02)
+    - 柯里化（Currying） (02.02)
+    - Reference Type (02.02)
+    - BigInt (02.02)
