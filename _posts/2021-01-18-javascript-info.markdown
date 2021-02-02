@@ -150,3 +150,9 @@ top: true
   - Document
     
     - 浏览器环境，规格 (02.02)
+    - DOM 树 (02.02)
+    - 遍历 DOM (02.02)
+    - 搜索：getElement*，querySelector* (02.02)
+    - 节点属性：type，tag 和 content (02.02)
+    - 特性和属性（Attributes and properties） (02.02)
+    - 修改文档（document） (02.02)
