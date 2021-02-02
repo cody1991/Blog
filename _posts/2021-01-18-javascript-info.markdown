@@ -125,3 +125,8 @@ top: true
     - Promisification (02.01)
     - 微任务（Microtask） (02.01)
     - Async/await (02.01)
+  
+  - Generator，高级 iteration
+  
+    - Generator (跳过)
+    - 异步迭代和 generator (跳过)
