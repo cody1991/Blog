@@ -18,7 +18,7 @@ top: true
   - 电视剧
 
     - 在看
-      - [中国 (2020)](https://movie.douban.com/subject/35268248/)
+      - [大秦帝国之崛起 (2017)](https://movie.douban.com/subject/5923466/)
     - 想看
       - [山海情 (2021)](https://movie.douban.com/subject/35033654/)
     - 看完
@@ -33,13 +33,13 @@ top: true
     - 在看
       - [JavaScript高级程序设计（第4版）](https://book.douban.com/subject/35175321/?from=tag)
       - [工作漂流](https://book.douban.com/subject/33463965/)
-      - [世界观（原书第3版）](https://book.douban.com/subject/35181762/)
     - 想看
       - [labuladong 的算法小抄](https://book.douban.com/subject/35252621/)
       - [经济学原理(第7版)](https://book.douban.com/subject/26435630/)
     - 看完
     - 不看咯
       - 龙血战神 (微信读书)
+      - [世界观（原书第3版）](https://book.douban.com/subject/35181762/)
 
   - 听书
     - 在听
