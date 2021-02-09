@@ -145,7 +145,7 @@ top: true
     - Reference Type (02.02)
     - BigInt (02.02)
     
-- 浏览器：文档，事件，接口
+- 浏览器：文档，事件，接口  (02.09读完第一部分～)
 
   - Document
     
@@ -196,3 +196,11 @@ top: true
     - DOM 变动观察器（Mutation observer） (02.09)
     - 选择（Selection）和范围（Range） (02.09)
     - 事件循环：微任务和宏任务 (02.09)
+
+- 其他文章
+
+  - Frame 和 window
+  
+    - 弹窗和 window 的方法
+    - 跨窗口通信
+    - 点击劫持攻击
