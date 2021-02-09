@@ -184,3 +184,9 @@ top: true
     - 聚焦：focus/blur (02.08)
     - 事件：change，input，cut，copy，paste (02.08)
     - 表单：事件和方法提交 (02.08)
+    
+  - 加载文档和其他资源
+  
+    - 页面生命周期：DOMContentLoaded，load，beforeunload，unload (02.09)
+    - 脚本：async，defer (02.09)
+    - 资源加载：onload，onerror (02.09)
