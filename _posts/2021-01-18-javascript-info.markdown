@@ -190,3 +190,9 @@ top: true
     - 页面生命周期：DOMContentLoaded，load，beforeunload，unload (02.09)
     - 脚本：async，defer (02.09)
     - 资源加载：onload，onerror (02.09)
+    
+  - 杂项
+
+    - DOM 变动观察器（Mutation observer） (02.09)
+    - 选择（Selection）和范围（Range） (02.09)
+    - 事件循环：微任务和宏任务 (02.09)
