@@ -17,16 +17,16 @@ top: true
 
   - 电视剧
 
-    - 在看
-      - [大秦帝国之崛起 (2017)](https://movie.douban.com/subject/5923466/)
-    - 想看
-      - [山海情 (2021)](https://movie.douban.com/subject/35033654/)
     - 看完
       - [想见你 想見你 (2019)](https://movie.douban.com/subject/30468961/) 这一部真的非常好看
       - [百岁之好，一言为定 (2020)](https://movie.douban.com/subject/34822374/) 喜欢这份甜甜的爱情哈哈哈
       - [甜蜜家园 스위트홈 (2020)](https://movie.douban.com/subject/34858078/)
       - [大秦帝国之裂变 (2009)](https://movie.douban.com/subject/3114220/)
       - [大秦帝国之纵横 (2013)](https://movie.douban.com/subject/4858790/) 张仪最后那段看得想哭，世道如此，悲夫张仪
+    - 在看
+      - [大秦帝国之崛起 (2017)](https://movie.douban.com/subject/5923466/)
+    - 想看
+      - [山海情 (2021)](https://movie.douban.com/subject/35033654/)
 
   - 书籍
 
