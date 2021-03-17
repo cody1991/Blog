@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 生活清单
-tags: [Hello]
+tags: [life]
 top: true
 ---
 
