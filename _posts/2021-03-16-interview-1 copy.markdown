@@ -8,4 +8,4 @@ tags: [interview]
 
 简单的一个总结和思考
 
-图有点大，自行打开图片地址吧：https://codytang.cn/img/posts/interview-1.png
+图有点大，自行打开图片地址吧：https://github.com/cody1991/Blog/blob/master/img/posts/interview-1.png
