@@ -30,18 +30,16 @@ top: true
 
   - 书籍
 
-    - 在看
-      - [JavaScript高级程序设计（第4版）](https://book.douban.com/subject/35175321/?from=tag)
-    - 想看
-      - [工作漂流](https://book.douban.com/subject/33463965/)
-      - [labuladong 的算法小抄](https://book.douban.com/subject/35252621/)
-      - [经济学原理(第7版)](https://book.douban.com/subject/26435630/)
     - 看完
       - [被嫌弃的松子的一生](https://book.douban.com/subject/25744411/) 今年看完的第一本书
       - [被讨厌的勇气](https://book.douban.com/subject/26369699/) 今年看完的第二本书，对个人认识有了一些提高。。
-    - 不看咯
-      - 龙血战神 (微信读书)
-      - [世界观（原书第3版）](https://book.douban.com/subject/35181762/)
+      - [JavaScript 高级程序设计（第 4 版）](https://book.douban.com/subject/35175321/?from=tag) 今年看完的第三本书，对比第三本增加了很多 es6+ 的内容，另外也是一次查缺补漏的过程，好评
+    - 在看
+      - [JavaScript 设计模式与开发实践](https://book.douban.com/subject/26382780/)
+    - 想看
+      - [工作漂流](https://book.douban.com/subject/33463965/)
+      - [labuladong 的算法小抄](https://book.douban.com/subject/35252621/)
+      - [经济学原理(第 7 版)](https://book.douban.com/subject/26435630/)
 
   - 听书
     - 在听

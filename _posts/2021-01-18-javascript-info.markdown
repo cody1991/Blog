@@ -2,14 +2,13 @@
 layout: post
 title: 《现代 JavaScript 教程》阅读进度
 tags: [JavaScript]
-top: true
 ---
 
 始于 2021 年 01 月 18 号
 
 来自 [现代 JavaScript 教程](https://zh.javascript.info/)
 
-- JavaScript 编程语言 (02.02读完第一部分～)
+- JavaScript 编程语言 (02.02 读完第一部分～)
 
   - 简介
 
@@ -73,9 +72,9 @@ top: true
     - 解构赋值 (01.26)
     - 日期和时间 (01.26)
     - JSON 方法，toJSON (01.26)
-    
+
   - 函数进阶内容
-   
+
     - 递归和堆栈 (01.27)
     - Rest 参数与 Spread 语法 (01.27)
     - 变量作用域，闭包 (01.27)
@@ -89,19 +88,19 @@ top: true
     - 深入理解箭头函数 (01.28)
 
   - 对象属性配置
-    
+
     - 属性标志和属性描述符 (01.29)
     - 属性的 getter 和 setter (01.29)
-  
+
   - 原型，继承
-  
+
     - 原型继承 (01.30)
     - F.prototype (01.30)
     - 原生的原型 (01.30)
-    - 原型方法，没有 __proto__ 的对象 (01.30)
-    
+    - 原型方法，没有 **proto** 的对象 (01.30)
+
   - 类
-  
+
     - Class 基本语法 (01.30)
     - 类继承 (01.30)
     - 静态属性和静态方法 (01.30)
@@ -109,14 +108,14 @@ top: true
     - 扩展内建类 (01.30)
     - 类检查："instanceof" (01.30)
     - Mixin 模式 (01.30)
-    
+
   - 错误处理
-    
+
     - 错误处理，"try..catch" (01.30)
     - 自定义 Error，扩展 Error (01.30)
-    
+
   - Promise，async/await
-  
+
     - 简介：回调 (02.01)
     - Promise (02.01)
     - Promise 链 (02.01)
@@ -125,30 +124,30 @@ top: true
     - Promisification (02.01)
     - 微任务（Microtask） (02.01)
     - Async/await (02.01)
-  
+
   - Generator，高级 iteration
-  
+
     - Generator (跳过)
     - 异步迭代和 generator (跳过)
-    
+
   - 模块
-  
+
     - 模块 (Module) 简介 (02.02)
     - 导出和导入 (02.02)
     - 动态导入 (02.02)
-    
+
   - 杂项
-  
+
     - Proxy 和 Reflect (02.02)
     - Eval：执行代码字符串 (02.02)
     - 柯里化（Currying） (02.02)
     - Reference Type (02.02)
     - BigInt (02.02)
-    
-- 浏览器：文档，事件，接口  (02.09读完第二部分～)
+
+- 浏览器：文档，事件，接口 (02.09 读完第二部分～)
 
   - Document
-    
+
     - 浏览器环境，规格 (02.02)
     - DOM 树 (02.02)
     - 遍历 DOM (02.02)
@@ -160,37 +159,37 @@ top: true
     - 元素大小和滚动 (02.04)
     - Window 大小和滚动 (02.04)
     - 坐标 (02.04)
-    
+
   - 事件简介
-  
+
     - 浏览器事件简介 (02.05)
     - 冒泡和捕获 (02.05)
     - 事件委托 (02.05)
     - 浏览器默认行为 (02.05)
     - 创建自定义事件 (02.05)
-    
+
   - UI 事件
-  
+
     - 鼠标事件 (02.08)
     - 移动鼠标：mouseover/out，mouseenter/leave (02.08)
     - 鼠标拖放事件 (02.08)
     - 指针事件 (02.08)
     - 键盘：keydown 和 keyup (02.08)
     - 滚动 (02.08)
-    
+
   - 表单，控件
-  
+
     - 表单属性和方法 (02.08)
     - 聚焦：focus/blur (02.08)
     - 事件：change，input，cut，copy，paste (02.08)
     - 表单：事件和方法提交 (02.08)
-    
+
   - 加载文档和其他资源
-  
+
     - 页面生命周期：DOMContentLoaded，load，beforeunload，unload (02.09)
     - 脚本：async，defer (02.09)
     - 资源加载：onload，onerror (02.09)
-    
+
   - 杂项
 
     - DOM 变动观察器（Mutation observer） (02.09)
@@ -200,7 +199,7 @@ top: true
 - 其他文章
 
   - Frame 和 window
-  
+
     - 弹窗和 window 的方法
     - 跨窗口通信
     - 点击劫持攻击
