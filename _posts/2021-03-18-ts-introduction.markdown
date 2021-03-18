@@ -733,9 +733,9 @@ npm install @types/node --save-dev
 
 [demo 地址](https://www.typescriptlang.org/play?#code/LIQwLgFgdADg9gdwBQEYA0ByATBglAbgChCATOAYwFcBbAUwDswoQSSBRANwbABkBLAM5gGtAE5IM5ADZ9yAawxoABADNK9cmD5x6SWriUBvQktNLyOgXCm0oUuAHM9UMCFEPaYAMKVRo7gSEAL4EQA)
 
-## 1-2 进阶
+# 1-2 进阶
 
-### 1-2-1 类型别名
+## 1-2-1 类型别名
 
 常用语联合类型，给类型改个名
 
