@@ -656,3 +656,79 @@ function testCat(cat: Cat) {
 ## 1-1-9 声明文件
 
 ## 1-1-10 内置对象
+
+`js` 的很多内置对象，`ts` 已经帮我们做好定义了
+
+比如 `Boolean` `Error` `Date` `RegExp`
+
+另外 `ts` 也内置了 `Dom` 相关的类型
+
+比如 `Document` 、 `HTMLElement` 、 `Event` 、 `NodeList`
+
+我们可以直接拿来定义值的类型
+
+比如我们使用
+
+```ts
+Math.pow(1, '2');
+
+// - Argument of type 'string' is not assignable to parameter of type 'number'.
+```
+
+`ts` 已经内置了它的定义，如
+
+> (method) Math.pow(x: number, y: number): number
+> Returns the value of a base expression taken to a specified power.
+> @paramx — The base value of the expression.
+> @paramy — The exponent value of the expression.
+
+类似于
+
+```ts
+interface Math {
+  /**
+   * Returns the value of a base expression taken to a specified power.
+   * @param x The base value of the expression.
+   * @param y The exponent value of the expression.
+   */
+  pow(x: number, y: number): number;
+}
+```
+
+又比如：
+
+```ts
+document.addEventListener('click', function (e) {
+  console.log(e.targetCurrent);
+});
+
+// - Property 'targetCurrent' does not exist on type 'MouseEvent'.
+```
+
+`e` 被推断为 `MouseEvent` 但是它上面没有 `targetCurrent` 属性
+
+它的类型定义是这样的
+
+```ts
+interface Document
+  extends Node,
+    GlobalEventHandlers,
+    NodeSelector,
+    DocumentEvent {
+  addEventListener(
+    type: string,
+    listener: (ev: MouseEvent) => any,
+    useCapture?: boolean
+  ): void;
+}
+
+// 第一个参数是 字符串类型的 type 字段，第二个是一个函数，它接收一个类型为 MouseEvent 的 `ev` 参数，返回 any 类型，第三个参数是可选的一个 boolean 类型的 useCapture 参数
+```
+
+如果要写 `node.js` 的话，可以安装下面的库，提供了一些类型声明
+
+```ts
+npm install @types/node --save-dev
+```
+
+[demo 地址](https://www.typescriptlang.org/play?#code/LIQwLgFgdADg9gdwBQEYA0ByATBglAbgChCATOAYwFcBbAUwDswoQSSBRANwbABkBLAM5gGtAE5IM5ADZ9yAawxoABADNK9cmD5x6SWriUBvQktNLyOgXCm0oUuAHM9UMCFEPaYAMKVRo7gSEAL4EQA)
