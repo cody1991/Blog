@@ -125,3 +125,99 @@ function aUnionFunc(args: number | string) {
 ```
 
 [demo](https://www.typescriptlang.org/play?#code/DYUwLgBAhgqgdgSwPZwGpWAVxALgnTAWwCMQAnCAHwgGcwyE4BzCAXggEYBuAKFkRTosINhADkHAEwBmMbx4B6BRABmmOAGMwyONHg6AYuo0AKKGSY08BEuSq16jJgEoIAb0XKI3iBpQ0kUAA6YCQmMwsaEJBmMAALZ14lCABfIA)
+
+## 1-1-5 对象的类型 - 接口
+
+使用接口定义对象的类型
+
+接口是一个行为的抽象，需要类去实现它
+
+```ts
+interface People {
+  name: string;
+  age: number;
+}
+
+const cody: People = {
+  name: 'cody',
+  age: 29,
+};
+```
+
+我们定义一个 `People` 的接口，又定义了一个 `People` 类型的变量 `cody`。`cody`的形状一定要和 `People`一样才行
+
+这里如果 `cody` 少了 `age` 属性，或者多了一个 `sex` 属性，都会报错
+
+不过我们可以通过 `?` 来申明一个可选的字段，比如
+
+```ts
+interface People {
+  name: string;
+  age: number;
+  sex?: 'male' | 'female';
+}
+
+const cody: People = {
+  name: 'cody',
+  age: 29,
+};
+```
+
+这个时候 `sex` 属性不一定要去指定
+
+我们可以添加任意属性，比如
+
+```ts
+interface People {
+  name: string;
+  age: number;
+  sex?: 'male' | 'female';
+  [prop: string]: any;
+}
+
+const cody: People = {
+  name: 'cody',
+  age: 29,
+  hahaha: 123,
+};
+```
+
+`[prop: string]: any;` 的属性值类型必须是所有值类型的联合类型，如果写成了 `[prop: string]: number` 那么会报错。下面是一个不会报错的例子
+
+```ts
+interface People {
+  name: string;
+  age: number;
+  sex?: 'male' | 'female';
+  [prop: string]: string | number | undefined;
+}
+
+const cody: People = {
+  name: 'cody',
+  age: 29,
+  hahaha: 123,
+};
+```
+
+我们也可以指定只读类型的属性
+
+```ts
+interface People {
+  readonly id: number;
+  name: string;
+  age: number;
+  sex?: 'male' | 'female';
+  [prop: string]: string | number | undefined;
+}
+
+const cody: People = {
+  id: 1,
+  name: 'cody',
+  age: 29,
+  hahaha: 123,
+};
+```
+
+如果我们去修改 `id` 属性值的时候就会报错
+
+[demo](https://www.typescriptlang.org/play?ssl=14&ssc=2&pln=1&pc=1#code/JYOwLgpgTgZghgYwgAgAoQPYAcA2KDeAUMiclBHACYYg4CeywlAXMiAK4C2ARtADTFSIOJwisAzmCigA5gG5BJODLFsuvKAtLJxEAB4B+VgHJOcPMeQAfZMZgQzFraQDaWKNglTZAXS-SQGWs1Hmhg9hBKCBhQCEoFAF9CQgQaSWRUyjpWdGw8ZABeZCJtJlYARgFtYVETTLpjKtJlVQAmAE4mkgALOF7eitaAZgEEoA)
