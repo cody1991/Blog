@@ -221,3 +221,76 @@ const cody: People = {
 如果我们去修改 `id` 属性值的时候就会报错
 
 [demo](https://www.typescriptlang.org/play?ssl=14&ssc=2&pln=1&pc=1#code/JYOwLgpgTgZghgYwgAgAoQPYAcA2KDeAUMiclBHACYYg4CeywlAXMiAK4C2ARtADTFSIOJwisAzmCigA5gG5BJODLFsuvKAtLJxEAB4B+VgHJOcPMeQAfZMZgQzFraQDaWKNglTZAXS-SQGWs1Hmhg9hBKCBhQCEoFAF9CQgQaSWRUyjpWdGw8ZABeZCJtJlYARgFtYVETTLpjKtJlVQAmAE4mkgALOF7eitaAZgEEoA)
+
+### 1-1-6 数组的类型
+
+数组的类型定义有几种，下面一个个看看
+
+### `type[]` 方式
+
+比如下面这样，也可以和联合类型组合使用的。如果有不在 `type` 类型定义的值在的话就会报错。另外进行一些数组的操作，比如 `push()` 进去一个不是 `type` 类型的话也会报错
+
+```ts
+let aArray: (number | string)[] = [1, 2, 3, 4, 5, '1'];
+```
+
+### `Array<type>` 泛型方式
+
+下面这个例子和上面的效果是一样的。泛型在后面的章节会再详细阐述
+
+```ts
+let bArray: Array<number | string> = [1, 2, 3, 4, 5, '1'];
+```
+
+### 接口形式
+
+上面的效果是一样的。不过就复杂多了。
+
+```ts
+interface NumberAndStringArray {
+  [index: number]: number | string;
+}
+
+let cArray: NumberAndStringArray = [1, 2, 3, 4, 5, '1'];
+```
+
+但是我们可以用这种方式来定义类数组
+
+函数的 `arguments` 是类数组，如果我们用数组的方式给它定义，会报错。我们看看下面的例子
+
+```ts
+function aFunc() {
+  let args: number[] = arguments;
+  console.log(args);
+}
+
+// - Type 'IArguments' is missing the following properties from type 'number[]': pop, push, concat, join, and 24 more.
+```
+
+有个简单的修复方法是如下：
+
+```ts
+function bFunc() {
+  let args: IArguments = arguments;
+  console.log(args);
+}
+```
+
+`ts` 给我们内置了一些接口，比如常用的 `IArguments` , `NodeList` , `HTMLCollection`
+
+当然我们也可以自己实现一下 `IArguments`
+
+```ts
+interface MyNumberArguments {
+  [index: number]: number;
+  length: number;
+  callee: Function;
+}
+
+function cFunc() {
+  let args: MyNumberArguments = arguments;
+  console.log(args);
+}
+```
+
+[demo](https://www.typescriptlang.org/play?#code/DYUwLgBAhgggTnKBPAXBAFAOwK4FsBGIcAPgM5hwCWmA5gJQDaAuhALwQMCMANAEzcBmbgBZuAVm4ByTpKYBuAFALQkfPESoI65AB4cBImQrUaAPjYQOPfkNETpsxQupgiAMygBjEBAByeQjgYTAATAGVjWm0kCABvBUtLBmoQkAAPNH1ApkyAw3IqWkUAXyUVCE9olH8DINCIwppoiy4+QRFxKRl5JQB6Xog3bExPMEoAe0xoADFhz3Q6OIV+xMtyqDgaUlza5gsNmjwQTDBSRRXVz0nScdAAOmBxmnQD0jplgdKPwbmxyYh8LMRgslhdEutNtsIABJeCHXDHU77TZHE5nb6Xa63EAPJ4vSHvFZfFzuLw+ACySBqgThqKR8Q4KXSO2yKCyREUEFAtDAAAsWRyEp4oMBQCA0EDRhNMAovkMRn8pp5JSCGRCtmhKdSiLSEWjkfDEeiKlj7o9nq93sUgA)
