@@ -732,3 +732,42 @@ npm install @types/node --save-dev
 ```
 
 [demo 地址](https://www.typescriptlang.org/play?#code/LIQwLgFgdADg9gdwBQEYA0ByATBglAbgChCATOAYwFcBbAUwDswoQSSBRANwbABkBLAM5gGtAE5IM5ADZ9yAawxoABADNK9cmD5x6SWriUBvQktNLyOgXCm0oUuAHM9UMCFEPaYAMKVRo7gSEAL4EQA)
+
+## 1-2 进阶
+
+### 1-2-1 类型别名
+
+常用语联合类型，给类型改个名
+
+```ts
+type Name = string;
+type NameResolver = () => string;
+type NameOrResolver = Name | NameResolver;
+
+function getName(n: NameOrResolver): Name {
+  if (typeof n === 'string') return n;
+  else return n();
+}
+```
+
+[demo 地址](https://www.typescriptlang.org/play?ssl=1&ssc=1&pln=8&pc=2#code/C4TwDgpgBAcghgW2gXigZ2AJwJYDsDmA3AFCiSyIQBKEaA9gDYBuEmUqAFAJTsB86WPEVLho8JAHlMNes1bsKSKAB9F1WoxaYSxAGYBXXAGNg2Orij4IwcRA64AXGqkzNrLk9tQA3sSj+obF0oDjIIOmCLZGioAHIMHAJYnkxrfUwLXBIAqAgGNGhU4HTM7hIAXyA)
+
+## 1-2-2 字符串字面类型
+
+使用别名来创建字符串字面类型
+
+```ts
+type EventNames = 'click' | 'scroll' | 'mousemove';
+
+function handleEvent(ele: Element, event: EventNames) {
+  console.log(ele, event);
+}
+
+handleEvent(document.body, 'click');
+handleEvent(document.body, 'dbclick');
+// - Argument of type '"dbclick"' is not assignable to parameter of type 'EventNames'.
+```
+
+`dbclick` 不在 `EventNames` 定义的字面类型里面，所以会报错
+
+[demo](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogbhAdsAcgQwLYQM5QLxQDkAxgDYCWxA1oVAD5HbEBOA9qabQ4RqwK7YIvBIQDcAKHEAzPomLByrRFAAWaRABNSEeEmAAKCNoBcsbVmQAaKBATJTu5OizYAlFADe4qD6jEl2OwQAHSkrADmhtrWtnquEgC+kmqa2o4GGqzEfBbAwQBGrBog1iQU1ISu4ilaOnYZWTl6BUUlRBr5ZJQ0rkA)
