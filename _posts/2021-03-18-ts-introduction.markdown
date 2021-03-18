@@ -4,7 +4,7 @@ title: TypeScript入门手册
 tags: [typescript]
 ---
 
-# 1 - 简介
+# 1-0 简介
 
 TypeScript 主要添加了类型系统和对 ES6 的支持
 
