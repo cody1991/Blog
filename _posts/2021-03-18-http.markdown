@@ -1,0 +1,23 @@
+---
+layout: post
+title: HTTP学习
+tags: [http]
+---
+
+# 前言
+
+这篇文章主要是阅读 [《图解 HTTP》](https://book.douban.com/subject/25863515/) 时记录一些用自己语言组织的笔记，希望能够查缺补漏，并且有更深的理解。
+
+记录手段：在微信读书阅读此书，思考 🤔 某些内容是否消化了，也有加入到此文章到价值，答案肯定的话就进行划线标记，后续在此文中用自己的语言重新组织，记录起来，力求精简。
+
+# 1. 了解 Web 以及网络基础
+
+HTTP，全称是 HyperText Transfer Protocol，即超文本传输协议。Web 是建立在 HTTP 协议上进行通信的
+
+HTTP 最初诞生的理念：借助多文档之间相互关联形成的超文本，连接成可以互相查阅的万维网（World Wide Web，简称 WWW）
+
+WWW 的三项构建技术：
+
+- HTML：超文本标记语言(HyperText Markup Language)
+- HTTP：文档传输协议
+- URL：统一资源定位符（Uniform Resource Locator），指定文档所在的地址
