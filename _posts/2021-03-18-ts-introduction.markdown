@@ -294,3 +294,124 @@ function cFunc() {
 ```
 
 [demo](https://www.typescriptlang.org/play?#code/DYUwLgBAhgggTnKBPAXBAFAOwK4FsBGIcAPgM5hwCWmA5gJQDaAuhALwQMCMANAEzcBmbgBZuAVm4ByTpKYBuAFALQkfPESoI65AB4cBImQrUaAPjYQOPfkNETpsxQupgiAMygBjEBAByeQjgYTAATAGVjWm0kCABvBUtLBmoQkAAPNH1ApkyAw3IqWkUAXyUVCE9olH8DINCIwppoiy4+QRFxKRl5JQB6Xog3bExPMEoAe0xoADFhz3Q6OIV+xMtyqDgaUlza5gsNmjwQTDBSRRXVz0nScdAAOmBxmnQD0jplgdKPwbmxyYh8LMRgslhdEutNtsIABJeCHXDHU77TZHE5nb6Xa63EAPJ4vSHvFZfFzuLw+ACySBqgThqKR8Q4KXSO2yKCyREUEFAtDAAAsWRyEp4oMBQCA0EDRhNMAovkMRn8pp5JSCGRCtmhKdSiLSEWjkfDEeiKlj7o9nq93sUgA)
+
+## 1-1-7 函数类型
+
+函数有输入和输出，都要考虑类型的把控
+
+### 函数声明
+
+看看下面简单的例子
+
+```ts
+function sum(a: number, b: number): number {
+  return a + b;
+}
+
+// sum(1) - Expected 2 arguments, but got 1.
+// sum(1, 2, 3) - Expected 2 arguments, but got 3.
+```
+
+参数数量需要严格一样
+
+### 函数表达式
+
+我们可以改写下上面的 `sum` 函数声明，用函数表达式的方式重新定义一下
+
+```ts
+let sum2 = function (a: number, b: number): number {
+  return a + b;
+};
+```
+
+不过就会发现一个问题，`sum2` 本身就没有定义类型了，我们给它也加上
+
+```ts
+let sum2: (a: number, b: number) => number = function (
+  a: number,
+  b: number
+): number {
+  return a + b;
+};
+```
+
+这里的 `(a: number, b: number) => number` 左边是输入，右边是输出，和 `ES6` 的箭头函数不一样，不要混淆了
+
+### 接口定义函数形状
+
+下面改用接口的方式定义也是可以的
+
+```ts
+interface SumFuncShape {
+  (a: number, b: number): number;
+}
+
+let sum3: SumFuncShape = function (a: number, b: number): number {
+  return a + b;
+};
+```
+
+### 可选参数
+
+```ts
+function aFunc(a: string, b?: string): string {
+  if (b) return a + b;
+  return a;
+}
+```
+
+和接口里面定义可选的属性是一样的做法 `?:`。然后可选参数后面不能再加入其他参数了，只能放在最后面
+
+### 默认值
+
+和 `ES6` 的语法意义
+
+```ts
+function bFunc(a: string, b: string = 'default'): string {
+  return a + b;
+}
+```
+
+### 剩余参数
+
+和 `ES6` 的语法意义
+
+```ts
+function cFunc(a: string, ...b: string[]): string {
+  return a + b.join();
+}
+```
+
+### 重载
+
+重载的一个目的：函数可以在不同的参数数量或者类型的情况下，做出不同的处理。
+
+我们先看一下一个简单的例子
+
+```ts
+function dFunc(a: string | number): string | number {
+  if (typeof a === 'number') {
+    return Number(a.toString().split('').reverse().join(''));
+  } else {
+    return a.split('').reverse().join('');
+  }
+}
+```
+
+不过有个问题，输入是 `string` 返回 `number` 或者 输入是 `number` 返回 `string` 的话，它是校验不了的，一样可以通过。我们需要优化下
+
+```ts
+function dFunc(a: string): string;
+function dFunc(a: number): number;
+function dFunc(a: string | number): string | number {
+  if (typeof a === 'number') {
+    return Number(a.toString().split('').reverse().join(''));
+  } else {
+    return a.split('').reverse().join('');
+  }
+}
+```
+
+重复定义了这个函数，最后才是真正的实现，最终能保证我们想要的结果
+
+[demo](https://www.typescriptlang.org/play?#code/GYVwdgxgLglg9mABAZxAWwBQEMBcizoBGApgE4A0iheBaJpAlDUWYgN4BQi3ipxUIUkiyIA1FQDcHAL4cOAenkp0GAIwMFS1JlWUATJQDMGjgBt+ytHrzZmdMpWr4WjRAF4AfM-ul3iUJCwCIi23vSOdvRMYaycPLz8gsJikjJyMGBQZMBYEMSIAMroAGLgEAUAFlgADvlxPKG04VSRZNFNZFKyZhbahnhFaKWQlTX5bv5lQUiNLhExjK2+9dx8AkKIIuKEXXIB0PDCwxChyFCkGQDmjgD8eGcXYJfRD1fsXDwwwCGEDAnryW2UniaySm12HH20yox1O5yu81eTz8AHIACbEHIgUxQFEveHIlb-MFbVLdKGHRAQWG4FAE66IAB0zKcSMuAG0ALr4x6Xd4gxIbUmERkAKzgGQwDAhFOCaJp93pPKuUllSHlZVmPnaLlVU0pGsgcN5iAAPgtlcjzR1lh9uF8QlAAJ61ODfERuT2IFE2vH8+I8UEbAByLmwjKgcAK9KljOQ1VMMCgGBReMZfAAbmRkMRY+LJamGNK7YhpIhiKYc-6A8ShXGE0mU2nM9ncwwxRKwE2NPFZNIgA)
