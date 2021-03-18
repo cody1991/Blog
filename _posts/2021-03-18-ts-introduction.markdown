@@ -727,7 +727,7 @@ interface Document
 
 如果要写 `node.js` 的话，可以安装下面的库，提供了一些类型声明
 
-```ts
+```
 npm install @types/node --save-dev
 ```
 
