@@ -222,7 +222,7 @@ const cody: People = {
 
 [demo](https://www.typescriptlang.org/play?ssl=14&ssc=2&pln=1&pc=1#code/JYOwLgpgTgZghgYwgAgAoQPYAcA2KDeAUMiclBHACYYg4CeywlAXMiAK4C2ARtADTFSIOJwisAzmCigA5gG5BJODLFsuvKAtLJxEAB4B+VgHJOcPMeQAfZMZgQzFraQDaWKNglTZAXS-SQGWs1Hmhg9hBKCBhQCEoFAF9CQgQaSWRUyjpWdGw8ZABeZCJtJlYARgFtYVETTLpjKtJlVQAmAE4mkgALOF7eitaAZgEEoA)
 
-### 1-1-6 数组的类型
+## 1-1-6 数组的类型
 
 数组的类型定义有几种，下面一个个看看
 
