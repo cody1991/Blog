@@ -1194,3 +1194,54 @@ interface Point3D extends PointInstanceType {
 另外我们发现是不继承 构造函数的，也不会继承静态属性和静态方法。因为我们类的实例，其实也是不包含这些的，很好理解
 
 [demo 地址](https://www.typescriptlang.org/play?#code/MYGwhgzhAEAKD2BLAdgF2gbwFDV9Y8yEqATgK7CrwkAUADmQEYiLDQAeAXNMmQLaMApiQA00Bs1bQAnt14DhASkw48AXywasKVMIBmYYILhI0ASSKowyIwBVpdY9jwc5-ISQDcq3LJ7vhby0dfUNjBB0AZgARaEF2XWQAExgI80trOwcnH2gALzcFL00sLBBBdDpTVEik7jSa2IBeTFdoAEYxPwAmMQLoSOgtAktxavrqi2JMwXtHaBbkQQB3Ex0aTuhuxU8gA)
+
+## 1-2-7 泛型
+
+泛型指的是定义函数，接口或者类的时候，不预先指定好类型，在实际用的时候才去指定类型
+
+先看一个简单的例子
+
+```ts
+function repeat(length: number, value: any): any[] {
+  const result = [];
+  for (let index = 0; index < length; index++) {
+    result.push(value);
+  }
+  return result;
+}
+
+console.log(repeat(5, 'cody')); // ["cody", "cody", "cody", "cody", "cody"]
+```
+
+但是你可以发现，返回的值是 `any[]`，我们不能保证返回的数组的项和传入的 `value` 的类型一致。进行下面的优化：
+
+```ts
+function repeat2<T>(length: number, value: T): T[] {
+  const result = [];
+  for (let index = 0; index < length; index++) {
+    result.push(value);
+  }
+  return result;
+}
+console.log(repeat2(2, 'cody')); // ["cody", "cody"]
+```
+
+可以看到上面的例子，在函数名 `repeat2` 后面加了一个 `<T>`，它代表可以输入任意类型的值，但是使用的时候一旦制定了 `T` 类型，后面的 `value` 参数和 返回的 `T[]` 数组都是这种类型了，解决了我们上面提到的问题
+
+我们稍微调整下 `push` 的值，会发现报错了。这个如果在原来的 `repeat` 函数是不会报错的，因为它并不校验。
+
+```
+result.push(Number(value));
+
+// - Type 'number[]' is not assignable to type 'T[]'.
+// - Type 'number' is not assignable to type 'T'.
+// - 'T' could be instantiated with an arbitrary type which could be unrelated to 'number'.
+```
+
+我们也可以指定多个泛型，比如
+
+```ts
+function swap<U, T>(arr: [U, T]): [T, U] {
+  return [arr[1], arr[0]];
+}
+```
