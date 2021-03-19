@@ -1,0 +1,105 @@
+---
+layout: post
+title: JavaScript 模板库分析
+tags: [JavaScript]
+---
+
+数据驱动，以 `Vue` 来讲的话，一般是 `View = new Vue(template, data)`，我们的视图是通过 `Vue` 框架进行模板解析，数据结合之后生成的。
+
+我们看下 `jQuery` 创始人一段简单的模板库解析函数 [javascript-micro-templating](https://johnresig.com/blog/javascript-micro-templating/)
+
+```js
+// Simple JavaScript Templating
+// John Resig - https://johnresig.com/ - MIT Licensed
+(function () {
+  var cache = {};
+
+  this.tmpl = function tmpl(str, data) {
+    // Figure out if we're getting a template, or if we need to
+    // load the template - and be sure to cache the result.
+    var fn = !/\W/.test(str)
+      ? (cache[str] =
+          cache[str] || tmpl(document.getElementById(str).innerHTML))
+      : // Generate a reusable function that will serve as a template
+        // generator (and which will be cached).
+        new Function(
+          'obj',
+          'var p=[],print=function(){p.push.apply(p,arguments);};' +
+            // Introduce the data as local variables using with(){}
+            "with(obj){p.push('" +
+            // Convert the template into pure JavaScript
+            str
+              .replace(/[\r\t\n]/g, ' ')
+              .split('<%')
+              .join('\t')
+              .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+              .replace(/\t=(.*?)%>/g, "',$1,'")
+              .split('\t')
+              .join("');")
+              .split('%>')
+              .join("p.push('")
+              .split('\r')
+              .join("\\'") +
+            "');}return p.join('');"
+        );
+
+    // Provide some basic currying to the user
+    return data ? fn(data) : fn;
+  };
+})();
+```
+
+简单修改成一个模块，去掉 `cache` 等功能，分析最核心的部分：
+
+```js
+// template.js
+module.exports = function template(str, data) {
+  const fn = new Function(
+    'obj',
+    'var p=[],print=function(){p.push.apply(p,arguments);};' +
+      // Introduce the data as local variables using with(){}
+      "with(obj){p.push('" +
+      // Convert the template into pure JavaScript
+      str
+        .replace(/[\r\t\n]/g, ' ')
+        .split('<%')
+        .join('\t')
+        .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+        .replace(/\t=(.*?)%>/g, "',$1,'")
+        .split('\t')
+        .join("');")
+        .split('%>')
+        .join("p.push('")
+        .split('\r')
+        .join("\\'") +
+      "');}return p.join('');"
+  );
+
+  // Provide some basic currying to the user
+  return data ? fn(data) : fn;
+};
+```
+
+我们引入使用一下：
+
+```js
+// demo.js
+const template = require('./template');
+console.log(
+  template(
+    `<span data-message='<%= 'hello' + 'world' %>'>
+      <%= name ? name: 1+1+1 %>
+      <% print('hello msg'); %>
+     </span>`,
+    {
+      name: 'codytang',
+    }
+  )
+);
+```
+
+输出了以下结果（把空格去掉了，方便阅读）：
+
+`<span data-message='helloworld'> codytang hello msg </span>`
+
+接下来一行行来分析下 `template` 是如何工作的
