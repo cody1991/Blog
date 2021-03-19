@@ -1,6 +1,6 @@
 ---
 layout: post
-title: TypeScript入门手册
+title: TypeScript 入门笔记
 tags: [typescript]
 ---
 
@@ -1065,3 +1065,132 @@ cat.say();
 ```
 
 [demo 地址](https://www.typescriptlang.org/play?#code/IYIwzgLgTsDGEAJYBthjAgggOwJYFthkEBvAKAUqQHttIoBXeaqACgAcGRldYFtg+AKYAuBPVzYA5gEpSFKoti0w1ZEIB0yalNYDhMgNwLKAXxMJQ9OIjDAAnqxliAbtVwATY+bJkUaDABhYEQhAA8IIWwPDBwCInlFO0c5ckUlFTVNbV0IAAtcMA19ISMLcx9lOkRYEIQAXn4hAHcEYIhWAHJaiE6yno1kp0MgA)
+
+## 1-2-6 类与接口
+
+实现 `implements` 是面向对象中的一个概念。一般类只能继承一个类
+
+但是日常开发中经常不同类之间是有相同特征的，把这一部分抽取出来成为一个接口，类通过 `implements` 实现它们的方法，获取更大的灵活度
+
+举个生活中的例子，我们有一个门的类，防盗门继承门，防盗门有警铃的功能，另外又有一个警车的类，它也有警铃的功能，于是我们可以把这个功能抽取出来成为一个接口，让防盗门和警车去实现它就好了
+
+我们代码实现下上面提到的情况
+
+```ts
+interface Alarm {
+  alarm(): void;
+}
+
+class Car {}
+class AlarmCar extends Car implements Alarm {
+  alarm() {
+    console.log('AlarmCar alarm!!!');
+  }
+}
+
+class Door {}
+class AlarmDoor extends Door implements Alarm {
+  alarm() {
+    console.log('AlarmDoor alarm!!!');
+  }
+}
+```
+
+另外我们也可以实现多个接口，比如车还有车灯
+
+```ts
+interface Light {
+  lightOn(): void;
+  lightOff(): void;
+}
+class Car {}
+class AlarmCar extends Car implements Alarm, Light {
+  alarm() {
+    console.log('AlarmCar alarm!!!');
+  }
+  lightOff() {}
+  lightOn() {}
+}
+```
+
+### 接口继承接口
+
+另外接口也是可以继承其他接口的，所以我们的类也需要实现接口父类的方法
+
+```ts
+interface blingbling {
+  blingbling(): void;
+}
+
+interface Light extends blingbling {
+  lightOn(): void;
+  lightOff(): void;
+}
+
+class Car {}
+class AlarmCar extends Car implements Alarm, Light {
+  alarm() {
+    console.log('AlarmCar alarm!!!');
+  }
+  lightOff() {}
+  lightOn() {}
+  blingbling() {}
+}
+```
+
+上面的例子可以在这里查看： [demo 地址](https://www.typescriptlang.org/play?#code/JYOwLgpgTgZghgYwgAgIIBs5QLbIN4BQyxycmOAFAJQBcyAbgPbAAmA3AQL4EGiSyIUAI3SgA5iPH4iJSSAmj51Ok1YduvcNHhJkAGWBiAFmGQQAHpBAsAzsjkKphEslHGwAeRDKGzdjOI3Ew8YGB9Vfw0ETBs7AGEsfGRuaLhYtHJsBKgzSwhreMTgbAAHdAhsfLA7DCxsABp9QxNiZxIyOuokhEYQG0ZygDp0RjEKAHJanGzSTIBCBfGqZIDXZs9QrrxuFyDPb2Xt1YcHLe4omLsAEUZGHLwV1PSp7Bu73KtbZDec4rKKqo1TLSFwdSiHZA9PoDCDDUYTF4-WZ1BZzJYrThAA)
+
+### 接口继承类
+
+接口也可以继承类
+
+我们先看看下面的案例
+
+```ts
+class Point {
+  constructor(public x: number, public y: number) {}
+}
+
+interface Point3D extends Point {
+  z: number;
+}
+
+let point: Point3D = { x: 1, y: 2, z: 3 };
+```
+
+实际上我们声明一个类的时候，也会产生这个类的类型。所以我们既可以用 `Point` 创建一个实例，也可以把它当做一个类型，如 `const point: Point = new Point(1, 2);`
+
+其实等价于下面的写法：
+
+```ts
+class Point {
+  constructor(public x: number, public y: number) {}
+}
+interface PointInstanceType {
+  x: number;
+  y: number;
+}
+const point: PointInstanceType = new Point(1, 2);
+```
+
+我们大概也能理解
+
+```ts
+interface Point3D extends Point {
+  z: number;
+}
+```
+
+其实等价于
+
+```ts
+interface Point3D extends PointInstanceType {
+  z: number;
+}
+```
+
+所以接口继承类，实际上是继承了类的实例的类型，等价于继承了另外一个接口
+
+另外我们发现是不继承 构造函数的，也不会继承静态属性和静态方法。因为我们类的实例，其实也是不包含这些的，很好理解
+
+[demo 地址](https://www.typescriptlang.org/play?#code/MYGwhgzhAEAKD2BLAdgF2gbwFDV9Y8yEqATgK7CrwkAUADmQEYiLDQAeAXNMmQLaMApiQA00Bs1bQAnt14DhASkw48AXywasKVMIBmYYILhI0ASSKowyIwBVpdY9jwc5-ISQDcq3LJ7vhby0dfUNjBB0AZgARaEF2XWQAExgI80trOwcnH2gALzcFL00sLBBBdDpTVEik7jSa2IBeTFdoAEYxPwAmMQLoSOgtAktxavrqi2JMwXtHaBbkQQB3Ex0aTuhuxU8gA)
