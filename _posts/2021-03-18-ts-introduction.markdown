@@ -771,3 +771,25 @@ handleEvent(document.body, 'dbclick');
 `dbclick` 不在 `EventNames` 定义的字面类型里面，所以会报错
 
 [demo](https://www.typescriptlang.org/play?#code/C4TwDgpgBAogbhAdsAcgQwLYQM5QLxQDkAxgDYCWxA1oVAD5HbEBOA9qabQ4RqwK7YIvBIQDcAKHEAzPomLByrRFAAWaRABNSEeEmAAKCNoBcsbVmQAaKBATJTu5OizYAlFADe4qD6jEl2OwQAHSkrADmhtrWtnquEgC+kmqa2o4GGqzEfBbAwQBGrBog1iQU1ISu4ilaOnYZWTl6BUUlRBr5ZJQ0rkA)
+
+## 1-2-3 元组
+
+数组一般情况下是相同类型的值的集合，而元组是不同类型的值的集合，看看下面的 `demo`
+
+```ts
+let aTunple: [string, number, number, boolean] = ['cody', 123, 4, true];
+```
+
+另外发现
+
+```ts
+aTunple.push(1);
+aTunple.push(new Boolean(1));
+
+// - Argument of type 'Boolean' is not assignable to parameter of type 'string | number | boolean'.
+// - Type 'Boolean' is not assignable to type 'true'.
+```
+
+不能加入 元组 中定义的类型集合的其他类型值
+
+[demo 地址](https://www.typescriptlang.org/play?ssl=1&ssc=1&pln=8&pc=22#code/DYUwLgBAhgKgrgOwA6gFwQNoGcwCcCWCA5gDQQJwC2ARiLmRTXWdQPauhQIC6EAvJgDkAY1YATAJ6CyARgBMAZjIAWMnjghuAbgBQO2IhQgAdEjhYAFgAoZASl0B6B9HjJQp89YQgA7hABC7JwINrb2egZuJpb4AGZgVrZ6oghYHCbArERWkUb2QA)
