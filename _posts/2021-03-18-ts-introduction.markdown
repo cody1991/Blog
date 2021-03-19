@@ -793,3 +793,104 @@ aTunple.push(new Boolean(1));
 不能加入 元组 中定义的类型集合的其他类型值
 
 [demo 地址](https://www.typescriptlang.org/play?ssl=1&ssc=1&pln=8&pc=22#code/DYUwLgBAhgKgrgOwA6gFwQNoGcwCcCWCA5gDQQJwC2ARiLmRTXWdQPauhQIC6EAvJgDkAY1YATAJ6CyARgBMAZjIAWMnjghuAbgBQO2IhQgAdEjhYAFgAoZASl0B6B9HjJQp89YQgA7hABC7JwINrb2egZuJpb4AGZgVrZ6oghYHCbArERWkUb2QA)
+
+## 1-2-4 枚举
+
+枚举一般是用在值在一定范围内的情况，比如下面的例子，一周七天只有限定的几个值
+
+```ts
+enum Days {
+  Sun,
+  Mon,
+  Tue,
+  Wed,
+  Thu,
+  Fri,
+  Sat,
+}
+```
+
+枚举值是从 `0` 开始的，枚举值到枚举名也会有映射关系，我们看看 `ts` 转 `js` 是怎样的：
+
+```js
+'use strict';
+var Days;
+(function (Days) {
+  Days[(Days['Sun'] = 0)] = 'Sun';
+  Days[(Days['Mon'] = 1)] = 'Mon';
+  Days[(Days['Tue'] = 2)] = 'Tue';
+  Days[(Days['Wed'] = 3)] = 'Wed';
+  Days[(Days['Thu'] = 4)] = 'Thu';
+  Days[(Days['Fri'] = 5)] = 'Fri';
+  Days[(Days['Sat'] = 6)] = 'Sat';
+})(Days || (Days = {}));
+```
+
+简单测试一下：
+
+```ts
+console.log(Days.Sun === 0); // true
+console.log(Days.Sat === 6); // true
+console.log(Days[6] === 'Sat'); // true
+```
+
+另外我们可以给枚举值赋值，没有赋值的枚举值就会跟着上一个枚举值递增。看下具体的例子就知道什么意思了
+
+```ts
+enum Days2 {
+  Sun = 7,
+  Mon = 1,
+  Tue,
+  Wed,
+  Thu,
+  Fri,
+  Sat,
+}
+```
+
+会被转成
+
+```js
+var Days2;
+(function (Days2) {
+  Days2[(Days2['Sun'] = 7)] = 'Sun';
+  Days2[(Days2['Mon'] = 1)] = 'Mon';
+  Days2[(Days2['Tue'] = 2)] = 'Tue';
+  Days2[(Days2['Wed'] = 3)] = 'Wed';
+  Days2[(Days2['Thu'] = 4)] = 'Thu';
+  Days2[(Days2['Fri'] = 5)] = 'Fri';
+  Days2[(Days2['Sat'] = 6)] = 'Sat';
+})(Days2 || (Days2 = {}));
+```
+
+另外也有可能出现覆盖的情况，但是 `ts` 不会报错。看下第三个例子：
+
+```ts
+enum Days3 {
+  Sun = 3,
+  Mon = 1,
+  Tue,
+  Wed,
+  Thu,
+  Fri,
+  Sat,
+}
+```
+
+编译后的结果
+
+```js
+(function (Days3) {
+  Days3[(Days3['Sun'] = 3)] = 'Sun';
+  Days3[(Days3['Mon'] = 1)] = 'Mon';
+  Days3[(Days3['Tue'] = 2)] = 'Tue';
+  Days3[(Days3['Wed'] = 3)] = 'Wed';
+  Days3[(Days3['Thu'] = 4)] = 'Thu';
+  Days3[(Days3['Fri'] = 5)] = 'Fri';
+  Days3[(Days3['Sat'] = 6)] = 'Sat';
+})(Days3 || (Days3 = {}));
+```
+
+`Days3[3]` 原本是 `Sun`，后面被 `Wed` 覆盖了。这种情况最好自己规避
+
+[demo 地址](https://www.typescriptlang.org/play?#code/KYOwrgtgBAIghgTwM5QN4CgpagZTCAGigFkB7QqAFTGCIHVgATIygCzCIDEAnASyJxwALugC+6AMbkkpADbAAdLNIBzABTxkCvCCgBeA1AAMASgDck6XMXL1mpNuH7DANnPpLIGfKWqNiJABtFwBdZz0oAHJBIUiTD1BIWACAJjRMbB19KAB2IjJdCIBGFhp6JhZ2Lj4BYTEE8Gh7AGZ07Fx8bOb88mySqjKoBmYqKqgeflw60SA)
