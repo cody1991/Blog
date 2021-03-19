@@ -982,10 +982,9 @@ class Animal {
 
 另外还有一个修饰符 `readonly`，它需要在其他修饰符后面。我们再调整下上面的例子
 
-```
+```ts
 class Animal {
-    protected constructor(protected readonly name: string) {
-    }
+  protected constructor(protected readonly name: string) {}
 }
 
 const cat = new Cat('hello');
