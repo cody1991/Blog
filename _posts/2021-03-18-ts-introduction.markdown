@@ -894,3 +894,175 @@ enum Days3 {
 `Days3[3]` 原本是 `Sun`，后面被 `Wed` 覆盖了。这种情况最好自己规避
 
 [demo 地址](https://www.typescriptlang.org/play?#code/KYOwrgtgBAIghgTwM5QN4CgpagZTCAGigFkB7QqAFTGCIHVgATIygCzCIDEAnASyJxwALugC+6AMbkkpADbAAdLNIBzABTxkCvCCgBeA1AAMASgDck6XMXL1mpNuH7DANnPpLIGfKWqNiJABtFwBdZz0oAHJBIUiTD1BIWACAJjRMbB19KAB2IjJdCIBGFhp6JhZ2Lj4BYTEE8Gh7AGZ07Fx8bOb88mySqjKoBmYqKqgeflw60SA)
+
+## 1-2-5 类
+
+`ts` 中对类新增了三个修饰符
+
+- `public`: 默认属性和方法都是这个修饰符，代表共有的，外部都可以访问到
+- `private`: 代表这个属性和方法是私有的，只有这个类可以访问
+- `protected`: 和 `private` 类似，但是子类可以访问
+
+看一下简单的例子
+
+```ts
+class Animal {
+  private name;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+const cat = new Animal('hello');
+console.log(cat.name);
+
+// - Property 'name' is private and only accessible within class 'Animal'.
+```
+
+另外可以发现子类继承也是不行的
+
+```ts
+class Cat extends Animal {
+  constructor(name: string) {
+    super(name);
+    console.log(this.name);
+  }
+}
+
+// - Property 'name' is private and only accessible within class 'Animal'.
+```
+
+不过我们可以改成 `protected`修复符，上面的报错就没有了
+
+不过实例去访问 `name` 属性还是一样会报错
+
+```
+- Property 'name' is protected and only accessible within class 'Animal' and its subclasses.
+```
+
+只有 `Animal` 和它的子类，这里就是 `Cat` 类，可以访问这个属性
+
+另外我们看看如果把 `Animal` 的 构造函数设置为 `private` 也会报错
+
+```
+- Cannot extend a class 'Animal'. Class constructor is marked as private.
+- Constructor of class 'Animal' is private and only accessible within the class declaration.
+```
+
+无法继承。
+
+如果把 `Animal` 的构造函数设置为 `protected` 的话，无法实例化
+
+```
+- Constructor of class 'Animal' is protected and only accessible within the class declaration.
+```
+
+但是如果是实例话 `Cat` 类的话还是可以的，`Cat` 有访问父类为 `protected` 的构造函数。
+
+另外可以发现我们对属性的修饰符是单独拎出来写的，可以进行下面的简化
+
+比如
+
+```ts
+class Animal {
+  protected name;
+  protected constructor(name: string) {
+    this.name = name;
+  }
+}
+```
+
+和下面是等价的
+
+```ts
+class Animal {
+  protected constructor(protected name: string) {}
+}
+```
+
+另外还有一个修饰符 `readonly`，它需要在其他修饰符后面。我们再调整下上面的例子
+
+```
+class Animal {
+    protected constructor(protected readonly name: string) {
+    }
+}
+
+const cat = new Cat('hello');
+cat.name = 'haha';
+
+// - Property 'name' is protected and only accessible within class 'Animal' and its subclasses.
+// - Cannot assign to 'name' because it is a read-only property.
+
+// 如果 readonly 写在了 protected 前面的话，也会有下面的报错：'protected' modifier must precede 'readonly' modifier.
+```
+
+上面关于类的时候，代码在 [demo 地址](https://www.typescriptlang.org/play?#code/MYGwhgzhAECCB2BLAtmE0DeAoavoHp9oAHAJ0QDcwAXAU2njGVoG4c8yB7O4OgE2jBO8CNVIBXXp1IAKLj37RStMH2EgAngya0AXNFHl4AcwCUmdrgC+WG1lCQYAYRrRaADzrw+MBCjTYeILChpLU0jKMzLqGiCbmgUF4EOLEtLJRtKZsSXhCIpwgtAB0IJzGMtQAFogQxZnZltA2dvmigq4AvAy0AO7QLtQyAORVtCBlw43ANPU60N2jYFVgw2yEwQVFpeUyM9RzzNlAA)
+
+### 抽象类
+
+`abstract` 定义抽象类，它不能被实例化
+
+```ts
+abstract class Animal {
+  constructor(public name: string) {
+    console.log(name);
+  }
+}
+const cat = new Animal('cat');
+// - Cannot create an instance of an abstract class.
+```
+
+我们新建一个类继承这个抽象类。继承的子类必须实现抽象类中的抽象方法
+
+```ts
+abstract class Animal {
+  constructor(public name: string) {
+    console.log(name);
+  }
+  abstract say(): void;
+}
+class Cat extends Animal {}
+const cat = new Cat('cat');
+
+// - Non-abstract class 'Cat' does not implement inherited abstract member 'say' from class 'Animal'.
+```
+
+我们实现一下这个方法，如今可以正常运行没有报错了
+
+```ts
+abstract class Animal {
+  constructor(public name: string) {
+    console.log(name);
+  }
+  abstract say(): void;
+}
+class Cat extends Animal {
+  say() {
+    console.log(this.name);
+  }
+}
+const cat = new Cat('cat');
+cat.say();
+```
+
+可以看下最终的编译结果， `Animal` 抽象类其实也是真实存在的
+
+```js
+'use strict';
+class Animal {
+  constructor(name) {
+    this.name = name;
+    console.log(name);
+  }
+}
+class Cat extends Animal {
+  say() {
+    console.log(this.name);
+  }
+}
+const cat = new Cat('cat');
+cat.say();
+```
+
+[demo 地址](https://www.typescriptlang.org/play?#code/IYIwzgLgTsDGEAJYBthjAgggOwJYFthkEBvAKAUqQHttIoBXeaqACgAcGRldYFtg+AKYAuBPVzYA5gEpSFKoti0w1ZEIB0yalNYDhMgNwLKAXxMJQ9OIjDAAnqxliAbtVwATY+bJkUaDABhYEQhAA8IIWwPDBwCInlFO0c5ckUlFTVNbV0IAAtcMA19ISMLcx9lOkRYEIQAXn4hAHcEYIhWAHJaiE6yno1kp0MgA)
