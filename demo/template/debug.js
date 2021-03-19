@@ -1,8 +1,6 @@
-module.exports = function template(str, data) {
+export default function template(str, data) {
   console.log(
-    'var p=[],print=function(){p.push.apply(p,arguments);};' +
-      // Introduce the data as local variables using with(){}
-      "with(obj){p.push('" +
+    "with(obj){p.push('" +
       // Convert the template into pure JavaScript
       str
         .replace(/[\r\t\n]/g, ' ')
@@ -18,6 +16,7 @@ module.exports = function template(str, data) {
         .join("\\'") +
       "');}return p.join('');"
   );
+
   const fn = new Function(
     'obj',
     'var p=[],print=function(){p.push.apply(p,arguments);};' +
@@ -41,4 +40,4 @@ module.exports = function template(str, data) {
 
   // Provide some basic currying to the user
   return data ? fn(data) : fn;
-};
+}

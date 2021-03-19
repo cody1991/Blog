@@ -102,4 +102,424 @@ console.log(
 
 `<span data-message='helloworld'> codytang hello msg </span>`
 
-接下来一行行来分析下 `template` 是如何工作的
+接下来一行行来分析下 `template` 是如何工作的。
+
+## template 函数
+
+我们首先分析一下整个函数的结构和使用方法
+
+```js
+module.exports = function template(str, data) {
+  const fn = new Function();
+  return data ? fn(data) : fn;
+};
+```
+
+它接受两个参数，看起来和我们提到的 `View = new Vue(template, data)` 很像
+
+- str，即我们的模板
+- data，即我们传入的数据
+
+它的输出有两种，如果传入了数据的话，执行模板的解析，吐出来解析后的 `html` 字符串；如果没有传入数据的话，返回这个函数，即可以进行 currying 化。什么意思？我们看看下面的代码
+
+```js
+const str1 = '...';
+const myTmp = template(str1); // 它是一个函数
+
+myTmp({ a: 1 });
+myTmp({ a: 1, b: 1 });
+myTmp({ c: 1 });
+```
+
+`myTmp` 其实是和 `str1` 绑定起来的，这里用到了闭包。 `myTmp` 代表的是一个模板，我们传入不同的数据，可以产生不同的模板字符串。
+
+## new Function
+
+函数也是对象，他们都是 `Function` 类型，`Function` 是一个构造函数，我们可以通过 `new Function` 去创建一个函数。
+
+我们大部分时间认知的其实就只有
+
+```js
+function miaomiaomiao() {}
+
+const wangwangwang = function () {};
+
+miaomiaomiao instanceof Function; // true
+wangwangwang instanceof Function; // true
+```
+
+两种函数声明的方式，其实通过 `new Function` 也是可以的，不过不常用。
+
+可以看一个简单的例子
+
+```js
+const sum = new Function('a', 'b', 'return a + b');
+console.log(sum(2, 6));
+```
+
+我们看看它的语法
+
+```js
+new Function ([arg1[, arg2[, ...argN]],] functionBody)
+```
+
+- arg1, arg2, ... argN
+
+  被函数使用的参数的名称必须是合法命名的。参数名称是一个有效的 JavaScript 标识符的字符串，或者一个用逗号分隔的有效字符串的列表;例如“×”，“theValue”，或“a,b”。
+
+- functionBody
+
+  一个含有包括函数定义的 JavaScript 语句的字符串。
+
+那其实回到我们的 `template` 函数，它的结构是
+
+```js
+const fn = new Function('obj', '...');
+```
+
+可以发现它只有一个参数 `obj`，函数体是一串字符串，这字符串我们后面在分析分析
+
+最终我们可以通过 `fn(data)` 的方式调用这个函数，传入的 `data` 即 `obj`
+
+想了解更多关于 `new Function` 的使用，可以参考 [Function](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function)，上面的大部分例子和说明也是从这里获取的
+
+## 函数体
+
+接下来就是最主要的部门了，我们返回的函数的函数题是怎样的？
+
+为了方便看看最终的结果，我们先创建一个模板：
+
+```js
+const myTemplate = template(
+  `<span data-message='<%= 'hello' + 'world' %>'>
+    <% print('hello msg'); %>
+    <%= name ? name: 1+1+1 %>
+    <% print('hello msg'); %>
+   </span>`
+);
+```
+
+打印了一下模板生成后的函数体内容：
+
+```js
+function test(obj) {
+  var p = [],
+    print = function () {
+      p.push.apply(p, arguments);
+    };
+  with (obj) {
+    p.push("<span data-message='", 'hello' + 'world', "'>     ");
+    print('hello msg');
+    p.push('     ', name ? name : 1 + 1 + 1, '     ');
+    print('hello msg');
+    p.push('    </span>');
+  }
+  return p.join('');
+}
+
+console.log(test({ name: 'hello11' }));
+```
+
+它的运行机制很简单，一步步看下来：
+
+1. 声明一个空的数组 `p`
+2. 声明一个函数 `print`，它的作用就是把传入的参数 `push` 到数组 `p` 中，`apply` 的使用很简单，就不多说啦。我们在模板中能使用 `print` 函数，也是因为在这里进行定义了
+3. `with` 的作用，可以参考 [with](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/with)，简单来说就是改变了当前的作用域链。一般执行上下文有一个全局的作用域，每次创建函数的时候会生成一个新的作用域对象，置于执行上下文的顶端，就像栈一样。去查找变量的时候会从顶端一层层查找对应的变量是否存在，直到全局作用域，如果不存在的话返回 `unefined`。而使用 `with` 的话可理解成强行在顶端加入了一个新的作用域对象，它的优先级也是最高的了。这里指的是 `obj` 对象，在这个作用域下的所有对象都会先查找在 `obj` 对象上是否存在，比如 `name` 变量的话就会去看看 `obj.name` 是否存在，否则继续沿着作用域链去查找（自己的理解，可能说的不太好，可以参考官网）
+4. 我们把解析出来的模板字符串，一个个的 `push` 进入到了 `p` 数组中
+5. 最终调用数组上的 `join` 函数，把模板字符串合并成一个字符串返回，就是我们要的结果了
+
+可以发现，其实最终产生的函数，是很容易看懂的，那它是怎么生成的呢？
+
+## 正则表达式
+
+```js
+str
+  .replace(/[\r\t\n]/g, ' ')
+  .split('<%')
+  .join('\t')
+  .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+  .replace(/\t=(.*?)%>/g, "',$1,'")
+  .split('\t')
+  .join("');")
+  .split('%>')
+  .join("p.push('")
+  .split('\r')
+  .join("\\'");
+```
+
+其实核心部分就在这里的正则表达式的使用了，我们可以通过一步步的调用，去查看上面模板的函数题是怎么生成的
+
+```js
+const myTemplate = template(
+  `<span data-message='<%= 'hello' + 'world' %>'>
+    <% print('hello msg'); %>
+    <%= name ? name: 1+1+1 %>
+    <% print('hello msg'); %>
+   </span>`
+);
+```
+
+一步步来看，先简单打印我们的 str 是什么
+
+```html
+// console.log(str);
+
+<span data-message='<%= 'hello' + 'world' %>'>
+    <% print('hello msg'); %>
+    <%= name ? name: 1+1+1 %>
+    <% print('hello msg'); %>
+   </span>
+```
+
+---
+
+之后在 `str` 上调用了一个 `replace` ，[/[\r\t\n]/g](https://regexper.com/#%2F%5B%5Cr%5Ct%5Cn%5D%2Fg) 其实就是全局找 回车符，制表符或者换行符，把它们统一成了空格。
+
+```html
+// console.log(str.replace(/[\r\t\n]/g, ' '));
+
+<span data-message='<%= 'hello' + 'world' %>'>     <% print('hello msg'); %>     <%= name ? name: 1+1+1 %>     <% print('hello msg'); %>    </span>
+```
+
+---
+
+继续往下看。调用了一个 `split` 的方法，以 `<%` 字符为分隔符，生成一个数组。
+
+```js
+// console.log(str.replace(/[\r\t\n]/g, ' ').split('<%'));
+[
+  "<span data-message='",
+  "= 'hello' + 'world' %>'>     ",
+  " print('hello msg'); %>     ",
+  '= name ? name: 1+1+1 %>     ',
+  " print('hello msg'); %>    </span>",
+];
+```
+
+---
+
+又通过 `join('\t')` 的方法把它们拼凑起来了，以制表符为分隔，可以发现现在已经没有 `<%` 符号了
+
+```html
+  <!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('<%')
+      .join('\t')
+  ); -->
+<span data-message='	= 'hello' + 'world' %>'>     	 print('hello msg'); %>     	= name ? name: 1+1+1 %>     	 print('hello msg'); %>    </span>
+```
+
+---
+
+这个正则表达式里面，这个表达式是 `Group1`，而 `(^|%>)` 是 `Group2`，最后还有一个 `'` 符号
+`Group2` 查找开头或者 `%>` 字符串，而 `[^\t]*` 找的是除了 `\t` 以外的 0 个或者更多的任意字符，最终使用
+
+`Group1` 和 `\r` 字符串进行替换，去掉了最后的 `'`，得到了下面的结果。
+
+其实这里最主要就是找到对应的位置，把模板标识符 `%>` 附近的 `'` 给去掉了，也就是属性上的
+
+```html
+  <!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('<%')
+      .join('\t')
+      .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+  ); -->
+
+<span data-message=
+	= 'hello' + 'world' %>
+>     	 print('hello msg'); %>     	= name ? name: 1+1+1 %>     	 print('hello msg'); %>    </span>
+```
+
+---
+
+`replace(/\t=(.*?)%>/g, "',$1,'")`，主要是把表达式解析出来，然后去掉它们两边的 `\t=` 和 `%>` 符号，使用 `',` 和 `',` 两边填充，这里的 `,` 其实是 `push` 函数参数的分隔符
+
+```html
+<!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('<%')
+      .join('\t')
+      .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%>/g, "',$1,'")
+  ); -->
+
+<span data-message=
+', 'hello' + 'world' ,'
+>     	 print('hello msg'); %>     ', name ? name: 1+1+1 ,'     	 print('hello msg'); %>    </span>
+```
+
+---
+
+简单的通过制表符分隔，获取到我们几块剩下的字符模板
+
+```js
+// console.log(
+//   str
+//     .replace(/[\r\t\n]/g, ' ')
+//     .split('<%')
+//     .join('\t')
+//     .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+//     .replace(/\t=(.*?)%>/g, "',$1,'")
+//     .split('\t')
+// );
+[
+  "<span data-message=\r', 'hello' + 'world' ,'\r>     ",
+  " print('hello msg'); %>     ', name ? name: 1+1+1 ,'     ",
+  " print('hello msg'); %>    </span>",
+];
+```
+
+---
+
+使用 `');` 进行拼接
+
+```html
+  <!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('<%')
+      .join('\t')
+      .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%>/g, "',$1,'")
+      .split('\t')
+      .join("');")
+  ); -->
+
+<span data-message=
+', 'hello' + 'world' ,'
+>     '); print('hello msg'); %>     ', name ? name: 1+1+1 ,'     '); print('hello msg'); %>    </span>
+```
+
+---
+
+又通过 `.split('%>')` 把它们拆分
+
+```js
+// console.log(
+//   str
+//     .replace(/[\r\t\n]/g, ' ')
+//     .split('<%')
+//     .join('\t')
+//     .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+//     .replace(/\t=(.*?)%>/g, "',$1,'")
+//     .split('\t')
+//     .join("');")
+//     .split('%>')
+// );
+
+[
+  "<span data-message=\r', 'hello' + 'world' ,'\r>     '); print('hello msg'); ",
+  "     ', name ? name: 1+1+1 ,'     '); print('hello msg'); ",
+  '    </span>',
+];
+```
+
+---
+
+通过 `.join("p.push('")` 拼接
+
+```html
+  <!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('<%')
+      .join('\t')
+      .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%>/g, "',$1,'")
+      .split('\t')
+      .join("');")
+      .split('%>')
+      .join("p.push('")
+  ); -->
+
+<span data-message=
+', 'hello' + 'world' ,'
+>     '); print('hello msg'); p.push('     ', name ? name: 1+1+1 ,'     '); print('hello msg'); p.push('    </span>
+```
+
+---
+
+通过 `.split('\r')` chaifen
+
+```js
+// console.log(
+//   str
+//     .replace(/[\r\t\n]/g, ' ')
+//     .split('<%')
+//     .join('\t')
+//     .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+//     .replace(/\t=(.*?)%>/g, "',$1,'")
+//     .split('\t')
+//     .join("');")
+//     .split('%>')
+//     .join("p.push('")
+//     .split('\r')
+// );
+
+[
+  '<span data-message=',
+  "', 'hello' + 'world' ,'",
+  ">     '); print('hello msg'); p.push('     ', name ? name: 1+1+1 ,'     '); print('hello msg'); p.push('    </span>",
+];
+```
+
+---
+
+```html
+  <!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('<%')
+      .join('\t')
+      .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%>/g, "',$1,'")
+      .split('\t')
+      .join("');")
+      .split('%>')
+      .join("p.push('")
+      .split('\r')
+      .join("\\'")
+  ); -->
+<span data-message=\'', 'hello' + 'world' ,'\'>     '); print('hello msg'); p.push('     ', name ? name: 1+1+1 ,'     '); print('hello msg'); p.push('    </span>
+```
+
+---
+
+最终得到下面的结果。。
+
+```js
+// console.log(
+//     "with(obj){p.push('" +
+//       // Convert the template into pure JavaScript
+//       str
+//         .replace(/[\r\t\n]/g, ' ')
+//         .split('<%')
+//         .join('\t')
+//         .replace(/((^|%>)[^\t]*)'/g, '$1\r')
+//         .replace(/\t=(.*?)%>/g, "',$1,'")
+//         .split('\t')
+//         .join("');")
+//         .split('%>')
+//         .join("p.push('")
+//         .split('\r')
+//         .join("\\'") +
+//       "');}return p.join('');"
+//   );
+
+with (obj) {
+  p.push("<span data-message='", 'hello' + 'world', "'>     ");
+  print('hello msg');
+  p.push('     ', name ? name : 1 + 1 + 1, '     ');
+  print('hello msg');
+  p.push('    </span>');
+}
+return p.join('');
+```
+
+## 末尾语
+
+虽然正则都看得懂，但是很难想到他为什么会想到这样子去做。。。还要好好消化下
