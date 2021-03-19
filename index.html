@@ -3,7 +3,7 @@ layout: page
 description: '记录下来，变成自己的东西'
 ---
 
-{% for post in site.posts %} {% if post.top == true && !post.hidden %}
+{% for post in site.posts %} {% if post.top == true and post.hidden != true %}
 <div class="post-preview">
   <a href="{{ post.url | prepend: site.baseurl }}">
     <h2 class="post-title">[置顶] {{ post.title }}</h2>
@@ -22,7 +22,7 @@ description: '记录下来，变成自己的东西'
 </div>
 <hr />
 {% endif %} {% endfor %} {% for post in paginator.posts %} {% if post.top !=
-true && !post.hidden %}
+true and post.hidden != true %}
 <div class="post-preview">
   <a href="{{ post.url | prepend: site.baseurl }}">
     <h2 class="post-title">{{ post.title }}</h2>
