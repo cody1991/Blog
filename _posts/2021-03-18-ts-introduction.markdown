@@ -1245,3 +1245,124 @@ function swap<U, T>(arr: [U, T]): [T, U] {
   return [arr[1], arr[0]];
 }
 ```
+
+### 泛型约束
+
+泛型不能任意调取属性或者方法，因为不一定存在，不过我们可以进行约束
+
+比如下面的例子：
+
+```ts
+function needLength<T>(arg: T): number {
+  return arg.length;
+}
+
+// 这样是会报错的，我们改进下
+
+interface LengthWise {
+  length: number;
+}
+function needLength<T extends LengthWise>(arg: T): number {
+  return arg.length;
+}
+```
+
+再看一个例子：
+
+```ts
+function copyFields<T extends S, S>(target: T, source: S): T {
+  for (let field in source) {
+    target[field] = (source as T)[field];
+  }
+  return target;
+}
+let x = { a: 1, b: 2, c: 3, d: 4 };
+console.log(copyFields(x, { b: 10, d: 20 }));
+```
+
+如果有在 `source` 中出现 `target` 不存在的字段，就会报错
+
+### 泛型接口
+
+```ts
+interface CreateArrayFunc {
+  <T>(length: number, value: T): Array<T>;
+}
+
+let arrayFunc: CreateArrayFunc = function <T>(
+  length: number,
+  value: T
+): Array<T> {
+  const arr: T[] = [];
+  for (let index = 0; index < length; index += 1) {
+    arr.push(value);
+  }
+  return arr;
+};
+
+console.log(arrayFunc(2, 'cody'));
+```
+
+### 泛型类
+
+看下例子就好了
+
+```ts
+class MulType<T> {
+  constructor(public val: T) {}
+  say(): T {
+    return this.val;
+  }
+}
+
+const numberType = new MulType(40);
+console.log(numberType.say());
+
+const numberType2 = new MulType('123');
+console.log(numberType2.say());
+```
+
+[demo](https://www.typescriptlang.org/play?ssl=56&ssc=34&pln=46&pc=1#code/GYVwdgxgLglg9mABAJwKYAdUEMoAoA2qYA5lABYBciYIAtgEarIA0iAblviKlVmAJ4BKXgIDaAXUQBvAFCJ5iCAgDOUFKmUh8agLyIJAbjkLgcZIgKo1MMABNUAD0R6ADAcQ37TgDyJCJcndPRwBqEMFpYwUFNE1tADp0EGUyXA4uVEEjaIBfKPUoEGQkWK0oIzyZJTBlOEJ4-DhiXDRMHFwAVlYAciVbfm7BLMQAehH9ACI+-gnWKbh+2cR5xbnppZWZ8RkZUEhYBHU2qAAmbwAVAD5LAMpqOkYWdk5uKnPhRHOJSOjq1XU4rp9OJsiYzBZCNY7I5nIg3B5oT4-ERSGQgoiwhFZNFoqUEkkUmkXplQfI8rirEUShoyhUqio6qgGk0WhhsKdcCcetNBsMxpN1msFlsdvy8VBEslUgA5B5MIkZIZGXbgaDwJDKADuWHQ3gAqqwrrgsMhkFRRAbPuIPqJzqw9ZJsTFKcV9CbkKIAIziVju0QucQgmSVGxQJjALAQVCIAAyKPIAHUYMpo075P5UVQaAwmHSVft1dRUKhbHHbhdEI4w3ZlLH42QkynribiG8PtnHj9nYVXS2GvW82Bi6X67hup6TgBmQbKvZqw5KdD8ABiMFQ+FsygrVaIm8QAGVWPvrlAW1Y3qxakUo1R9x9zl35KZzJY1MA1xuEYgr8go1j8tE-LnPwmCIN0ACiDhQMgkZQN4ADWqD8HAwCfJe0E2MQlzdIofBgHAaiMIgyQlogUBwAiXhkSB0bdMu3TxABCinsgxBWKI77rrYkh6LgP5RogWC1u8HEftxpKIOS3ZUmRZ7lMGMiQogTh6FIglUJ6rD0FQXKKFQk6sLYVAACySUYfyMsyzSLiuYnKLgDisGp2mIJ6LiGTpLiSUqOyhuGkbRgAwmgOCoAAgqaWArqqj6IBc1wZuQWZyk86SvJ8HwRTB-DxXmSnulFy6qlQwXsuFkXRZAsJzgcSAVnoqjIJhCX1slOapcSbZUFlUXxbFfxqO6bzfHoEj5M+EJWJRMKuOiVG+IlaLTU4IR6J6WKCaakqEmlmSSfkaA9kg7p5hZ9SNM0BWVRAnLcsKvI7BA+BCbWACyWjAZgfVpooKjQSA0BmLgST0PgMAQM8+BtpE+RSfIyhRbgwgPj9FJHWRZDJvE6QSXklQDfc7WfdGehDpqiDvfgxO4MZLhZPSNSWRduAdkwxPxAj-BI4Ij1-YTjzEycsJkxTH00WOE7TvTZ1MszrPIILHOI0MMhAA)
+
+## 声明合并
+
+如果定义了两个相同的接口，类或者函数，他们会合并起来
+
+### 函数的合并
+
+这是我们之前写过的例子，重载多种类型的函数
+
+```ts
+function dFunc(a: string): string;
+function dFunc(a: number): number;
+function dFunc(a: string | number): string | number {
+  if (typeof a === 'number') {
+    return Number(a.toString().split('').reverse().join(''));
+  } else {
+    return a.split('').reverse().join('');
+  }
+}
+```
+
+### 接口合并
+
+```ts
+interface Miaomiao {
+  a: number;
+}
+
+interface Miaomiao {
+  b: number;
+}
+
+const t: Miaomiao = {
+  a: 1,
+  b: 2,
+};
+```
+
+### 类合并
+
+和接口合并基本一样
+
+[demo 地址](https://www.typescriptlang.org/play?#code/GYVwdgxgLglg9mABAEwGLggCgIYC5EDOUATjGAOYCU+RpFA3AFCiSwIrqQ75ggC2AIwCmxaol6CRTFtHhI0GboRJlyiAD7j+w0TRUUNWycUQBvRokuIYwRJigBPAA5C4t7IgC83xAHIJOr6UZhZWYcRCUCDESABy2iI4AHRQcADK+uSYlEkETgA2MFCYvkFJEQBuIgRC2UkAVnBkJUGUTGEAvohC+TUhYeGR0UjYuQVFLTmV1bU5jc2lbaGWHYyrjGRQIsDYEEKIALIw2HB8x3D9VnhGOgA0a4wbYFvEO3uH52cnl5YCPAnEZaIAD0wMQ11oqnu6wgCCIiD4+COJy+F08P3B+AATAAGe5hP6IAAseIeQA)
