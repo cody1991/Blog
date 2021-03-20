@@ -1,0 +1,1142 @@
+---
+layout: post
+title: Vue3 + TypeScript + Vuex4 初尝试
+tags: [Vue]
+---
+
+一个简单的任务列表构建，本文的代码在 [vue3-typescript](https://github.com/cody1991/vue3-typescript) 可自行下载
+
+# 准备工作
+
+使用 Vue CLI 脚手架工具快速创建项目
+
+```sh
+sudo yarn global add @vue/cli
+
+vue create vue3-ts
+```
+
+手动选择我们想要的配置
+
+```sh
+Vue CLI v4.5.12
+? Please pick a preset: Manually select features
+? Check the features needed for your project: Choose Vue version, Babel, TS, Vuex, Linter
+? Choose a version of Vue.js that you want to start the project with 3.x (Preview)
+? Use class-style component syntax? No
+? Use Babel alongside TypeScript (required for modern mode, auto-detected polyfills, transpiling JSX)? Yes
+? Pick a linter / formatter config: Basic
+? Pick additional lint features: Lint on save
+? Where do you prefer placing config for Babel, ESLint, etc.? In dedicated config files
+? Save this as a preset for future projects? No
+```
+
+之后进入到我们的 `vue3-ts` 文件夹运行 `yarn serve` 就可以启动项目了，看到我们熟悉的界面
+
+![](/img/posts/vue3-ts-1.png)
+
+接着安装我们的 `UI` 库，并不想自己写样式。。
+
+```sh
+yarn add bulma
+```
+
+调整下 `App.vue` 文件，引入 `bulma`
+
+```vue
+<template>
+  <div>App</div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'App',
+});
+</script>
+
+<style>
+@import '~bulma/css/bulma.css';
+</style>
+```
+
+# 需求明确
+
+然后明确下我们这个项目的任务，其实就是增删改查任务，`CURD boy`~
+
+# Vuex
+
+`Vuex` 里面的四要素： `Store` `Getters` `Actions` `Mutations`
+
+`States` 状态都存储在 `Store` 里面，我们只能同步通过 `Mutations` 去修改 `States`，异步修改 `States` 的话可以使用 `Actions` 在回调中调用 `Mutations` 修改 `States`，`Getters` 是方便获取 `States` 的一种手段，类似于 `Computed`
+
+开始构建我们的 `Store` 吧～
+
+## States
+
+```ts
+// store/state.ts
+export type TaskItem = {
+  id: number;
+  title: string;
+  description: string;
+  createdBy: string;
+  assignedTo: string;
+  completed: boolean;
+  editing: boolean;
+};
+
+export type State = {
+  loading: boolean;
+  tasks: TaskItem[];
+  showCreateModal: boolean;
+  showEditModal: boolean;
+  editModalTaskId: number | undefined;
+  showTaskModal: boolean;
+  showTaskId: number | undefined;
+};
+
+export const state: State = {
+  loading: false,
+  tasks: [],
+  showCreateModal: false,
+  showEditModal: false,
+  editModalTaskId: undefined,
+  showTaskModal: false,
+  showTaskId: undefined,
+};
+```
+
+之后引入就好了
+
+```ts
+import { createStore } from 'vuex';
+import { state } from './state';
+export default createStore({
+  state,
+  mutations: {},
+  actions: {},
+  modules: {},
+});
+```
+
+## Mutations
+
+之后编写下我们可以修改状态的方法。
+
+1. 编写我们需要修改状态的方法枚举值
+2. 编写 `Mutations` 相关方法的类型定义
+3. 实现 `Mutations` 相关方法
+
+```ts
+import { MutationTree } from 'vuex';
+
+import { State, TaskItem } from './state';
+
+export enum MutationType {
+  CreateTask = 'CREATE_TASK',
+  SetTasks = 'SET_TASKS',
+  CompleteTask = 'COMPLETE_TASK',
+  RemoveTask = 'REMOVE_TASK',
+  EditTask = 'EDIT_TASK',
+  UpdateTask = `UPDATE_TASK`,
+  SetLoading = 'SET_LOADING',
+  SetCreateModal = 'SET_CREATE_MODAL',
+  SetEditModal = 'SET_EDIT_MODAL',
+  SetTaskModal = 'SET_TASK_MODAL',
+}
+
+export type Mutations = {
+  [MutationType.CreateTask](state: State, task: TaskItem): void;
+  [MutationType.SetTasks](state: State, tasks: TaskItem[]): void;
+  [MutationType.CompleteTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ): void;
+  [MutationType.RemoveTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ): void;
+  [MutationType.EditTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ): void;
+  [MutationType.UpdateTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ): void;
+  [MutationType.SetLoading](state: State, value: boolean): void;
+  [MutationType.SetCreateModal](state: State, value: boolean): void;
+  [MutationType.SetEditModal](
+    state: State,
+    value: {
+      showModal: boolean;
+      taskId: number | undefined;
+    }
+  ): void;
+  [MutationType.SetTaskModal](
+    state: State,
+    value: {
+      showModal: boolean;
+      taskId: number | undefined;
+    }
+  ): void;
+};
+
+export const mutations: MutationTree<State> & Mutations = {
+  [MutationType.CreateTask](state: State, task: TaskItem) {
+    state.tasks.push(task);
+  },
+  [MutationType.SetTasks](state: State, tasks: TaskItem[]) {
+    state.tasks = tasks;
+  },
+  [MutationType.CompleteTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ) {
+    const taskIndex = state.tasks.findIndex((ele) => ele.id === task.id);
+    if (taskIndex > -1) {
+      state.tasks[taskIndex] = {
+        ...state.tasks[taskIndex],
+        ...task,
+      };
+    }
+  },
+  [MutationType.RemoveTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ) {
+    const taskIndex = state.tasks.findIndex((ele) => ele.id === task.id);
+    if (taskIndex > -1) {
+      state.tasks.splice(taskIndex, 1);
+    }
+  },
+  [MutationType.EditTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ) {
+    const taskIndex = state.tasks.findIndex((ele) => ele.id === task.id);
+    if (taskIndex > -1) {
+      state.tasks[taskIndex] = {
+        ...state.tasks[taskIndex],
+        editing: !state.tasks[taskIndex].editing,
+      };
+      console.log('tasking editing', state.tasks[taskIndex]);
+    }
+  },
+  [MutationType.UpdateTask](
+    state: State,
+    task: Partial<TaskItem> & {
+      id: number;
+    }
+  ) {
+    const taskIndex = state.tasks.findIndex((ele) => ele.id === task.id);
+    if (taskIndex > -1) {
+      state.tasks[taskIndex] = {
+        ...state.tasks[taskIndex],
+        ...task,
+      };
+    }
+  },
+  [MutationType.SetLoading](state: State, value: boolean) {
+    state.loading = value;
+  },
+  [MutationType.SetCreateModal](state: State, value: boolean) {
+    state.showCreateModal = value;
+  },
+  [MutationType.SetEditModal](
+    state: State,
+    value: {
+      showModal: boolean;
+      taskId: number | undefined;
+    }
+  ) {
+    state.showEditModal = value.showModal;
+    state.editModalTaskId = value.taskId;
+  },
+  [MutationType.SetTaskModal](
+    state: State,
+    value: {
+      showModal: boolean;
+      taskId: number | undefined;
+    }
+  ) {
+    state.showTaskModal = value.showModal;
+    state.showTaskId = value.taskId;
+  },
+};
+```
+
+再在 `store/index.ts` 倒入就好了
+
+```ts
+import { createStore } from 'vuex';
+import { state } from './state';
+import { mutations } from './mutations';
+export default createStore({
+  state,
+  mutations,
+  actions: {},
+  modules: {},
+});
+```
+
+## Actions
+
+我们接下来编写 `Actions` 相关的方法
+
+```ts
+import { ActionContext, ActionTree } from 'vuex';
+
+import { Mutations, MutationType } from './mutations';
+import { State } from './state';
+
+export enum ActionTypes {
+  GetTaskItems = 'GET_Task_ITEMS',
+  SetCreateModal = 'SET_CREATE_MODAL',
+  SetEditModal = 'SET_EDIT_MODAL',
+}
+
+type ActionArguments = Omit<ActionContext<State, State>, 'commit'> & {
+  commit<K extends keyof Mutations>(
+    key: K,
+    payload: Parameters<Mutations[K]>[1]
+  ): ReturnType<Mutations[K]>;
+};
+
+export type Actions = {
+  [ActionTypes.GetTaskItems](context: ActionArguments): void;
+  [ActionTypes.SetCreateModal](context: ActionArguments): void;
+  [ActionTypes.SetEditModal](context: ActionArguments): void;
+};
+
+const sleep = (ms: number) =>
+  new Promise((res) => setTimeout(() => res(true), ms));
+
+export const actions: ActionTree<State, State> & Actions = {
+  async [ActionTypes.GetTaskItems]({ commit }) {
+    commit(MutationType.SetLoading, true);
+    await sleep(1000);
+    commit(MutationType.SetLoading, false);
+
+    commit(MutationType.SetTasks, [
+      {
+        id: 1,
+        title: 'learn Vue3 + TypeScript + Vuex4',
+        description: 'good good study, day day up',
+        createdBy: 'codytang',
+        assignedTo: 'codytang',
+        completed: false,
+        editing: false,
+      },
+      {
+        id: 2,
+        title: 'miaomiaomiao',
+        description: '喵咪～～～',
+        createdBy: '🐱',
+        assignedTo: '🐱',
+        completed: false,
+        editing: false,
+      },
+    ]);
+  },
+  [ActionTypes.SetCreateModal]({ commit }) {
+    commit(MutationType.SetCreateModal, true);
+  },
+  [ActionTypes.SetEditModal]({ commit }) {
+    commit(MutationType.SetEditModal, {
+      showModal: true,
+      taskId: 1,
+    });
+  },
+};
+```
+
+再在 `store/index.ts` 倒入就好了
+
+```ts
+import { createStore } from 'vuex';
+import { state } from './state';
+import { mutations } from './mutations';
+import { actions } from './actions';
+export default createStore({
+  state,
+  mutations,
+  actions,
+  modules: {},
+});
+```
+
+## Getters
+
+我们定义几个 `Getters` 辅助函数帮助我们快速获取一些值
+
+```ts
+import { GetterTree } from 'vuex';
+import { State, TaskItem } from './state';
+
+export type Getters = {
+  completedTaskCount(state: State): number;
+  totalTaskCount(state: State): number;
+  getTaskById(state: State): (id: number) => TaskItem | undefined;
+};
+
+export const getters: GetterTree<State, State> & Getters = {
+  completedTaskCount(state: State) {
+    return state.tasks.filter((item) => item.completed).length;
+  },
+  totalTaskCount(state: State) {
+    return state.tasks.length;
+  },
+  getTaskById: (state: State) => (id: number) => {
+    return state.tasks.find((task) => task.id === id);
+  },
+};
+```
+
+再在 `store/index.ts` 倒入就好了
+
+```ts
+import { createStore } from 'vuex';
+import { state } from './state';
+import { mutations } from './mutations';
+import { actions } from './actions';
+import { getters } from './getters';
+export default createStore({
+  state,
+  mutations,
+  actions,
+  getters,
+  modules: {},
+});
+```
+
+基本的几个要素都齐全了，我们再来修改下我们的 `Store`
+
+## Store
+
+调整成为下面这样
+
+```ts
+import {
+  createStore,
+  Store as VuexStore,
+  CommitOptions,
+  DispatchOptions,
+  createLogger,
+} from 'vuex';
+import { State, state } from './state';
+import { Mutations, mutations } from './mutations';
+import { Actions, actions } from './actions';
+import { Getters, getters } from './getters';
+
+export const store = createStore<State>({
+  plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
+  state,
+  mutations,
+  actions,
+  getters,
+  modules: {},
+});
+
+export function useStore() {
+  return store as Store;
+}
+
+export type Store = Omit<
+  VuexStore<State>,
+  'getters' | 'commit' | 'dispatch'
+> & {
+  commit<K extends keyof Mutations, P extends Parameters<Mutations[K]>[1]>(
+    key: K,
+    payload: P,
+    options?: CommitOptions
+  ): ReturnType<Mutations[K]>;
+} & {
+  dispatch<K extends keyof Actions>(
+    key: K,
+    payload?: Parameters<Actions[K]>[1],
+    options?: DispatchOptions
+  ): ReturnType<Actions[K]>;
+} & {
+  getters: {
+    [K in keyof Getters]: ReturnType<Getters[K]>;
+  };
+};
+```
+
+另外因为修改了导出的行为， `main.ts` 也需要同步修改
+
+```ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import { store } from './store';
+
+createApp(App).use(store).mount('#app');
+```
+
+状态管理部分算是完成了，我们开始编写我们的 `App` 去使用它
+
+# App
+
+接下来简单改写了一下 `App.vue` 文件。首先看模板，其实就是 `loading` 的时候展示 `loading...`提示，`loading` 结束之后展示一些任务相关的信息
+
+另外我们看到脚本部分，`Vue3` 和 `Vue2` 区别还是很大的，这些是 `Vue3` 里面新增的 `Composition Api`
+
+```vue
+<template>
+  <div class="container mx-auto mt-4">
+    <h1 class="is-size-3 has-text-centered p-2 has-text-weight-bold">
+      任务管理应用
+    </h1>
+    <div v-if="loading">
+      <h3 class="has-text-centered mt-4">Loading...</h3>
+    </div>
+    <div v-else>
+      <p class="has-text-centered mt-2">
+        {{ completedCount }} of {{ totalTaskCount }} completed.
+      </p>
+      <!-- <TaskList /> -->
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, computed, onMounted } from 'vue';
+import { useStore } from './store';
+import { ActionTypes } from './store/actions';
+
+export default defineComponent({
+  name: 'App',
+  setup() {
+    const store = useStore();
+    const loading = computed(() => store.state.loading);
+    const completedCount = computed(() => store.getters.completedTaskCount);
+    const totalTaskCount = computed(() => store.getters.totalTaskCount);
+
+    onMounted(() => store.dispatch(ActionTypes.GetTaskItems));
+
+    return {
+      loading,
+      completedCount,
+      totalTaskCount,
+    };
+  },
+});
+</script>
+
+<style>
+@import '~bulma/css/bulma.css';
+</style>
+```
+
+接下来编写 `TaskList` 组件
+
+## TaskList
+
+先把大概的结构写出来，再慢慢补充细节上去
+
+```vue
+<template>
+  <table class="table">
+    <thead>
+      <tr>
+        <th><abbr title="Position">Task Id</abbr></th>
+        <th>Completed</th>
+        <th>Task</th>
+        <th><abbr title="Won">Created By</abbr></th>
+        <th><abbr title="Drawn">Assigned To</abbr></th>
+        <th><abbr title="Lost">Actions</abbr></th>
+      </tr>
+    </thead>
+    <tbody v-if="tasks">
+      <template v-for="task in tasks" :key="task.id">
+        <!-- <TaskListItem v-bind="task" /> -->
+      </template>
+    </tbody>
+    <tfoot>
+      <!-- <CreateModal v-show="showCreateModal"></CreateModal> -->
+      <button class="button is-link" @click="setModal">Create Task</button>
+    </tfoot>
+  </table>
+  <!-- <EditModal v-if="showEditModal" :id="editTaskId"></EditModal> -->
+  <!-- <TaskItem v-if="showTaskModal" :id="showTaskId"></TaskItem> -->
+</template>
+
+<script lang="ts">
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../store';
+import { MutationType } from '@/store/mutations';
+export default defineComponent({
+  setup() {
+    const store = useStore();
+    const setModal = () => store.commit(MutationType.SetCreateModal, true);
+    const tasks = computed(() => store.state.tasks);
+    const showCreateModal = computed(() => store.state.showCreateModal);
+
+    const showEditModal = computed(() => store.state.showEditModal);
+    const editTaskId = computed(() => store.state.editModalTaskId);
+
+    const showTaskModal = computed(() => store.state.showTaskModal);
+    const showTaskId = computed(() => store.state.showTaskId);
+
+    return {
+      showCreateModal,
+      setModal,
+      tasks,
+      showEditModal,
+      showTaskModal,
+      editTaskId,
+      showTaskId,
+    };
+  },
+});
+</script>
+
+<style>
+table {
+  width: 100%;
+}
+.fa {
+  font-size: 1.2rem;
+  margin-left: 15px;
+}
+.fa:hover {
+  font-size: 1.4rem;
+}
+</style>
+```
+
+## TaskListItem
+
+编写任务列表中每一项的组件
+
+```vue
+<template>
+  <tr>
+    <th>{{ id }}</th>
+    <td>
+      <input
+        type="checkbox"
+        :checked="completed"
+        @change="toggleCompletion()"
+      />
+    </td>
+    <td>{{ title }} <strong>(C)</strong></td>
+    <td>{{ createdBy }}</td>
+    <td>{{ assignedTo }}</td>
+    <td>
+      <span @click="viewTask()"> View </span>
+      <span @click="editTask()"> Edit </span>
+      <span @click="removeTask()"> Remove </span>
+    </td>
+  </tr>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { useStore } from '../store';
+import { MutationType } from '../store/mutations';
+
+export default defineComponent({
+  props: {
+    id: { type: Number, required: true },
+    title: { type: String, required: true },
+    createdBy: { type: String, required: true },
+    assignedTo: { type: String, required: true },
+    completed: { type: Boolean, required: true },
+  },
+  setup(props) {
+    const store = useStore();
+
+    const toggleCompletion = () => {
+      store.commit(MutationType.CompleteTask, {
+        id: props.id,
+        completed: !props.completed,
+      });
+    };
+
+    const viewTask = () => {
+      store.commit(MutationType.SetTaskModal, {
+        taskId: props.id,
+        showModal: true,
+      });
+    };
+
+    const removeTask = () => {
+      store.commit(MutationType.RemoveTask, {
+        id: props.id,
+      });
+    };
+
+    const editTask = () => {
+      store.commit(MutationType.SetEditModal, {
+        taskId: props.id,
+        showModal: true,
+      });
+    };
+
+    return {
+      toggleCompletion,
+      viewTask,
+      removeTask,
+      editTask,
+    };
+  },
+});
+</script>
+```
+
+## TaskItem
+
+接下来写下点击查看任务时候的蒙层组件 `TaskItem`
+
+这个组件主要处理信息的展示，以及关掉弹窗的逻辑
+
+```vue
+<template>
+  <div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-4">标题: {{ task.title }}</p>
+            </div>
+          </div>
+          <div class="content">
+            <p class="subtitle is-6"><b>分配给:</b> {{ task.assignedTo }}</p>
+            <p class="subtitle is-6"><b>创建人:</b> {{ task.createdBy }}</p>
+            <p class="subtitle is-6">描述: {{ task.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      class="modal-close is-large"
+      @click="closeModal"
+      aria-label="close"
+    ></button>
+  </div>
+</template>
+<script lang="ts">
+import { MutationType } from '@/store/mutations';
+import { computed, defineComponent } from 'vue';
+import { useStore } from 'vuex';
+
+export default defineComponent({
+  props: {
+    id: {
+      type: Number,
+      required: true,
+    },
+  },
+  setup(props) {
+    console.log(1);
+    const store = useStore();
+    const task = computed(() => store.getters.getTaskById(Number(props.id)));
+
+    const closeModal = () => {
+      store.commit(MutationType.SetTaskModal, {
+        showModal: false,
+        taskId: undefined,
+      });
+    };
+
+    return {
+      task,
+      closeModal,
+    };
+  },
+});
+</script>
+```
+
+## CreateModal
+
+接下来我们处理下创建任务的弹窗
+
+`...toRefs(state)` 可以把响应式对象的属性，平铺出来，继续保持响应式，直接在模板中使用
+
+```vue
+<template>
+  <div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-content">
+          <form @submit.prevent="createTask">
+            <div class="field">
+              <label class="label">Task Title</label>
+              <div class="control">
+                <input
+                  v-model="title"
+                  class="input"
+                  type="text"
+                  placeholder="Enter task"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Description</label>
+              <div class="control">
+                <textarea
+                  v-model="description"
+                  class="textarea"
+                  placeholder="Textarea"
+                ></textarea>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Assigned By</label>
+              <div class="control">
+                <input
+                  v-model="createdBy"
+                  class="input"
+                  type="text"
+                  placeholder="Enter Assigner's name"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Assigned To</label>
+              <div class="control">
+                <input
+                  v-model="assignedTo"
+                  class="input"
+                  type="text"
+                  placeholder="Enter task creator's name"
+                />
+              </div>
+            </div>
+            <div class="field is-grouped">
+              <div class="control">
+                <button type="submit" class="button is-link">Submit</button>
+              </div>
+              <div class="control" @click="closeModal">
+                <button class="button is-link is-light">Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <button
+      class="modal-close is-large"
+      @click="closeModal"
+      aria-label="close"
+    ></button>
+  </div>
+</template>
+<script lang="ts">
+import { MutationType } from '@/store/mutations';
+import { defineComponent, reactive, toRefs } from 'vue';
+import { useStore } from 'vuex';
+
+export default defineComponent({
+  setup() {
+    const store = useStore();
+    const state = reactive({
+      title: '',
+      description: '',
+      createdBy: '',
+      assignedTo: '',
+    });
+
+    const closeModal = () => {
+      store.commit(MutationType.SetCreateModal, false);
+    };
+
+    const createTask = () => {
+      if (
+        !state.title ||
+        !state.description ||
+        !state.createdBy ||
+        !state.assignedTo
+      )
+        return;
+
+      const task = {
+        id: Date.now(),
+        title: state.title,
+        description: state.description,
+        createdBy: state.createdBy,
+        assignedTo: state.assignedTo,
+        completed: false,
+        editing: false,
+      };
+
+      store.commit(MutationType.CreateTask, task);
+      state.title = '';
+      state.createdBy = '';
+      state.assignedTo = '';
+      state.description = '';
+    };
+
+    return {
+      state,
+      closeModal,
+      createTask,
+      ...toRefs(state),
+    };
+  },
+});
+</script>
+```
+
+## EditModal
+
+再来看看编辑的弹窗
+
+```vue
+<template>
+  <div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-content">
+          <form @submit.prevent="updateTask">
+            <h1>Edit Modal</h1>
+            <div class="field">
+              <label class="label">Task Title</label>
+              <div class="control">
+                <input
+                  v-model="title"
+                  class="input"
+                  type="text"
+                  placeholder="Enter task"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Description</label>
+              <div class="control">
+                <textarea
+                  v-model="description"
+                  class="textarea"
+                  placeholder="Textarea"
+                ></textarea>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Assigned By</label>
+              <div class="control">
+                <input
+                  v-model="createdBy"
+                  class="input"
+                  type="text"
+                  placeholder="Enter Assigner's name"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Assigned To</label>
+              <div class="control">
+                <input
+                  v-model="assignedTo"
+                  class="input"
+                  type="text"
+                  placeholder="Enter task creator's name"
+                />
+              </div>
+            </div>
+            <div class="field is-grouped">
+              <div class="control">
+                <button type="submit" class="button is-link">Submit</button>
+              </div>
+              <div class="control" @click="closeModal">
+                <button class="button is-link is-light">Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <button
+          class="modal-close is-large"
+          @click="closeModal"
+          aria-label="close"
+        ></button>
+      </div>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import { useStore } from '@/store';
+import { MutationType } from '@/store/mutations';
+import { defineComponent, onMounted, reactive, toRefs } from 'vue';
+
+export default defineComponent({
+  props: {
+    id: {
+      type: Number,
+      required: true,
+    },
+  },
+  setup(props) {
+    const store = useStore();
+    const state = reactive({
+      title: '',
+      description: '',
+      createdBy: '',
+      assignedTo: '',
+    });
+
+    const setFields = () => {
+      const task = store.getters.getTaskById(Number(props.id));
+      if (task) {
+        const { title, description, createdBy, assignedTo } = task;
+        state.title = title;
+        state.description = description;
+        state.createdBy = createdBy;
+        state.assignedTo = assignedTo;
+      }
+    };
+
+    const closeModal = () => {
+      store.commit(MutationType.SetEditModal, {
+        showModal: false,
+        taskId: undefined,
+      });
+    };
+
+    onMounted(() => setFields());
+
+    const updateTask = () => {
+      if (
+        !state.title ||
+        !state.description ||
+        !state.createdBy ||
+        !state.assignedTo
+      )
+        return;
+
+      const task = {
+        id: props.id,
+        title: state.title,
+        description: state.description,
+        createdBy: state.createdBy,
+        assignedTo: state.assignedTo,
+        completed: false,
+        editing: false,
+      };
+
+      store.commit(MutationType.UpdateTask, task);
+
+      state.title = '';
+      state.createdBy = '';
+      state.assignedTo = '';
+      state.description = '';
+
+      closeModal();
+    };
+
+    return {
+      ...toRefs(state),
+      closeModal,
+      updateTask,
+    };
+  },
+});
+</script>
+```
+
+## 再续 TaskList
+
+前面注释的组件现在都补上了，所以最终组件展示成下面这样
+
+```vue
+<template>
+  <table class="table">
+    <thead>
+      <tr>
+        <th><abbr title="Position">Task Id</abbr></th>
+        <th>Completed</th>
+        <th>Task</th>
+        <th><abbr title="Won">Created By</abbr></th>
+        <th><abbr title="Drawn">Assigned To</abbr></th>
+        <th><abbr title="Lost">Actions</abbr></th>
+      </tr>
+    </thead>
+    <tbody v-if="tasks">
+      <template v-for="task in tasks" :key="task.id">
+        <TaskListItem v-bind="task" />
+      </template>
+    </tbody>
+    <tfoot>
+      <CreateModal v-show="showCreateModal"></CreateModal>
+      <button class="button is-link" @click="setModal">Create Task</button>
+    </tfoot>
+  </table>
+  <EditModal v-if="showEditModal" :id="editTaskId"></EditModal>
+  <TaskItem v-if="showTaskModal" :id="showTaskId"></TaskItem>
+</template>
+
+<script lang="ts">
+import { defineComponent, computed } from 'vue';
+import { useStore } from '../store';
+import { MutationType } from '@/store/mutations';
+import TaskListItem from './TaskListItem.vue';
+import TaskItem from './TaskItem.vue';
+import CreateModal from './CreateModal.vue';
+import EditModal from './EditModal.vue';
+export default defineComponent({
+  components: {
+    TaskListItem,
+    TaskItem,
+    CreateModal,
+    EditModal,
+  },
+  setup() {
+    const store = useStore();
+    const setModal = () => store.commit(MutationType.SetCreateModal, true);
+    const tasks = computed(() => store.state.tasks);
+    const showCreateModal = computed(() => store.state.showCreateModal);
+
+    const showEditModal = computed(() => store.state.showEditModal);
+    const editTaskId = computed(() => store.state.editModalTaskId);
+
+    const showTaskModal = computed(() => store.state.showTaskModal);
+    const showTaskId = computed(() => store.state.showTaskId);
+
+    return {
+      showCreateModal,
+      setModal,
+      tasks,
+      showEditModal,
+      showTaskModal,
+      editTaskId,
+      showTaskId,
+    };
+  },
+});
+</script>
+
+<style>
+table {
+  width: 100%;
+}
+</style>
+```
+
+## 结语
+
+这篇文章整理自 [Building Web Apps with Vue 3 composition API + Typescript + Vuex(4.0)](https://soshace.com/building-web-apps-with-vue-3-composition-api-typescript-vuex4-0/)
+
+过程也发现了原来的文章展示出来的代码有一些问题，在学习的过程中进行了修改，保证案例可正常运行～
+
+over ~
