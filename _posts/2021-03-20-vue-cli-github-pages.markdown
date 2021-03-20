@@ -32,7 +32,7 @@ module.exports = {
 
 > If you are deploying to https://<USERNAME>.github.io/<REPO>/, (i.e. your repository is at https://github.com/<USERNAME>/<REPO>), set publicPath to "/<REPO>/"
 
-## 创建 deploy.sh 文件
+## 创建 deploy.sh 文件 (手动的方式)
 
 按照官网的说明来也很简单就写好了
 
@@ -64,7 +64,7 @@ git push -f git@github.com:cody1991/vue3-typescript.git master:gh-pages
 cd -
 ```
 
-## Using Travis CI for automatic updates
+## Using Travis CI for automatic updates (自动的方式)
 
 可以利用 Travis CI 进行自动更新和构建
 
@@ -117,6 +117,15 @@ node_js:
 cache: npm
 
 script: npm run build
+
+after_success:
+  - cd dist
+  - git init
+  - git add .
+  - git config user.name cody1991
+  - git config user.email "476490767@qq.com"
+  - git commit -m "自动更新pages"
+  - git push --force --quiet "https://${GITHUB_TOKEN}@github.com/cody1991/vue3-typescript" master:gh-pages
 
 deploy:
   provider: pages
