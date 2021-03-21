@@ -17,7 +17,7 @@ description: '记录下来，变成自己的东西'
   </a>
   <p class="post-meta">
     Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{%
-    endif %} on {{ post.date | date: "%B %-d, %Y" }}
+    endif %} on {{ post.date | date: "%F" }}
   </p>
 </div>
 <hr />
@@ -36,7 +36,7 @@ true and post.hidden != true %}
   </a>
   <p class="post-meta">
     Posted by {% if post.author %}{{ post.author }}{% else %}{{ site.title }}{%
-    endif %} on {{ post.date | date: "%B %-d, %Y" }}
+    endif %} on <bold>{{ post.date | date: "%F" }}</bold>
   </p>
 </div>
 <hr />
