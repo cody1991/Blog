@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 《浏览器工作原理与实践》笔记
+title: 《浏览器工作原理与实践》系列笔记 - 宏观视觉上的浏览器
 tags: [browser]
 ---
 
@@ -8,7 +8,7 @@ tags: [browser]
 
 ## 1.1 - Chrome 架构：仅仅打开了 1 个页面，为什么有 4 个进程
 
-![](/img/posts/browser/1.png)
+![](/img/posts/browser/macro/1.png)
 
 打开浏览器的任务管理器，有时候会很好奇为什么只开了一两个标签页面，但是进程却那么多
 
@@ -22,7 +22,7 @@ tags: [browser]
 
 看看一个进程里面单线程和多线程处理问题的示例图
 
-![](/img/posts/browser/2.png)
+![](/img/posts/browser/macro/2.png)
 
 多线程可以并行运算提高效率，是不是感觉开启多线程是不错的选择
 
@@ -30,7 +30,7 @@ tags: [browser]
 
 1. 进程任一一个线程崩溃的话，整个进程都会崩溃
 2. 线程共享进程中的数据
-   ![](/img/posts/browser/3.png)
+   ![](/img/posts/browser/macro/3.png)
 3. 进程关闭后，所有占用的资源都会回收
 4. 进程之间相互独立，彼此之间数据是严格独立的，即使挂了也不会影响其他进程
 
@@ -38,7 +38,7 @@ tags: [browser]
 
 单进程浏览器：所有功能模块都运行在同一个进程中，包括网络，插件，JavaScript 运行环境，渲染引擎和页面，如下图，是一种单进程多线程的模式
 
-![](/img/posts/browser/4.png)
+![](/img/posts/browser/macro/4.png)
 
 这种模式有很多问题：
 
@@ -54,7 +54,7 @@ tags: [browser]
 
 前面说到的单进程浏览器时代，指的是 07 年前的，看下 08 年 谷歌发布的一个结构图
 
-![](/img/posts/browser/5.png)
+![](/img/posts/browser/macro/5.png)
 
 这里页面运行在单独的进程内，插件也在单独的进程内，他们通过 IPC 进行通信
 
@@ -64,7 +64,7 @@ tags: [browser]
 
 #### 目前多进程浏览器架构
 
-![](/img/posts/browser/6.png)
+![](/img/posts/browser/macro/6.png)
 
 现在包括了
 
@@ -93,11 +93,11 @@ tags: [browser]
 
 最终把 UI，数据库，文件，设备，网络等模块重构为基础服务，看看现在的模型图：
 
-![](/img/posts/browser/7.png)
+![](/img/posts/browser/macro/7.png)
 
 也提供了灵活的弹性架构，性能好的设备上用多进程的方式运行基础服务，如果性能受限，则把这些基础服务合并到一个进程中，节省内存的占用，如下图
 
-![](/img/posts/browser/8.png)
+![](/img/posts/browser/macro/8.png)
 
 ### 总结
 
@@ -131,7 +131,7 @@ tags: [browser]
 
 看下下面一个简单的网络结构示意图（有四层互联网结构，七层互联网结构等等，看看划分的标准了）
 
-![](/img/posts/browser/9.png)
+![](/img/posts/browser/macro/9.png)
 
 我们看下一个数据包从 A 到 B 是如何进行的
 
@@ -154,7 +154,7 @@ IP 通过 IP 地址信息把数据包发送到指定的电脑，而 UDP 通过�
 
 下图新增了传输层：
 
-![](/img/posts/browser/10.png)
+![](/img/posts/browser/macro/10.png)
 
 我们修改和扩展下前面的流程
 
@@ -178,13 +178,13 @@ IP 通过 IP 地址信息把数据包发送到指定的电脑，而 UDP 通过�
 
 TCP 的流程，和 UDP 很像，但是 TCP 的头信息中多包含了包的序号，用于排序组装数据包
 
-![](/img/posts/browser/11.png)
+![](/img/posts/browser/macro/11.png)
 
 我们看看 TCP 是如何重传机制和数据包排序功能的
 
 下面是 TCP 传输的生命周期，包括了建立连接，数据传输，断开连接三个阶段
 
-![](/img/posts/browser/12.png)
+![](/img/posts/browser/macro/12.png)
 
 1. 建立连接：通过三次握手，建立客户端和服务端的连接，TCP 提供面向连接的通信传输。面向连接的意思是，数据通信前做好两端的准备工作。三次握手指的是建立一个 TCP 连接的时候，客户端和服务端要发送三个数据包确认连接的建立
 2. 数据传输：接收端需要对每个数据包进行确认操作，即接收到数据包以后要向发送方发送确认数据包。所以如果发送发发送了数据包以后，一定时间内没有收到确认数据包，判定数据丢失，并触发重发机制。一个大文件在传输过程会拆成很多小的数据包，到达接收方以后，会按照 TCP 头信息的序号把它们进行排序，组成完整的数据
@@ -233,7 +233,7 @@ GET /index.html HTTP1.1
 
 HTTP 是应用层协议，封装了请求的文本信息，TCP/IP 传输 协议让数据能在网络上传输，浏览器先需要通过 TCP 和服务器建立连接，而 HTTP 的内容传输是在 TCP 的数据传输阶段进行的，我们看看下图
 
-![](/img/posts/browser/13.png)
+![](/img/posts/browser/macro/13.png)
 
 所以：
 
@@ -263,7 +263,7 @@ HTTP 是应用层协议，封装了请求的文本信息，TCP/IP 传输 协议�
 
 建立好 TCP 连接后，我们进入了数据传输阶段，我们看看浏览器是怎么发送 HTTP 请求的
 
-![](/img/posts/browser/14.png)
+![](/img/posts/browser/macro/14.png)
 
 请求行包含了请求方法，请求 URL，和 HTTP 版本号
 
@@ -281,7 +281,7 @@ HTTP 是应用层协议，封装了请求的文本信息，TCP/IP 传输 协议�
 
 一般返回的信息如下图
 
-![](/img/posts/browser/15.png)
+![](/img/posts/browser/macro/15.png)
 
 返回了响应行，包括了协议版本和状态码
 
@@ -305,7 +305,7 @@ Connection:Keep-Alive
 
 有时候我们打开一个网站，会自动跳转到另外一个地址，这是一个重定向的操作。比如下图
 
-![](/img/posts/browser/16.png)
+![](/img/posts/browser/macro/16.png)
 
 返回的状态码是 301，告诉浏览器我需要重定向到另外一个地址，包含在了响应头部 Location 字段里面，浏览器就会重新导航到这个地址
 
@@ -317,7 +317,7 @@ Connection:Keep-Alive
 
 我们看看资源的缓存是怎样的：
 
-![](/img/posts/browser/17.png)
+![](/img/posts/browser/macro/17.png)
 
 我们看下浏览器是怎么缓存数据的
 
@@ -348,19 +348,19 @@ HTTP 本身是无状态的，那浏览器是怎么保持用户登陆信息的？
 
 服务器会解析请求头中的登陆信息，判断用户的登陆信息是否有效，有效的话直接返回对应的资源
 
-![](/img/posts/browser/18.png)
+![](/img/posts/browser/macro/18.png)
 
 ### 总结
 
 下图是 HTTP 请求的示意图
 
-![](/img/posts/browser/19.png)
+![](/img/posts/browser/macro/19.png)
 
 ## 1.4 - 导航流程：从输入 URL 到页面展示这中间发生了什么
 
 经典面试题目，涉及到了网络，操作系统，Web 等一系列的问题。我们先在大局上看看整体的流程是怎样的：
 
-![](/img/posts/browser/20.png)
+![](/img/posts/browser/macro/20.png)
 
 需要各个浏览器的进程进行协作
 
@@ -417,7 +417,7 @@ HTTP 本身是无状态的，那浏览器是怎么保持用户登陆信息的？
 
 比如更新了下面的内容：
 
-![](/img/posts/browser/21.png)
+![](/img/posts/browser/macro/21.png)
 
 所以输入了地址，还有一段时间显示的老得页面
 
@@ -453,7 +453,7 @@ HTTP 本身是无状态的，那浏览器是怎么保持用户登陆信息的？
 
 ## 1.5 - 渲染流程：HTML、CSS 和 JavaScript 是如何变成页面的
 
-![](/img/posts/browser/22.png)
+![](/img/posts/browser/macro/22.png)
 
 浏览器是如果通过解析 HTML CSS JavaScript 文件，呈现出我们的网页的？
 
@@ -465,7 +465,7 @@ HTTP 本身是无状态的，那浏览器是怎么保持用户登陆信息的？
 
 渲染机制很复杂，化为为多个阶段，输入的 HTML 文件通过这些阶段最终输出像素，我们把这个流程称为渲染流水线，如下图
 
-![](/img/posts/browser/23.png)
+![](/img/posts/browser/macro/23.png)
 
 流水线有下面几个阶段
 
@@ -492,7 +492,7 @@ HTTP 本身是无状态的，那浏览器是怎么保持用户登陆信息的？
 
 下图是构建 DOM 树的过程
 
-![](/img/posts/browser/24.png)
+![](/img/posts/browser/macro/24.png)
 
 输入是 HTML 的文本内容，处理过程是使用 HTML 解析器进行解析，最终输出 DOM 树
 
@@ -518,7 +518,7 @@ CSS 主要有三个来源
 
 属性值有比如 2em bold blue 等等，不容易被渲染引擎理解，所以要转成浏览器所能理解的标准化计算值，这就是标准化过程，比如下图：
 
-![](/img/posts/browser/25.png)
+![](/img/posts/browser/macro/25.png)
 
 #### 计算出 DOM 中每个节点的具体样式
 
@@ -547,9 +547,9 @@ div p {
 
 最后会变成这样：
 
-![](/img/posts/browser/26.png)
+![](/img/posts/browser/macro/26.png)
 
-![](/img/posts/browser/27.png)
+![](/img/posts/browser/macro/27.png)
 
 第二个是层叠的规则，定义了如何合并来自多个源的属性值的算法
 
@@ -565,7 +565,7 @@ div p {
 
 DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一个可见元素布局树，我们看看布局树的生成过程：
 
-![](/img/posts/browser/28.png)
+![](/img/posts/browser/macro/28.png)
 
 它主要做的事情是遍历 DOM 节点，把可见节点加到布局树中
 
@@ -579,7 +579,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 下图是前面这部分的一个简单总结
 
-![](/img/posts/browser/29.png)
+![](/img/posts/browser/macro/29.png)
 
 - 浏览器不能直接识别 HTML 代码，所以需要转化成它认识的 DOM 树
 - 生成 DOM 树后，依据 CSS 样式，计算所有 DOM 节点的样式
@@ -593,7 +593,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 我们看看图层树和布局树之间的关系：
 
-![](/img/posts/browser/30.png)
+![](/img/posts/browser/macro/30.png)
 
 布局树中大部分没有特殊属性，就属于父元素的图层
 
@@ -603,7 +603,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 页面是二维的，层叠上下文属性让 HTML 元素具备了三维的概念，HTML 元素按照自身优先级分布在垂直与这个平面 z 轴上，如下图：
 
-![](/img/posts/browser/31.png)
+![](/img/posts/browser/macro/31.png)
 
 这里涉及到几个属性：
 
@@ -618,7 +618,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 出现裁剪的时候渲染引擎会为文字部分单独创建一个层，如果出现滚动条，也会提升为单独的层。比如刚刚提到的这个例子
 
-![](/img/posts/browser/32.png)
+![](/img/posts/browser/macro/32.png)
 
 ### 图层绘制
 
@@ -634,7 +634,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 其实浏览器绘制的时候，差不多也是这样的步骤。每个图层的绘制拆分成很多小的绘制指令，按照顺序组成一个带绘制的列表，如下图：
 
-![](/img/posts/browser/33.png)
+![](/img/posts/browser/macro/33.png)
 
 绘制指令的列表其实很简单，都是执行一个个简单的绘制。而绘制元素的话就是一系列的绘制指令集合
 
@@ -642,7 +642,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 绘制列表只是记录绘制的顺序和指令，但是实际上的绘制是通过渲染引擎中的合成线程来完成的。我们可以通过下图看看它们之间的关系
 
-![](/img/posts/browser/34.png)
+![](/img/posts/browser/macro/34.png)
 
 当图层的绘制列表准备好了，主线程会把绘制列表交给合成线程。合成线程是怎么工作的呢
 
@@ -652,13 +652,13 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 合成线程会按照视口附近的图块优先生成块图，实际生成位图是栅格化来操作的。栅格化的意思就是把块图生成位图，图块是栅格化执行的最小单位。渲染进程维护了一个栅格化的线程池子，所以图块的栅格化都在这个线程池里面进行：
 
-![](/img/posts/browser/35.png)
+![](/img/posts/browser/macro/35.png)
 
 栅格化过程有 GPU 加速完成，使用 GPU 生成位图的过程叫做快速 栅格化，或者 GPU 栅格化，生成的位图保存在 GPU 内存里面
 
 而 GPU 操作是在 GPU 进程里面的，如果 栅格化 使用到了 GPU，最终位图的生成是在 GPU 进程的，也就是跨进程操作。继续扩展上面的图片：
 
-![](/img/posts/browser/36.png)
+![](/img/posts/browser/macro/36.png)
 
 渲染进程把生成图块的指令交给 GPU 进程，GPU 执行生成位图的指令，然后保存在 GPU 内存中
 
@@ -670,7 +670,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 ### 渲染流水线大总结
 
-![](/img/posts/browser/37.png)
+![](/img/posts/browser/macro/37.png)
 
 - 渲染进程把 HTML 内容转换成浏览器识别的 DOM 树
 - 渲染进程把 CSS 样式表转换成浏览器理解的 styleSheets，计算出 DOM 节点的样式
@@ -687,7 +687,7 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 #### 更新了元素的几何属性
 
-![](/img/posts/browser/38.png)
+![](/img/posts/browser/macro/38.png)
 
 比如我们改变了一个元素的高度，会触发浏览器的重新布局，以及一系列的子阶段，这个就叫做重排
 
@@ -695,13 +695,13 @@ DOM 树里面有一些不可见元素，我们需要把它们去掉，生成一�
 
 #### 更新了元素的绘制属性
 
-![](/img/posts/browser/39.png)
+![](/img/posts/browser/macro/39.png)
 
 如果我们只是修改了颜色，布局阶段不会改变，因为元素的几何属性并没有改变，直接进入到了绘制的阶段，省去了布局和分层的阶段，执行效率币重排高点
 
 #### 直接是合成阶段
 
-![](/img/posts/browser/40.png)
+![](/img/posts/browser/macro/40.png)
 
 如果是一个不需要重新布局和重新绘制的属性呢？浏览器跳过布局和绘制，只执行了后续的合成操作
 
