@@ -1,0 +1,7 @@
+---
+layout: post
+title: 《图解 Google V8》系列笔记 - 宏观视角
+tags: [V8]
+---
+
+开始阅读 https://time.geekbang.org/column/intro/296
