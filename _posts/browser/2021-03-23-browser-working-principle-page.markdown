@@ -238,4 +238,74 @@ script 标签之前，所有的解析流程还是和之前介绍的一样，但�
 
 不过 Chrome 做了一些优化，主要的优化手段是预解析的操作
 
-渲染引擎收到字节码后，开启一个预解析县城，分析 HTML 文件是否有 JS CSS 等文件，解析道的话预解析线程会提前下载
+渲染引擎收到字节码后，开启一个预解析线程，分析 HTML 文件是否有 JS CSS 等文件，解析道的话预解析线程会提前下载
+
+我们可以用一些策略来规避这些问题，比如 cdn 加速 js 文件加载，压缩 js 体积，另外如果没有操作 dom 结构的代码可以设置为 异步加载，通过 async 或者 defer 标记
+
+```html
+<script async type="text/javascript" src="foo.js"></script>
+<script defer type="text/javascript" src="foo.js"></script>
+```
+
+它们有一点区别， async 的脚本一旦加载完成，就会立即执行
+
+defer 的脚本需要在 DomContentLoaded 事件结束前执行
+
+另外在执行 js 前，也需要先解析 js 语句之上所有的 css 样式，如果引用了外部的 css 文件，还要等待 css 文件下载完成，解析成 cssom 才可以执行
+
+js 引擎在解析 js 之前不知道是否操作了 cssom，所以不管是否执行了 cssom，都会执行 css 文件下载，解析操作，再执行 js 脚本
+
+所以 js 脚本依赖样式表，这又多了一个阻塞的过程
+
+于是我们知道了 js 会阻塞 dom 生成，样式文件又会阻塞 js 执行，所以实际工程中要关注 js 文件和样式表文件，使用不当会影响页面性能
+
+## 总结
+
+额外说明，渲染引擎还有一个安全检查模块叫做 xssAuditor 用来检测词法安全，分词器解析出来 token 以后，检测这些模块是否安全，比如引用外部的脚本是否符合 csp 规范，是否存在跨站点请求
+
+如果出现不规范的，xssAuditor 会对脚本或者下载任务进行拦截
+
+# 渲染流水线：CSS 如何影响首次加载时的白屏时间？
+
+本文站在渲染流水线的视角介绍 css 如何工作，css 的工作流程来分析性能瓶颈，最后再讨论如何减少首次加载白屏
+
+看一段简单的代码
+
+```css
+/* theme.css */
+div {
+  color: coral;
+  background-color: black;
+}
+```
+
+```html
+<html>
+  <head>
+    <link href="theme.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div>🐶 14 🐱</div>
+  </body>
+</html>
+```
+
+![](/img/posts/browser/page/14.png)
+
+- 主页面发起请求
+- 网络进程执行。请求到 html 数据后，发给渲染进程
+- 渲染进程解析 HTML 数据并构建 DOM（看到存在一定的空闲时间，可能成为渲染瓶颈）
+
+渲染进程接收到 HTML 会先开启预解析线程，如果遇到 js 或者 css 会提前下载这些数据
+
+- 所以预解析线程解析出一个外部的 theme.css，发起请求
+- dom 构建结束，但是 theme.css 还没下载好，这里也有一段空闲的时间，可能成为瓶颈
+- 合成布局树，需要 cssom 和 dom，这里要等 css 加载结束解析成 cssom
+
+## 渲染流水线为什么需要 cssom
+
+浏览器也无法解决 css 文件内容，要把它解析成渲染引擎可以理解的，就是 cssom 结构
+
+它第一个功能室给 js 操作样式表的能力，另外一个是布局树合成提供的基础信息样式
+
+cssom 体现在 dom 中就是 document.styleSheets
