@@ -106,4 +106,136 @@ HTTP HTTPS WebSocket 加载的状态和时间的关系，直观感受页面加�
 
 ## 总结
 
+- 介绍了 Chrome 开发者工具 10 个基础的面板信息
+- 剖析了网络面板，再结合之前介绍的网络请求流程来重点分析了网络面板中时间线的各个指标的含义
+- 简要分析了时间线中各项指标出现异常的可能原因，并给出了一些优化方案
+
 如果你要去做一些实践性的项目优化，理解其背后的理论至关重要。因为理论就是一条“线”，它会把各种实践的内容“串”在一起，然后你可以围绕着这条“线”来排查问题
+
+# DOM 树：JavaScript 是如何影响 DOM 树构建的
+
+DOM 树是怎么生成的，说下 DOM 树的解析流程
+
+然后说下遇到 JS 脚本，DOM 解析器会怎么处理，另外还有 DOM 解析器是怎么处理跨站资源的
+
+## DOM
+
+网络传给渲染引擎的 HTML 无法被引擎理解，要转成能理解的内部结构，就是 DOM 了
+
+DOM 提供了 HTML 文档结构化的表述，它有三个作用
+
+- DOM 是生成页面的基础结构
+- DOM 提供了 JS 脚本操作的接口，JS 可以对 DOM 结构进行访问，改变文档的结构样式内容
+- DOM 是安全防护线，不安全的内容在 DOM 解析的时候会去掉
+
+## DOM 树如何生成
+
+渲染引擎内部有个 HTML 解析器，负责把 HTML 字节流转成 DOM 结构
+
+首先 HTML 解析器不会等等这个文档加载完毕在解析，加载了多少，HTML 就解析多少
+
+网络接收到响应头判断 content-type 为一个 HTML 文件的时候，为该请求分配一个渲染进程，网络进程和渲染进程会有一个共享数据的通道，网络进程接收数据就往这个通道写数据，渲染进程源源不断的读数据，然后塞给 HTML 解析器
+
+字节流是怎么转成 HTML 的呢？
+
+![](/img/posts/browser/page/6.png)
+
+一共有三个阶段
+
+### 分词器把字节流转成 Token，分为 Tag Token（startTag, endTag） 和文本 Token
+
+上面的代码会变成下图这样：
+
+![](/img/posts/browser/page/7.png)
+
+### 同步进行二三步骤，Token 解析为 DOM 节点，DOM 节点加到 DOM 树
+
+HTML 解析器维护了一个 Token 栈结构，该 Token 栈主要用来计算节点之间的父子关系，在第一个阶段中生成的 Token 会被按照顺序压到这个栈
+
+- 如果押入栈的是 start token,HTML 解析器会为该 Token 创建一个 DOM 节点，加入到 DOM 树，父节点就是当前栈顶的 DOM 节点
+- 如果是文本 token，生成文本节点，加入到 DOM 树，文本节点不需要押入栈
+- 如果是 end token，检查栈顶元素是否是 start tag，如果是，star tag 弹出，标识解析完了
+
+新 Token 就这样不停地压栈和出栈，整个解析过程就这样一直持续下去，直到分词器将所有字节流分词完成
+
+我们看看下面这段代码
+
+```html
+<html>
+  <body>
+    <div>1</div>
+    <div>test</div>
+  </body>
+</html>
+```
+
+第一个是 start tag html，押入栈中，创建一个 html dom 节点，加入 dom 树
+
+另外默认创建一个根为 document 的空 DOM，同时吧 start tag document 的 token 压入到栈，创建一个 html dom 节点，添加到 document 上
+
+比如下图
+
+![](/img/posts/browser/page/8.png)
+
+然后按照相同的流程，解析 start tag body 和 start tag div
+
+![](/img/posts/browser/page/9.png)
+
+然后创建 第一个 div 的文本 token，添加到 dom，父元素就是栈顶的元节点
+
+![](/img/posts/browser/page/10.png)
+
+解析出第一个 end tag div，判断栈顶是不是 start tag div，是的话弹出
+
+![](/img/posts/browser/page/11.png)
+
+最终我们得到了下图
+
+![](/img/posts/browser/page/12.png)
+
+现实中包含了很多其他的元素，我们继续往下看
+
+## JavaScript 如何影响 DOM 生成
+
+```html
+<html>
+  <body>
+    <div>1</div>
+    <script>
+      let div1 = document.getElementsByTagName('div')[0];
+      div1.innerText = 'time.geekbang';
+    </script>
+    <div>test</div>
+  </body>
+</html>
+```
+
+script 标签之前，所有的解析流程还是和之前介绍的一样，但是解析到 script 标签时，渲染引擎判断这是一段脚本，此时 HTML 解析器就会暂停 DOM 的解析，因为接下来的 JavaScript 可能要修改当前已经生成的 DOM 结构
+
+![](/img/posts/browser/page/13.png)
+
+解析到 JS 的时候，如上图
+
+这里 JS 接入，执行脚本，修改了 DOM 第一个 div 的内容
+
+执行完以后，HTML 解析器恢复解析
+
+如果加入的是 外部的 JS 文件
+
+```html
+<html>
+  <body>
+    <div>1</div>
+    <script type="text/javascript" src="foo.js"></script>
+    <div>test</div>
+  </body>
+</html>
+```
+
+和上面的流程基本一样，但是需要先下载 JS。
+
+需要注意下载环境，文件下载会阻塞 dom 解析，因为下载过程会阻塞 dom 解析，通常也是耗时的
+
+不过 Chrome 做了一些优化，主要的优化手段是预解析的操作
+
+渲染引擎收到字节码后，开启一个预解析县城，分析 HTML 文件是否有 JS CSS 等文件，解析道的话预解析线程会提前下载
