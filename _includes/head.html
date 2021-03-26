@@ -64,8 +64,8 @@
   />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="{{ "/css/hux-blog.min.css" | prepend:
-  site.baseurl }}">
+  <link rel="stylesheet" href="{{ "/css/hux-blog.css" | prepend: site.baseurl
+  }}">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ "/css/codytang-blog.css" | prepend:
@@ -89,13 +89,17 @@
 
   <!-- ga & ba script hoook -->
   <script></script>
-  
+
   <script>
-  ;(function () {
-    var src = '//cdn.jsdelivr.net/npm/eruda';
-    if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
-    document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-    document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
-  })();
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
   </script>
 </head>
