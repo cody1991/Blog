@@ -1,0 +1,20 @@
+---
+layout: post
+title: 小程序开发
+tags: [miniprogram]
+from:
+---
+
+开发中，上部分小程序截图
+
+![](/img/posts/mp/1.jpeg)
+
+![](/img/posts/mp/2.jpeg)
+
+![](/img/posts/mp/3.jpeg)
+
+![](/img/posts/mp/4.jpeg)
+
+![](/img/posts/mp/5.jpeg)
+
+![](/img/posts/mp/6.jpeg)
