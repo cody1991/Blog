@@ -5,6 +5,10 @@ tags: [miniprogram]
 from:
 ---
 
+可以通过搜索 静言录 找到我的小程序了～
+
+![](/img/posts/mp/7.jpeg)
+
 开发中，上部分小程序截图
 
 暂时有的功能模式
