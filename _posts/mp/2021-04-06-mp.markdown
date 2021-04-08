@@ -9,7 +9,7 @@ from:
 
 ![](/img/posts/mp/gh_8cf7dfac4319_258.jpeg)
 
-开发中，上部分小程序截图
+开发中，上部分小程序截图，代码托管在官方的 Git 管理工具中 [地址](https://git.weixin.qq.com/codytang/miniprogram-demo)
 
 暂时有的功能模式
 
