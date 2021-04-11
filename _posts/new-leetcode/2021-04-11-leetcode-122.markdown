@@ -1,0 +1,37 @@
+---
+layout: post
+title: LeetCode 数组系列 - 122. 买卖股票的最佳时机 II
+tags: [LeetCode]
+---
+
+https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/
+
+其实简单的解法就像下面这样，判断股票下一天如果比今天的高，就不会抛售股票，直接把增加的当作利润加上就好了
+
+```
+执行用时：80 ms, 在所有 JavaScript 提交中击败了91.89% 的用户
+
+内存消耗：39.2 MB, 在所有 JavaScript 提交中击败了93.83% 的用户
+```
+
+```js
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function (prices) {
+  if (prices.length < 2) return 0;
+
+  let sum = 0;
+  for (let index = 1; index < prices.length; index += 1) {
+    const cur = prices[index];
+    const before = prices[index - 1];
+
+    if (cur > before) {
+      sum += cur - before;
+    }
+  }
+
+  return sum;
+};
+```
