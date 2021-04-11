@@ -22,8 +22,11 @@ https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/
 
 就能获取到我们想要的结果了～
 
+```
 执行用时：84 ms, 在所有 JavaScript 提交中击败了 85.51% 的用户
+
 内存消耗：39.1 MB, 在所有 JavaScript 提交中击败了 84.06% 的用户
+```
 
 ```js
 /**

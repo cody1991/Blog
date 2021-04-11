@@ -13,8 +13,11 @@ https://leetcode-cn.com/problems/longest-common-prefix/
 - 先两两对比找出它们的最长前缀
 - 然后一直循环处理
 
+```
 执行用时：80 ms, 在所有 JavaScript 提交中击败了 95.37% 的用户
+
 内存消耗：38.7 MB, 在所有 JavaScript 提交中击败了 95.84% 的用户
+```
 
 ```js
 /**
