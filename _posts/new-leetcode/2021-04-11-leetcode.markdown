@@ -1,0 +1,52 @@
+---
+layout: post
+title: LeetCode 数组系列 - 两个数组的交集 (350)
+tags: [LeetCode]
+---
+
+https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/
+
+这是一道 easy 的题目，也很快能想出解决方案～过～
+
+简单来说：
+
+- 遍历第一个数组，创建一个 Map 对象，记录出现的值的次数
+- 遍历第二个数组，查看 Map 中是否存在，且次数大于 0，如果符合条件的话把这个值推入到我们的结果数组中，并把 Map 中对应的值的次数减一就好了～～
+
+它有个进阶版本，如果是一种有序的数组的话，就需要用到双指针了
+
+- 初始化指向第一个数组和第二个数组的第一个位置，即下标为 0 的地方
+- 循环比较两个数组指针指向的元素的大小
+  - 元素比较小的那个的数组，指针往后挪一位
+  - 如果想等的话，则推入到我们的结果数组中，并且两个数组的指针都往后挪一位
+
+就能获取到我们想要的结果了～
+
+```js
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number[]}
+ */
+var intersect = function (nums1, nums2) {
+  if (nums1.length === 0 || nums2.length === 0) return [];
+
+  const obj = {};
+  const result = [];
+  for (let index = 0; index < nums1.length; index++) {
+    const num = nums1[index];
+    if (!obj[num]) obj[num] = 0;
+    obj[num] += 1;
+  }
+
+  for (let index = 0; index < nums2.length; index++) {
+    const num = nums2[index];
+    if (obj[num] && obj[num] > 0) {
+      result.push(num);
+      obj[num] -= 1;
+    }
+  }
+
+  return result;
+};
+```
