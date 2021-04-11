@@ -1,0 +1,65 @@
+---
+layout: post
+title: LeetCode 数组系列 - 189. 旋转数组
+tags: [LeetCode]
+---
+
+https://leetcode-cn.com/problems/rotate-array/
+
+下面是比较不好的办法，其实题目也提出了空间复杂度为 O(1)，我其实等于新建了两个数组，空间复杂度肯定就上去了，是 O(n)。所以等出来的内存消耗也不怎么好
+
+```
+执行用时：120 ms, 在所有 JavaScript 提交中击败了37.38% 的用户
+
+内存消耗：48.2 MB, 在所有 JavaScript 提交中击败了5.01% 的用户
+```
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var rotate = function (nums, k) {
+  if (nums.length < 2) return nums;
+  const realK = k % nums.length;
+
+  const before = nums.slice(nums.length - realK);
+  const after = nums.slice(0, nums.length - realK);
+
+  for (let index = 0; index < nums.length; index += 1) {
+    if (index < realK) {
+      nums[index] = before[index];
+    } else {
+      nums[index] = after[index - realK];
+    }
+  }
+};
+```
+
+想到一个更加优雅的解法，不过解决的时间和空间上却没有太大的进步，挺奇怪的。。
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+
+var rotate = function (nums, k) {
+  if (nums.length < 2) return nums;
+  let realK = k % nums.length;
+
+  reverse(nums, 0, nums.length - 1);
+  reverse(nums, 0, realK - 1);
+  reverse(nums, realK, nums.length - 1);
+};
+
+function reverse(nums, start, end) {
+  while (start < end) {
+    [nums[start], nums[end]] = [nums[end], nums[start]];
+    start++;
+    end--;
+  }
+}
+```
