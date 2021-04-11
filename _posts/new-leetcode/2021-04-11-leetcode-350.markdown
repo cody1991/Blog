@@ -1,6 +1,6 @@
 ---
 layout: post
-title: LeetCode 数组系列 - 两个数组的交集 (350)
+title: LeetCode 数组系列 - 350. 两个数组的交集 II
 tags: [LeetCode]
 ---
 
@@ -21,6 +21,9 @@ https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/
   - 如果想等的话，则推入到我们的结果数组中，并且两个数组的指针都往后挪一位
 
 就能获取到我们想要的结果了～
+
+执行用时：84 ms, 在所有 JavaScript 提交中击败了 85.51% 的用户
+内存消耗：39.1 MB, 在所有 JavaScript 提交中击败了 84.06% 的用户
 
 ```js
 /**

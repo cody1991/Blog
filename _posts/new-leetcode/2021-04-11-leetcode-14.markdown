@@ -1,0 +1,52 @@
+---
+layout: post
+title: LeetCode 数组系列 - 14. 最长公共前缀
+tags: [LeetCode]
+---
+
+https://leetcode-cn.com/problems/longest-common-prefix/
+
+题目给的是寻找数组里面所以元素的最长公共前缀
+
+要找出所有的字符串的最长公共前缀，其实就需要：
+
+- 先两两对比找出它们的最长前缀
+- 然后一直循环处理
+
+执行用时：80 ms, 在所有 JavaScript 提交中击败了 95.37% 的用户
+内存消耗：38.7 MB, 在所有 JavaScript 提交中击败了 95.84% 的用户
+
+```js
+/**
+ * @param {string[]} strs
+ * @return {string}
+ */
+var longestCommonPrefix = function (strs) {
+  if (strs.length === 0) return '';
+
+  let result = strs[0];
+  for (let index = 1; index < strs.length; index++) {
+    const str = strs[index];
+    let base = str;
+    let target = result;
+
+    // 看下哪个比较长，作为基准的 indexOf 判断，能少判断点
+    if (str.length < result.length) {
+      [base, target] = [target, base];
+    }
+
+    // 因为找的是共同的前缀，所以 indexOf 要为 0 才算找到
+    // 不为 0 或者 字符串还没为空的话，就重新取目标字符串前 n-1 的字符进行循环判断
+    while (base.indexOf(target) !== 0 && target !== '') {
+      target = target.slice(0, target.length - 1);
+    }
+
+    // 如果一直截断共同的前缀字符串到空字符串，那就表明这两个字符串没有公共的前缀字符串，所以整个数组也是没有公共的前缀字符串的，直接返回 '' 空数组
+    if (target === '') return '';
+
+    // 否则设置我们新的 公共前缀字符串，投入到下一轮的比较中
+    result = target;
+  }
+  return result;
+};
+```
