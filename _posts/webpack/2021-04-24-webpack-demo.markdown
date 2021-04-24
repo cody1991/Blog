@@ -1086,3 +1086,170 @@ module.exports = {
   },
 };
 ```
+
+# source map
+
+## 前言
+
+开启 source map
+
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+module.exports = {
+  mode: 'development',
+  devtool: 'source-map',
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+    }),
+  ],
+};
+```
+
+还支持很多其他选项。我们先看看现在这种情况生成的代码
+
+```javascript
+/******/ (() => {
+  // webpackBootstrap
+  var __webpack_exports__ = {};
+  /*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+  console.log('demo');
+
+  /******/
+})();
+//# sourceMappingURL=main.js.map
+```
+
+我们的 dist/main.js 如上面的代码，最后指向了我们的 map 文件，它的内容如下：
+
+```json
+{
+  "version": 3,
+  "sources": ["webpack://demo-4/./src/index.js"],
+  "names": [],
+  "mappings": ";;;;;AAAA",
+  "file": "main.js",
+  "sourcesContent": ["console.log('demo');\n"],
+  "sourceRoot": ""
+}
+```
+
+## 深入了解
+
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const allModes = [
+  'eval',
+  'eval-cheap-source-map',
+  'eval-cheap-module-source-map',
+  'eval-source-map',
+  'cheap-source-map',
+  'cheap-module-source-map',
+  'source-map',
+  'inline-cheap-source-map',
+  'inline-cheap-module-source-map',
+  'inline-source-map',
+  'eval-nosources-cheap-source-map',
+  'eval-nosources-cheap-module-source-map',
+  'eval-nosources-source-map',
+  'inline-nosources-cheap-source-map',
+  'inline-nosources-cheap-module-source-map',
+  'inline-nosources-source-map',
+  'nosources-cheap-source-map',
+  'nosources-cheap-module-source-map',
+  'nosources-source-map',
+  'hidden-nosources-cheap-source-map',
+  'hidden-nosources-cheap-module-source-map',
+  'hidden-nosources-source-map',
+  'hidden-cheap-source-map',
+  'hidden-cheap-module-source-map',
+  'hidden-source-map',
+];
+
+module.exports = allModes.map((item) => ({
+  mode: 'none',
+  devtool: item,
+  output: {
+    filename: `js/${item}.js`,
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      filename: `${item}.html`,
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+    ],
+  },
+}));
+```
+
+我们通过上面的配置文件，可以生成所有模式下打包出来的代码文件，然后再一个个来分析
+
+不过也只是分析一些主要常用的
+
+### eval
+
+生成的代码通过 eval 来执行，也没有生成对应的 map 文件。只能定位文件，浏览器看到的也是经过 webpack 处理后的代码，而不是源代码
+
+### eval-source-map
+
+对比 eval 模式，它会生成 source map 信息，可以定位到源代码的位置。但是看到 source map 信息是在打包后的文件里面的
+
+### eval-cheap-source-map
+
+阉割版的 eval-source-map，只能定位到行，不能定位到列
+
+构建速度快很多
+
+### eval-cheap-module-source-map
+
+名字带有 module 的模式，解析出来的源代码是没有经过 loader 处理的
+
+名字不带 module 的模式，解析出来的是经过 loader 处理加工后的
+
+所以看到我们加了 babel-loader
+
+所以如果我们想要和源代码一模一样的话，就需要选择这种带有 module 的模式
+
+### inline-source-map
+
+和普通 source-map 效果一样，但是文件以 data urls 的形式存在，和上面的 eval-source-map 一样
+
+### hide-source-map
+
+开发工具看不到 source map 效果，但是确实生成了 source map 文件，代码没有引用
+
+### nosources-source-map
+
+可以看到错误出现的位置，但是点进去看不到源代码
+
+为了保护生产环节下不暴露源代码
+
+## 选择
+
+开发环境选择 eval-cheap-module-source-map
+
+- 选择框架比较多，loader 转化后的代码差异大，我们更希望调试 loader 转换前的
+- 不需要列的信息，有行信息就能比较好的定位到，省略列信息可以提升构建速度
+- 启动打包慢，但是配合 webpack-dev-server 都是在监视模式下重新打包，重新打包速度很快
+
+现网环境
+
+- 最好不使用 source map 避免源代码的泄漏
+- 如果确实有需要，建议开启 nosources-source-map 模式，能定位到错误的地方，也能不暴露源码
+
+最后 webpack 和 source map 的关系，也只是 webpack 支持 source map，而不是 webpack 独有的功能
