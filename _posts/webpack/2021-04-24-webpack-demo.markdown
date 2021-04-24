@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 重学 webpack
+title: 深入理解 webpack
 tags: [webpack]
 ---
 
