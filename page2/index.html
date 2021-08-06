@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -28,7 +27,7 @@
     content="记录下来，变成自己的东西"
   />
   
-  <meta property="og:image" content="https://cody1991.github.io/Blog//img/cody1991.jpeg" />
+  <meta property="og:image" content="https://cody1991.github.io/Blog/img/cody1991.jpeg" />
   <meta property="og:url" content="https://cody1991.github.io/Blog//page2/" />
   <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
 
@@ -94,9 +93,8 @@
 </head>
 
 
-<!-- hack iOS CSS :active style -->
-<body ontouchstart="">
-
+  <!-- hack iOS CSS :active style -->
+  <body ontouchstart="">
     <!-- Navigation -->
 
     <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
@@ -221,8 +219,7 @@
             if (e.target.className == 'icon-bar') return;
             __HuxNav__.close();
         })
-    </script>
-    <!-- Search -->
+    </script> <!-- Search -->
 <div class="search-page">
   <div class="search-icon-close-container">
     <span class="search-icon-close">
@@ -239,9 +236,7 @@
       </div>
     </div>
   </div>
-</div>
-
-    <!-- Page Header -->
+</div> <!-- Page Header -->
 
 
 
@@ -697,7 +692,7 @@ Vue CLI 如果构建到 Github ...
   <h5><a href="/Blog/about/">ABOUT ME</a></h5>
   <div class="short-about">
     
-    <img src="/img/cody1991.jpeg" />
+    <img src="img/cody1991.jpeg" />
     
     
     <p>For the next quantum leap<br>离开世界之前，一切都是过程</p>
@@ -773,9 +768,7 @@ Vue CLI 如果构建到 Github ...
 </div>
 
 
-
-
-    <!-- Footer -->
+ <!-- Footer -->
 <footer>
     <div class="container">
         <div class="row">
@@ -1006,7 +999,7 @@ Vue CLI 如果构建到 Github ...
     SimpleJekyllSearch({
         searchInput: document.getElementById('search-input'),
         resultsContainer: document.getElementById('search-results'),
-        json: '/search.json',
+        json: 'search.json',
         searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
         noResultsText: 'No results',
         limit: 50,
@@ -1051,11 +1044,8 @@ Vue CLI 如果构建到 Github ...
     });
 </script>
 
-
-<!-- Image to hack wechat -->
-<img src="/img/icon_wechat.png" width="0" height="0" />
-<!-- Migrate from head to bottom, no longer block render and still work -->
-
-</body>
-
+    <!-- Image to hack wechat -->
+    <img src="img/icon_wechat.png" width="0" height="0" />
+    <!-- Migrate from head to bottom, no longer block render and still work -->
+  </body>
 </html>
