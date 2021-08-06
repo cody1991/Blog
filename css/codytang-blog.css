@@ -2,8 +2,12 @@
   list-style: none;
 }
 
-.task-list input[type="checkbox"] {
+.task-list input[type='checkbox'] {
   margin-right: 6px;
   position: relative;
   top: 1px;
+}
+
+.post-content-preview {
+  word-break: break-all;
 }
