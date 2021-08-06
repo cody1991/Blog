@@ -6,7 +6,7 @@ tags: [Vue]
 
 # 前言
 
-今天写了一篇 [Vue3 + TypeScript + Vuex4 初尝试](https://codytang.cn/2021/03/20/vue3-ts-list/) 的博客，代码放在 [vue3-typescript](https://github.com/cody1991/vue3-typescript) 上面了
+今天写了一篇 [Vue3 + TypeScript + Vuex4 初尝试](https://cody1991.github.io/Blog/2021/03/20/vue3-ts-list/) 的博客，代码放在 [vue3-typescript](https://github.com/cody1991/vue3-typescript) 上面了
 
 但是项目代码没有自动构建，现在只能下载到本地进行体验。想起之前写过的一个项目 [ticket-purchase](https://github.com/cody1991/ticket-purchase) 有自动构建到 Github Pages 的流程，但是没有总结是怎么处理的，今天记录下
 
