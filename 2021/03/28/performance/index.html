@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="前端性能优化总结 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="页面请求流程
+"
+  />
+   <meta property="article:published_time" content="2021-03-28T00:00:00Z">   
+  <meta property="article:tag" content="Performance" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/28/performance/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    前端性能优化总结 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/28/performance/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Performance" title="Performance">Performance</a>
+                        
+                    </div>
+                    <h1>前端性能优化总结</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 28, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="页面请求流程">页面请求流程</h1>
+
+<p>从用户输入 URL 地址栏到内容显示到界面上做了哪些事情，来进行性能优化的分析讨论</p>
+
+<ol>
+  <li>浏览器向 DNS 服务器发起解析 URL 地址中域名对应的 IP 地址的请求</li>
+  <li>通过三次握手建立 TCP 连接</li>
+  <li>浏览器组装 HTTP 请求报文，发起请求文件的 HTTP 请求</li>
+  <li>服务器对浏览器的请求作出响应，把对应的 HTML 文件返回给浏览器</li>
+  <li>浏览器解析 HTML 文件内容，显示对应的内容（具体的解析过程后面讨论）</li>
+  <li>通过四次挥手，释放 TCP 连接</li>
+</ol>
+
+<h2 id="dns-解析">DNS 解析</h2>
+
+<p>把域名解析为对应的 IP 地址，才可以在后面发起 TCP 请求</p>
+
+<p>DNS 的请求顺序为</p>
+
+<ul>
+  <li>本地缓存</li>
+  <li>浏览器缓存</li>
+  <li>本机的 DNS 缓存</li>
+  <li>路由器的 DNS 缓存</li>
+  <li>运营商的服务器 DNS 缓存（80%的 DNS 缓存查询在这里）</li>
+  <li>递归查询</li>
+</ul>
+
+<p>优化手段：dns 解析一般需要 20 ～ 120ms，尽可能允许使用浏览器缓存，能节省大量的时间，我们也会使用 dns-prefetch 来提前解析 DNS 并放在缓存中</p>
+
+<h2 id="tcp-连接建立">TCP 连接建立</h2>
+
+<p>这块没什么优化的手段说的，来看看三次握手的过程</p>
+
+<ol>
+  <li>服务器和浏览器会发送 SYN(同步序列编号) 和 ACK(确认字符)</li>
+  <li>第一次握手 🤝：浏览器把 SYN 设置为 1，随机产生一个值 seq=J，把数据包发给服务器，浏览器进入 <code class="language-plaintext highlighter-rouge">CLIENT_SENT</code> 阶段，等待服务器确认</li>
+  <li>第二次握手 🤝：服务器收到数据包后发现 SYN 是 1，知道浏览器请求建立连接，服务器把 SYN 和 ACK 都置为 1，ack=J+1，随机产生一个 seq=k，并把数据包发给浏览器，确认连接请求，服务器进入 <code class="language-plaintext highlighter-rouge">SYN_RCVD</code> 阶段</li>
+  <li>第三次握手 🤝：浏览器接收到以后，检查 ack 是否为 J+1，ACK 是否为 1 如果正确把 ACK 置为 1，ack=K+1，并把数据包发给服务器。服务器检查 ack 是否为 K+1，如果是的话确认连接建立。服务器和浏览器都进入 <code class="language-plaintext highlighter-rouge">ESTABLISHED</code> 状态，完成了三次握手，随后进入数据传输阶段</li>
+</ol>
+
+<h2 id="浏览器发起请求">浏览器发起请求</h2>
+
+<p>这里有很多优化的地方可以做</p>
+
+<h3 id="keep-alive-使用">keep alive 使用</h3>
+
+<p>HTTP 协议通信最耗时的部分在建立 TCP 连接，我们可以使用 HTTP 请求头中指定 <code class="language-plaintext highlighter-rouge">Connection: Keep-Alive</code></p>
+
+<p>在早起 HTTP/1.0 每个 HTTP 请求都需要打开一个 TCP 连接，使用完一次之后就断开这个 TCP 连接</p>
+
+<p>HTTP/1.1 改善了这种情况，在一次 TCP 连接中可以多个 HTTP 请求而不会断开，现在也是默认开启的</p>
+
+<p>通过这种机制，可以减少 TCP 的连接次数，意味着更少的 <code class="language-plaintext highlighter-rouge">TIME_WAIT</code> 状态连接，达到提高性能和提升服务器吞吐率</p>
+
+<p>但是长时间的 TCP 连接容易导致系统资源的无效占用，如果配置不当的 keep alive 可能导致其他更大的损失，因为 HTTP 传送完最后一个响应的时候还是维持 keepalive_timeout，才会真正去关闭</p>
+
+<h3 id="使用-websocket">使用 websocket</h3>
+
+<p>仅一次 TCP 连接就可以一直保持，对二进制的数据传输也有更好的支持，可以用于即时通信和海量高并发的情景</p>
+
+<h3 id="减少-http-请求的次数">减少 HTTP 请求的次数</h3>
+
+<p>HTTP 请求头部和响应头部，多次的传输会重复传输重复的信息，把它们打包在一起进行传输</p>
+
+<h3 id="配置使用懒加载">配置使用懒加载</h3>
+
+<p>主要是针对图片的懒加载</p>
+
+<h3 id="服务器的资源部署尽量同源">服务器的资源部署尽量同源</h3>
+
+<p>比如后台的请求，同源可以减少 CORS 的预检查 options 的请求时间</p>
+
+<h3 id="需要多个-cookie-识别用户的场景">需要多个 cookie 识别用户的场景</h3>
+
+<p>使用 session 代替，把信息存储在服务器，只要传输标识的 cookie，节省大量的无效传输</p>
+
+<h3 id="preload--dns-prefetch--prefetch">preload , dns-prefetch , prefetch</h3>
+
+<p>预请求资源，它们不会阻塞浏览器的解析，也能把预请求回来的信息缓存起来，这样不会推迟首屏的时间，能提到加速后面展示的时间</p>
+
+<h3 id="defer-async">defer async</h3>
+
+<p>使用 defer 和 async 属性的脚本，采用异步加载的方式，会先发起请求，但是先不执行</p>
+
+<p>async：无序加载脚本，谁先请求回来就先执行谁，请求回来的时候无论 DOM 解析还是 脚本解析中，接下来都会先解析这个脚本，它会阻塞 DOM 的解析
+defer：在 DOMContentLoad 前加载，但是加载之前所有的 DOM 解析肯定已经完成了，不会阻塞 DOM 的解析，也叫做延迟脚本</p>
+
+<h2 id="服务器返回响应信息浏览器接受到响应数据">服务器返回响应信息，浏览器接受到响应数据</h2>
+
+<h3 id="nginx">Nginx</h3>
+
+<p>nginx 是一款轻量级的 Web 服务器，反向代理服务器及电子邮件（IMAP/POP3）代理服务器。其特点是占有内存少，并发能力强，事实上 nginx 的并发能力确实在同类型的网页服务器中表现较好</p>
+
+<p>nginx 安装非常的简单，配置文件非常简洁，BUG 很少的服务器。nginx 启动特别容易，并且几乎可以做到 <code class="language-plaintext highlighter-rouge">7*24</code> 不间断运行，即使运行数个月也不需要重新启动，能够不间断服务的情况下进行软件版本的升级</p>
+
+<p>还可以解决跨域，进行请求过滤，配置 Gzip 压缩，负载均衡，作为静态资源服务器 等</p>
+
+<h4 id="负载均衡">负载均衡</h4>
+
+<p>把服务窗口想像成我们的后端服务器，而后面终端的人则是无数个客户端正在发起请求。</p>
+
+<p>负载均衡就是用来帮助我们将众多的客户端请求合理的分配到各个服务器，以达到服务端资源的充分利用和更少的请求时间</p>
+
+<p>Upstream 指定后端服务器地址列表</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>upstream balanceServer {
+  server 10.1.22.33:12345;
+  server 10.1.22.34:12345;
+  server 10.1.22.35:12345;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在 server 中拦截响应请求，并将请求转发到 Upstream 中配置的服务器列表</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>server {
+  server_name  fe.server.com;
+  listen 80;
+  location /api {
+    proxy_pass http://balanceServer;
+  }
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>默认情况下采用的策略，将所有客户端请求轮询分配给服务端。</p>
+
+<p>这种策略是可以正常工作的，但是如果其中某一台服务器压力太大，出现延迟，会影响所有分配在这台服务器下的用户</p>
+
+<p>而最小连接数策略将请求优先分配给压力较小的服务器，它可以平衡每个队列的长度，并避免向压力大的服务器添加更多的请求</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>upstream balanceServer {
+  least_conn; //配置压力较小的服务器
+  server 10.1.22.33:12345;
+  server 10.1.22.34:12345;
+  server 10.1.22.35:12345;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>依赖于 NGINX Plus，优先分配给响应时间最短的服务器</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>upstream balanceServer {
+  fair; //配置响应时间最短的服务器
+  server 10.1.22.33:12345;
+  server 10.1.22.34:12345;
+  server 10.1.22.35:12345;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>来自同一个 ip 的请求永远只分配一台服务器，有效解决了动态网页存在的 session 共享问题</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>upstream balanceServer {
+    ip_hash; // 配置1个IP永远只分配一台服务器
+    server 10.1.22.33:12345;
+    server 10.1.22.34:12345;
+    server 10.1.22.35:12345;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>配置静态资源服务器，比如：</p>
+
+<p>匹配以 <code class="language-plaintext highlighter-rouge">png|gif|jpg|jpeg</code> 为结尾的请求，将请求转发到本地路径，root 中指定的路径即 nginx 本地路径。同时也可以进行一些缓存的设置。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>location ~* \.(png|gif|jpg|jpeg)$ {
+    root       /root/static/;
+    autoindex  on;
+    access_log off;
+    expires    10h; # 设置过期时间为10小时
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="跨域问题解决">跨域问题解决</h4>
+
+<p>比如 前端 server 的域名为：fe.server.com，后端服务的域名为：dev.server.com</p>
+
+<p>现在我在 fe.server.com 对 dev.server.com 发起请求一定会出现跨域。</p>
+
+<p>现在我们只需要启动一个 nginx 服务器，将 server_name 设置为 fe.server.com,</p>
+
+<p>然后设置相应的 location 以拦截前端需要跨域的请求，最后将请求代理回 dev.server.com。</p>
+
+<p>如下面的配置：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>server {
+  listen       80;
+  server_name  fe.server.com;
+  location / {
+    proxy_pass dev.server.com;
+  }
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>完美绕过浏览器的同源策略：fe.server.com 访问 nginx 的 fe.server.com 属于同源访问，而 nginx 对服务端转发的请求不会触发浏览器的同源策略。</p>
+
+<h4 id="配置-gzip">配置 GZip</h4>
+
+<p>GZip 是三种标准的压缩方式之一，绝大部分的网站都用它来压缩 HTML CSS JavaScript 等资源</p>
+
+<p>对于文本内容，GZip 的效果非常明显，所需流量大约会降至 1/4 ~ 1/3</p>
+
+<p>开启 GZip 最低的 HTTP 要求是 1.1 版本</p>
+
+<p>需要服务器和浏览器同时支持，如浏览器支持 GZip 解析，服务器返回 GZip 压缩过的文件就可以了。通过 nginx 的配置来让服务端支持 GZip，通过 Respone 中 Content-Encoding 设置为 Gzip，指服务端开启了 GZip 的压缩方式</p>
+
+<h2 id="解析-html-文件绘制渲染页面">解析 HTML 文件，绘制渲染页面</h2>
+
+<ul>
+  <li>预解析器，会预解析 HTML 文件，把一些 CSS 和 JavaScript 文件请求回来</li>
+  <li>从上到下开始解析 HTML 文件，调用 HTML 解析器把 HTML 代码解析成 DOM 节点</li>
+  <li>调用 CSS 解析器把 CSS 代码解析成 CSSOM</li>
+  <li>Link 会阻塞 HTML 的解析，我们可以把样式代码进行内联</li>
+  <li>DOM 和 CSSOM 结合，通过样式计算，形成 布局树</li>
+  <li>布局树通过分层信息，形成 层树</li>
+  <li>浏览器开始根据层数进行绘制，绘制是一条条的绘制指令</li>
+  <li>传给合成线程进行光栅化，光栅化是分块的，也可以通过 GPU 加速</li>
+  <li>把处理后的信息返回给显卡去显示</li>
+</ul>
+
+<h3 id="一些优化策略">一些优化策略</h3>
+
+<p>图片比较多的时候一定要进行懒加载，图片是最需要优化的</p>
+
+<p>webpack4 配置 代码分割，提取公共代码成单独模块。方便缓存</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">someConfig</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="cm">/*
+    runtimeChunk 设置为 true, webpack 就会把 chunk 文件名全部存到一个单独的 chunk 中
+    这样更新一个文件只会影响到它所在的 chunk 和 runtimeChunk，避免了引用这个 chunk 的文件也发生改变。
+  */</span>
+  <span class="na">runtimeChunk</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">splitChunks</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">chunks</span><span class="p">:</span> <span class="dl">'</span><span class="s1">all</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// 默认 entry 的 chunk 不会被拆分, 配置成 all, 就可以了</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="tcp-四次挥手断开连接">TCP 四次挥手，断开连接</h2>
+
+<h1 id="让页面更加流畅">让页面更加流畅</h1>
+
+<h2 id="使用-requestanimationframe">使用 requestAnimationFrame</h2>
+
+<p>即便你能保证每一帧的总耗时都小于 16ms，也无法保证一定不会出现丢帧的情况，这取决于触发 JS 执行的方式</p>
+
+<p>假设使用 setTimeout 或 setInterval 来触发 JS 执行并修改样式从而导致视觉变化，那么会有这样一种情况，因为 setTimeout 或 setInterval 没有办法保证回调函数什么时候执行，它可能在每一帧的中间执行，也可能在每一帧的最后执行</p>
+
+<p>所以会导致即便我们能保障每一帧的总耗时小于 16ms，但是执行的时机如果在每一帧的中间或最后，最后的结果依然是没有办法每隔 16ms 让屏幕产生一次变化</p>
+
+<p>也就是说，即便我们能保证每一帧总体时间小于 16ms，但如果使用定时器触发动画，那么由于定时器的触发时机不确定，所以还是会导致动画丢帧</p>
+
+<p>现在整个 Web 只有一个 API 可以解决这个问题，那就是 requestAnimationFrame，它可以保证回调函数稳定的在每一帧最开始触发</p>
+
+<h2 id="避免-fsl强制同步布局">避免 FSL，强制同步布局</h2>
+
+<p>先执行 JS，然后在 JS 中修改了样式从而导致样式计算，然后样式的改动触发了布局、绘制、合成</p>
+
+<p>但 JavaScript 可以强制浏览器将布局提前执行，这就叫 强制同步布局 FSL</p>
+
+<p>比如</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">//读取offsetWidth的值会导致重绘</span>
+<span class="kd">const</span> <span class="nx">newWidth</span> <span class="o">=</span> <span class="nx">container</span><span class="p">.</span><span class="nx">offsetWidth</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>设置 width 的值会导致重排，但是 for 循环内部代码执行速度极快，当上面的查询操作导致的重绘还没有完成，下面的代码又会导致重排，而且这个重排会强制结束上面的重绘，直接重排，这样对性能影响非常大。</p>
+
+<p>所以我们一般会在循环外部定义一个变量</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c1">// 这里面使用变量代替 container.offsetWidth;</span>
+<span class="nx">boxes</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">newWidth</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">px</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="transform-属性">transform 属性</h2>
+
+<p>使用 transform 属性去操作动画，这个属性是由合成器单独处理的，所以使用这个属性可以避免布局与绘制。</p>
+
+<h2 id="translatez0">translateZ(0)</h2>
+
+<p>使用 translateZ(0)开启图层，减少重绘重排</p>
+
+<p>创建图层的最佳方式是使用 will-change，但某些不支持这个属性的浏览器可以使用 3D 变形（transform: translateZ(0)）来强制创建一个新层</p>
+
+<h2 id="样式的切换最好提前定义好-class">样式的切换最好提前定义好 class</h2>
+
+<p>通过 class 的切换批量修改样式，避免多次重绘重排</p>
+
+<h2 id="先切换-displaynone-再修改样式">先切换 display:none 再修改样式</h2>
+
+<h2 id="多次的-append-操作可以先插入到一个新生成的元素中再一次性插入到页面中">多次的 append 操作可以先插入到一个新生成的元素中，再一次性插入到页面中</h2>
+
+<h2 id="localstorage-和-sessionstorage-使用">localstorage 和 sessionstorage 使用</h2>
+
+<p>把这些数据在内存中存储一份，这样只要可以直接从内存中读书，速度更快，性能更好</p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/27/browser-working-principle-loop/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 循环系统"
+            >
+              Previous<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 循环系统</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/04/06/mp/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="小程序开发"
+            >
+              Next<br />
+              <span>小程序开发</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/28/performance";
+  var disqus_url = "https://cody1991.cn/2021/03/28/performance/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

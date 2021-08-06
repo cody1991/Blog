@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《浏览器工作原理与实践》系列笔记 - 浏览器中的网络 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="谈到浏览器的网络，就绕不开 HTTP，它是浏览器中应用最多的协议，是浏览器和服务器之间通信的语言，也是互联网的基石
+"
+  />
+   <meta property="article:published_time" content="2021-03-21T00:00:00Z">   
+  <meta property="article:tag" content="browser" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/21/browser-working-principle-http/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《浏览器工作原理与实践》系列笔记 - 浏览器中的网络 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/21/browser-working-principle-http/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=browser" title="browser">browser</a>
+                        
+                    </div>
+                    <h1>《浏览器工作原理与实践》系列笔记 - 浏览器中的网络</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 21, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>谈到浏览器的网络，就绕不开 HTTP，它是浏览器中应用最多的协议，是浏览器和服务器之间通信的语言，也是互联网的基石</p>
+
+<p>随着浏览器发展，为了适合新的形式也在持续发展。</p>
+
+<p>了解 HTTP 最好的方法就是了解它的发展史。接下来会从以浏览器的发展视角讲讲 HTTP 的研究，分别是</p>
+
+<ul>
+  <li>即将完成使命的 HTTP/1</li>
+  <li>走向我们的 HTTP/2</li>
+  <li>未来的 HTTP/3</li>
+</ul>
+
+<h1 id="http1http-性能优化">HTTP1：HTTP 性能优化</h1>
+
+<p>这节主要讲 HTTP/1.1，先来了解下发展史，然后介绍遇到的各种瓶颈，以及解决方法</p>
+
+<h2 id="超文本传输协议-http09">超文本传输协议 HTTP/0.9</h2>
+
+<p>这个协议是 1991 年提出的，最早的 HTTP 协议，主要用于学术，也是简单的在网络之间传输 HTML 文件就好了，所以也叫超文本传输协议。协议简单，采用请求响应模式，客户端发请求，服务器返回数据。它的主要流程如下：</p>
+
+<p><img src="/img/posts/browser/http/1.png" alt="" /></p>
+
+<p>当初传送的 HTML 文件也很小， HTTP/0.9 主要有下面几个特点</p>
+
+<ol>
+  <li>只有一个请求行，没有请求头和请求体。主要一个请求行就可以表示所有的客户端需求了</li>
+  <li>响应数据也没有响应头，只有响应行和响应体里面的数据</li>
+  <li>返回的数据内容是 ASCII 字节流传送的，因为当时也只有 HTML 格式的文件</li>
+</ol>
+
+<h2 id="被浏览器推动的-http10">被浏览器推动的 HTTP/1.0</h2>
+
+<p>1994 年，出现拨号上网服务，网景推出了第一款浏览器，万维网不仅限于学术交流，进入高速发展阶段。随后 W3C 和 HTTP 工作组成立，致力于 HTTP 的发展和改进</p>
+
+<p>万维网的高速发展带来很多新的需求，HTTP/0.9 已经不适合新型网络的发展了，需要一个新的协议来支撑，这就是 HTTP/1.0 诞生的原因。我们先看看新型网络需要什么需求</p>
+
+<p>浏览器中不再只有 HTML 文件，还包含了 JavaScript CSS 图片 音频 视频，因此支持多文件类型的下载是核心的诉求，文件格式也不应该局限于 ASCII，还有很多其他编码的文件</p>
+
+<h2 id="如何实现多文件的下载">如何实现多文件的下载？</h2>
+
+<p>HTTP/0.9 只有一个请求行，无法告诉服务器更多的信息，比如文件类型和文件编码。同样的，服务器返回的也只有数据和响应行，没有办法告知更多关于返回数据的信息</p>
+
+<p>于是在 HTTP/1.0 加入了请求头和响应头，以 key-value 形式保存，发送请求会先加上请求头，返回的数据也会先看到响应头</p>
+
+<p><img src="/img/posts/browser/http/2.png" alt="" /></p>
+
+<p>HTTP/1.0 是通过什么手段来支持多种不同的文件类型的？我们需要解决下面几个问题</p>
+
+<ul>
+  <li>浏览器需要知道服务器返回的数据类型是什么，才能根据类型进行不同的处理</li>
+  <li>万维网支持的类型越来越多，单个文件的体积也越来越大，为了减轻传输的性能，需要对数据进行压缩后在传输，浏览器需要知道服务器的压缩方法</li>
+  <li>万维网是支持全球的，不同的地方有不同的语言版本，所以浏览器需要告知服务器需要的语言版本</li>
+  <li>最后浏览器也需要知道文件的编码格式</li>
+</ul>
+
+<p>于是，HTTP/1.0 的一个请求可能是下面这样的，告知服务器需要返回什么类型的文件，期望的文件的编码，能够接收的压缩方式，以及期望的的语言版本</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>accept: text/html
+accept-encoding: gzip, deflate, br
+accept-Charset: ISO-8859-1,utf-8
+accept-language: zh-CN, zh
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>而服务器也会新增响应头，如下例子，告知了使用的压缩方法，已经返回的文件格式和编码格式</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>content-encoding: br
+content-type: text/html; charset=UTF-8
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>那么浏览器就会使用 br 的方式进行解压，按照 utf-8 的编码格式处理文件，按照 text/html 的方法解析 HTML 文件</p>
+
+<p>另外也根据需求引入了一些其他的功能，基本都是通过请求头和响应头来实现的</p>
+
+<ul>
+  <li>引入了状态码，主要当初有时候请求无法成功等，需要告诉浏览器处理结果</li>
+  <li>减轻服务器的压力，HTTP/1.0 提供了 cache 的能力，缓存已经下载的数据</li>
+  <li>服务器需要统计客户端的信息，所以请求头还加入了用户代理信息字段</li>
+</ul>
+
+<h2 id="缝缝补补的-http11">缝缝补补的 HTTP/1.1</h2>
+
+<p>需求继续在迭代，很快 HTTP/1.0 也很多需求不能满足，HTTP/1.1 在其基础上继续做了大量的更新。我们来看看 HTTP/1.0 遇到的问题，以及怎么解决的</p>
+
+<h3 id="改进持久连接">改进持久连接</h3>
+
+<p>HTTP/1.0 每次 HTTP 请求，都需要进过 TCP 建立连接，传输数据，断开连接的过程</p>
+
+<p><img src="/img/posts/browser/http/3.png" alt="" /></p>
+
+<p>一开始传输的内容不多，文件比较少，问题不大，但是随着网页的图片越来越多，如果每个请求都这么处理的话，开销非常大</p>
+
+<p>于是在 HTTP/1.1 增加了持久连接的方法，在一个 TCP 连接上可以传输多个 HTTP 请求，只要浏览器或者服务器没有明确断开的话，就一直保持</p>
+
+<p><img src="/img/posts/browser/http/4.png" alt="" /></p>
+
+<p>这样有效的减少了 TCP 建立连接和断开连接的次数，减少了服务器的压力</p>
+
+<p>持久连接在 HTTP/1.1 是默认打开的，如果不想使用的话可以使用 Connect: close 关闭。目前浏览器对于同一个域名，最多可以开启 6 个持久连接</p>
+
+<h3 id="不成熟的-http-管线化">不成熟的 HTTP 管线化</h3>
+
+<p>持久连接可以减少建立连接和断开连接的次数，但是要等待前面的请求返回才能进行下一次的请求，如果某次请求由于一些原因无法快速返回的话，就会阻塞后面的请求，这就是著名的队头阻塞问题</p>
+
+<p>HTTP/1.1 试图通过管线化技术解决这个问题，多个 HTTP 请求整批提交给服务器的技术，虽然可以整批提交，但是还是需要按照请求顺序回复浏览器的请求</p>
+
+<h3 id="提供虚拟主机支持">提供虚拟主机支持</h3>
+
+<p>HTTP/1.0 每一个域名绑定了唯一的 IP 地址，一个服务器只能支持一个域名，随着虚拟机的发展，需要实现一台物理主机上绑定多个虚拟机，每个虚拟机有自己的单独的域名，这些单独的域名都用同一个 IP 地址</p>
+
+<p>因此 HTTP/1.1 增加了 Host 字段，用来表明现在的域名地址，服务器可以根据不同的 Host 进行处理</p>
+
+<h3 id="对动态生成的内容进行支持">对动态生成的内容进行支持</h3>
+
+<p>HTTP/1.0 需要在响应头设置数据的大小，比如 Content-Length: 901，浏览器可以根据这个信息来进行数据的接收，不过后来很多的内容是动态生成的，传输前并不知道最终的数据大小，导致浏览器不知道什么时候能接收完所有的文件数据</p>
+
+<p>HTTP/1.1 引入了 chunk transfer 机制解决了这个问题，服务器把数据切割成若干个任意大小的数据，每个数据块发送的时候会附上上一个数据块的长度，最后使用一个零长度的块表示数据完成的标志，这样就提供了动态内容的支持了</p>
+
+<h3 id="客户端-cookie安全机制">客户端 cookie，安全机制</h3>
+
+<p>HTTP/1.1 引入了客户端 cookie 机制和安全机制</p>
+
+<h2 id="总结">总结</h2>
+
+<ul>
+  <li>HTTP/0.9 因为需求简单，实现也简单</li>
+  <li>随着万维网高速发展，核心需求是增加多文件类型的支持，HTTP/1.0 引入了请求头和响应头，也引入了新的 Cache 机制，用户代理，状态码等基础信息</li>
+  <li>人们对传输的要求越来越高，HTTP/1.1 增加了持久连接，尝试管道化提升效率（但是最终放弃了），引入了 cookie，安全机制，虚拟主机的支持，动态内容的支持</li>
+</ul>
+
+<p>虽然 HTTP/1.1 做了很多优化，但是还存在很多的痛点，需要 HTTP/2 去解决了</p>
+
+<h1 id="http2如何提升网络速度">HTTP2：如何提升网络速度</h1>
+
+<p>HTTP/1.1 主要做了下面三个优化：</p>
+
+<ul>
+  <li>持久连接</li>
+  <li>为每个域名维护 6 个持久 TCP 连接</li>
+  <li>使用 CDN 实现域名分片机制</li>
+</ul>
+
+<p>我们看下最后一点</p>
+
+<p><img src="/img/posts/browser/http/5.png" alt="" /></p>
+
+<p>引入了 CDN，同时为每个域名维护 6 个连接，大大减少了资源的下载时间。
+如果使用单个 TCP 连接的话，下载 100 个资源所花费的时间为 <code class="language-plaintext highlighter-rouge">100 * n * RTT</code>
+如果通过上面的手段，整个时间缩短为 <code class="language-plaintext highlighter-rouge">100 * n * RTT/(6 * CDN 个数)</code></p>
+
+<h2 id="http11-的主要问题">HTTP/1.1 的主要问题</h2>
+
+<p>带带宽的利用率不高，是核心问题之一</p>
+
+<p>带宽指的是每秒最多可以接收或者发送的字节数，能发送的最大字节数上限叫做上行带宽，能接受的最大字节数叫做下行带宽</p>
+
+<p>HTTP/1.1 很难把带宽用满，比如我们说 100M 带宽，实际下载速度能达到 12.5M/s。采用 HTTP/1.1 的话最大只能到 2.5M/s，这个问题的主要原因有下面几点：</p>
+
+<h3 id="tcp-的慢启动">TCP 的慢启动</h3>
+
+<p>一旦 TCP 连接完成，进入数据发送状态，一开始 TCP 采用一个很慢的速度去发送数据，然后慢慢加快速度，直到达到一个理想的状态，这个过程称之为慢启动</p>
+
+<p>就像开车一样，一开始速度为 0，慢慢加速直到稳定的车速 🚗</p>
+
+<p>慢启动 TCP 是为了减少网络阻塞的一种策略，我们无法改变</p>
+
+<p>而慢启动带来性能的问题是因为我们常用的资源文件本身不大，比如 HTML CSS JavaScript 文件，通常建立好连接就要发起请求，但是因为慢启动的原因，耗费的时间比正常时间多很多，也推迟了宝贵的首屏加载速度了</p>
+
+<h3 id="同时开启了多条-tcp-连接那么这些连接会竞争固定的带宽">同时开启了多条 TCP 连接，那么这些连接会竞争固定的带宽</h3>
+
+<p>同时建立了多条 TCP 连接，带宽充足的时候，发送速度（接收的情况一样）会慢慢上升，如果带宽不足的话，TCP 会减慢发送的速度。</p>
+
+<p>如果一个页面 200 个文件，使用了 3 个 CDN，那么加载的时候启用了 <code class="language-plaintext highlighter-rouge">6 * 3</code> 个 TCP 连接来下载文件，当发现带宽不足的时候，各个 TCP 连接都动态减慢速度</p>
+
+<p>这样会出现一个问题，因为一个 TCP 连接下载的是关键资源，比如 CSS JavaScript，而有的是下载图片 视频等资源。</p>
+
+<p>但是多条 TCP 连接不能协商哪个关键资源优先下载，那么就会影响关键资源等下载了</p>
+
+<h3 id="http11-头部阻塞问题">HTTP/1.1 头部阻塞问题</h3>
+
+<p>虽然可以公用一条 TCP 连接，但是同一时刻只能处理一个 HTTP 请求，如果一个请求一直卡住，那机会阻塞所有请求。那么这个时候带宽，CPU 也在白白浪费了</p>
+
+<p>而且在浏览器生成页面等过程，也希望能提前收到数据，进行一些预处理，比如接收到图片先进行编解码操作，真正需要的时候能马上使用，让用户感觉整体速度提升了</p>
+
+<p>头部阻塞使得这些资源不能并行处理，非常不利于优化</p>
+
+<h2 id="http2-多用复用">HTTP/2 多用复用</h2>
+
+<ul>
+  <li>慢启动和 TCP 连接之间相互竞争带宽是由于 TCP 本身的机制导致的</li>
+  <li>而队头阻塞是由于 HTTP/1.1 的机制导致的</li>
+</ul>
+
+<p>怎么解决呢？</p>
+
+<p>HTTP/2 的思路是一个域名只使用一条 TCP 长连接来传输数据，那么慢启动过程就只有一次，也避免了多个 TCP 连接带来的带宽竞争问题</p>
+
+<p>HTTP/2 也需要去实现资源的并行请求，任何时候发送请求给服务器，都不需要等待其他的请求，随时返回数据给浏览器</p>
+
+<p>HTTP/2 的方案总结如下：一个域名只使用一个 TCP 长连接和消除队头阻塞问题。示意图如下：</p>
+
+<p><img src="/img/posts/browser/http/6.png" alt="" /></p>
+
+<p>这也是 HTTP/2 最核心，最重要和具有颠覆性的多路复用机制。可以发现每个 HTTP 请求会有一个对应的 ID，比如 stream1 代表 index.html 请求，stream2 代表 foo.css 请求。浏览器可以随时发送请求</p>
+
+<p>服务器接收到以后会按照喜好来决定优先返回的内容，比如如果已经准备好了 index.html 和 bar.js 的响应头信息，那么接收到请求的时候里面把它们的响应头信息返回，然后再把它们的响应体信息返回</p>
+
+<p>之所以可以随意发送，是因为每份数据都有对应的 ID，浏览器接收到数据以后会根据 ID 拼接为完整的响应数据</p>
+
+<p>HTTP/2 采用了多路复用的技术可以把请求分成一帧一帧去传输，这样带来的一个好处是当接收到一个优先级高的请求， 比如 JavaScript 或者 CSS 关键资源的请求，服务器可以暂停现在的处理优先处理这部分的请求</p>
+
+<h2 id="多路复用的实现">多路复用的实现</h2>
+
+<p><img src="/img/posts/browser/http/7.png" alt="" /></p>
+
+<p>多路复用是怎么实现的呢？</p>
+
+<p>HTTP/2 新增了一个二进制分帧层，我们看看现在的过程</p>
+
+<ul>
+  <li>浏览器准备好请求行，请求头，请求体（如果有的话）</li>
+  <li>这些数据经过二进制分帧层，会被转换成带有请求 ID 编号的帧</li>
+  <li>服务器收到所有帧数据以后，会把所有相同 ID 的帧合并为一条完整的请求信息</li>
+  <li>服务器处理该请求，并把处理好的响应行，响应头和响应体发送给二进制分帧层</li>
+  <li>通用响应数据转成一个个带有响应 ID 编号的帧，返回给浏览器</li>
+  <li>接收到响应帧以后根据 ID 把帧数据交给对应的请求对象</li>
+</ul>
+
+<p>通过引入二进制分帧层，来实现了多路复用</p>
+
+<p>HTTP/2 对比 HTTP/1.1 改变的只是传输的方式</p>
+
+<h2 id="http2-其他特性">HTTP/2 其他特性</h2>
+
+<p>多路复用并行传输是 HTTP/2 的最主要特点，建立在二进制分帧层的基础之上的</p>
+
+<p>而在这个基础上还增加了一些其他新的特性</p>
+
+<h3 id="设置请求的优先级">设置请求的优先级</h3>
+
+<p>HTTP/2 提供了请求优先级，在发送请求的时候标上优先级，服务器收到以后也会优先处理</p>
+
+<h3 id="服务器推送">服务器推送</h3>
+
+<p>服务器可以直接推送消息给浏览器，比如当用户请求了一个 HTML 文件以后，服务器直到这个文件还需要后续引用的 JavaScript 文件和 CSS 文件，可以附带把这些文件一并发送给浏览器，当解析 HTML 的时候，能直接使用它们，这对于首屏加载速度是非常有意义的</p>
+
+<h3 id="头部压缩">头部压缩</h3>
+
+<p>对请求头和响应头进行了压缩。可能有时候觉得请求头不多，不需要压缩，但是发送请求的时候基本内容都是请求头信息，很少有请求体。如果有 100 个请求，把请求头信息压缩成原来的 20%，那也能提升不少的速度</p>
+
+<h2 id="总结-1">总结</h2>
+
+<p>分析 HTTP/1.1 存在的问题：慢启动，多条 TCP 竞争，头部阻塞问题</p>
+
+<p>HTTP/2 采用了多路复用对技术来解决这些问题，它是通过增加二进制分帧层来实现的，还能够设置资源的优先级，服务器推送，头部压缩等特性，大大提升了传输效率</p>
+
+<p>HTTP/2 在 2015 年发布后，已经得到了广泛的应用，国内很多网站已经实现了 HTTP/2 的部署，能带来大概 20%～ 60%的效率提升</p>
+
+<h1 id="http3甩掉-tcptcl-包袱-构建高效网络">HTTP3：甩掉 TCP、TCL 包袱 构建高效网络</h1>
+
+<p>HTTP/2 在 2018 年后大规模应用，很多缺陷都得到了解决</p>
+
+<p>HTTP/2 核心技术是使用了 多路复用技术，通过一个 TCP 连接来发送多个 URL 请求。能充分利用带宽，规避了 TCP 的满启动所带来的问题，还实现了头部压缩，服务器推送等功能，页面资源的传输速度大幅提升了</p>
+
+<p>HTTP/1.1 为了提升并行下载效率浏览器为每个域名维护了 6 个 TCP 连接，采用 HTTP/2 以后浏览器只为每个域名维护一个 TCP 持久连接，同时也解决了 HTTP/1.1 队头阻塞的问题</p>
+
+<p>不过我们看看 HTTP/2 存在什么缺陷</p>
+
+<h2 id="tcp-的队头阻塞">TCP 的队头阻塞</h2>
+
+<p>HTTP/2 解决了应用层面的队头阻塞问题，但是和 HTTP/1.1 一样还是基于 TCP 协议，TCP 协议一开始就是为单连接设计的，可以看成是两个计算机之间的虚拟管道，一端要将传输的数据按照顺序放到管道，最终也以相同的顺序出现在管道的另外一头</p>
+
+<p>我们看看 HTTP/1.1 协议栈中 TCP 是怎么传输数据的</p>
+
+<p><img src="/img/posts/browser/http/8.png" alt="" /></p>
+
+<p>从一端发送到另外一端的数据会拆分为一个个按照顺序排序的数据包，通过网络传送到了接收端，接收端按照顺序把这些数据包组合成原始数据，完成数据的传输</p>
+
+<p>如果有网络故障等导致丢包了，那么 TCP 连接就处于暂停状态，需要等丢失的包重新传过来。就像管道中的任意一块数据丢失了，之后的数据都需要等这个数据的重新传输</p>
+
+<p><img src="/img/posts/browser/http/9.png" alt="" /></p>
+
+<p>在 TCP 传输过程中，由于单个数据包的丢失造成的阻塞称为 TCP 上的队头阻塞</p>
+
+<p>队头阻塞怎么影响 HTTP/2 的传输呢？正常情况下 HTTP/2 是怎么传输多路请求的：</p>
+
+<p><img src="/img/posts/browser/http/10.png" alt="" /></p>
+
+<p>多个请求是跑在一个 TCP 管道中的，任意一路数据流出现队报，那么会阻塞该 TCP 连接中的所有请求。不同于 HTTP/1.1，浏览器为每个浏览器开启了 6 个 TCP 连接，如果一个 TCP 连接发生了队头阻塞，其他 5 个连接依然可以继续传输数据</p>
+
+<p>所以随着丢包率的增加 HTTP/2 的传输效率也会越来越差，系统达到 2%丢包率时，HTTP/1.1 的传输效率反而比 HTTP/2 表现更好</p>
+
+<h2 id="tcp-建立连接的延时">TCP 建立连接的延时</h2>
+
+<p>除了 TCP 队头阻塞问题，TCP 的握手也是影响效率的重要因素</p>
+
+<p>网络延迟又叫 RTT（Round Trip Time），我们把一个包发送到服务器，再从服务器返回数据包到浏览器的往返时间称之为 RTT，反映网络性能的重要指标</p>
+
+<p><img src="/img/posts/browser/http/11.png" alt="" /></p>
+
+<p>建立 TCP 连接需要几个 RTT 呢？如果使用 HTTPS 的话还需要 TLS 协议进行安全传输，使用 TLS 也是一个握手过程</p>
+
+<ul>
+  <li>建立 TCP 连接需要三次握手确认成功连接，需要消耗 1.5 个 RTT 才能进行数据传输</li>
+  <li>进行 TLS 连接，它有两个版本：TLS1.2 和 TLS1.3，每个版本建立所花时间不太一样，大概是 1 ～ 2 个 RTT</li>
+</ul>
+
+<p>大概需要 3 ～ 4 个 RTT 的事件，如果浏览器和服务器的物理距离比较近一个 RTT 可以在 10ms 以内，大概花费了 30 ～ 40ms，如果比较远的话一个 RTT 可能 100ms 以上，握手过程就需要 300~400ms 了</p>
+
+<h2 id="tcp-协议僵化">TCP 协议僵化</h2>
+
+<p>我们知道了队头阻塞和建立连接延迟的缺点，是否可以改进 TCP 协议呢？非常困难</p>
+
+<p>第一个原因是中间设备的僵化。互联网是多个网络互联的网站结构，为了保证互联网正常工作，需要各处搭建设备，称之为中间设备</p>
+
+<p>中间设备类型很多，包括路由器，防火墙，NAT，交换机等，通常依赖一些很少升级的软件，这些软件使用了大量 TCP 特性，被设置后就很少更新了</p>
+
+<p>如果客户端升级了 TCP 协议，新协议数据包经过这些中间设备，可能它们都不理解包的内容，就被丢弃了，它是阻碍 TCP 更新的一个大的障碍</p>
+
+<p>另外一个原因是操作系统的问题，TCP 协议都通过操作系统内核来实现，应用程序只能使用不能修改，而操作系统一般滞后于软件的更新，想要自由更新内核中的 TCP 协议也很难</p>
+
+<h2 id="quic-协议">QUIC 协议</h2>
+
+<p>HTTP/2 存在的一些缺陷都和 TCP 协议有关，但是 TCP 协议僵化，又很难通过修改 TCP 协议来解决这些问题，那现在考虑的就是如果绕过 TCP 协议，发明一个新的传输协议。但是也一样存在问题，中间设备的僵化，只认 TCP 和 UDP 协议，一样不能很好的支持</p>
+
+<p>所以 HTTP/3 选择一个折中的方案 - UDP 协议，基于 UDP 实现了类似于 TCP 的多路数据流，传输可靠性等功能，把这套叫做 QUIC 协议</p>
+
+<p><img src="/img/posts/browser/http/12.png" alt="" /></p>
+
+<p>我们看下 HTTP/3 的 QUIC 协议集合了以下几个功能</p>
+
+<ul>
+  <li>实现类似 TCP 的流量控制，传输可靠性功能。虽然 UDP 不提供可靠性传输，但是 QUIC 在 UDP 基础上增加了一层来保证数据可靠性传输，也提供了数据包重传，拥塞控制和一些其他的 TCP 特性</li>
+  <li>继承 TLS 加密功能，因为 QUIC 使用的是 TLS1.3，有更多的优点，其中之一是减少握手所花费的 RTT 个数</li>
+  <li>实现 HTTP/2 多路复用功能，与 TCP 不同，QUIC 实现了在同一物理连接上可以有多个独立逻辑的数据流，如下图，实现了数据流的单独传输，解决了 TCP 中队头阻塞的问题
+<img src="/img/posts/browser/http/13.png" alt="" /></li>
+  <li>实现了快速握手功能，由于 QUIC 基于 UDP，所以 QUIC 可以实现 0-RTT 或者 1-RTT 来建立连接，意味着以最快的速度来发送和接收数据，大大提升了首次打开页面的速度</li>
+</ul>
+
+<h2 id="http3-的挑战">HTTP/3 的挑战</h2>
+
+<ul>
+  <li>服务器和浏览器都没对 HTTP/3 提供比较完整的支持，Chrome 虽然很早支持 Chrome 版本的 QUIC，但是和官方的差异很大</li>
+  <li>部署 HTTP/3 存在很大的问题，系统对 UDP 的优化远远没有 TCP 的优化程度高，也是阻碍 QUIC 的重要原因</li>
+  <li>中间设备僵化，它们对 UDP 的优化也比 TCP 低，大概有 3%～ 7%的丢包率</li>
+</ul>
+
+<h2 id="总结-2">总结</h2>
+
+<ul>
+  <li>分析了 HTTP/2 中存在的一些问题，主要是 TCP 的队头阻塞，建立 TCP 的连接延时，和 TCP 协议的僵化问题</li>
+  <li>都是 TCP 内部问题，所以需要优化 TCP 或者另起炉灶</li>
+  <li>HTTP/3 基于 QUIC 协议，继承了 TCP+HTTP/2 多路复用+TLS 等一套协议，集众家所长，从协议底层对 Web 传输做了比较彻底的优化。不过需要等生态生疏，打造比 HTTP/2 更加高效的网络</li>
+  <li>动了底层协议，推广起来有巨大的挑战</li>
+</ul>
+
+<p>从制定了标准到标准的实践以及优化还有很长的路要走，HTTP/3 的增长速度也会慢很多，因为动了底层的协议，所以路漫漫～</p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/20/vue3-ts-list/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Vue3 + TypeScript + Vuex4 初尝试"
+            >
+              Previous<br />
+              <span>Vue3 + TypeScript + Vuex4 初尝试</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/21/browser-working-principle/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 宏观视觉上的浏览器"
+            >
+              Next<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 宏观视觉上的浏览器</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/21/browser-working-principle-http";
+  var disqus_url = "https://cody1991.cn/2021/03/21/browser-working-principle-http/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

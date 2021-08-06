@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《JS 正则迷你书》笔记1 - 字符匹配 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="from https://github.com/qdlaoyao/js-regex-mini-book
+"
+  />
+   <meta property="article:published_time" content="2020-07-21T00:00:00Z">   
+  <meta property="article:tag" content="Regular" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2020/07/21/regular-1/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《JS 正则迷你书》笔记1 - 字符匹配 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2020/07/21/regular-1/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Regular" title="Regular">Regular</a>
+                        
+                    </div>
+                    <h1>《JS 正则迷你书》笔记1 - 字符匹配</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on July 21, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>from <a href="https://juejin.im/post/59cc61176fb9a00a437b290b">https://github.com/qdlaoyao/js-regex-mini-book</a></p>
+
+<p><code class="language-plaintext highlighter-rouge">正则要么匹配字符，要么匹配位置</code></p>
+
+<h1 id="字符匹配">字符匹配</h1>
+
+<h2 id="两种模糊匹配横向和纵向">两种模糊匹配：横向和纵向</h2>
+
+<h3 id="横向">横向</h3>
+
+<p>匹配长度不固定，使用量词 <code class="language-plaintext highlighter-rouge">{m,n}</code></p>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">/ab{2,5}c/</code>，匹配 1 个 a,2~5 个 b,1 个 c</p>
+
+<p><img src="/img/posts/reg-1.svg" alt="https://regexper.com/#%2Fab%7B2%2C5%7Dc%2F" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">/ab</span><span class="se">{2,5}</span><span class="sr">c/g</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">abc abbc abbbc abbbbc abbbbbc abbbbbbc</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">reg</span><span class="p">);</span>
+<span class="c1">// (4) ["abbc", "abbbc", "abbbbc", "abbbbbc"]</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="纵向">纵向</h3>
+
+<p>具体到某一个字符到时候，可以是多个字符里面到某一个</p>
+
+<p>使用数组来实现，比如 <code class="language-plaintext highlighter-rouge">[abc]</code>，这个位置有可能是 <code class="language-plaintext highlighter-rouge">a</code> <code class="language-plaintext highlighter-rouge">b</code> <code class="language-plaintext highlighter-rouge">c</code></p>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">a[123]b</code> 可以匹配 <code class="language-plaintext highlighter-rouge">a1b</code> <code class="language-plaintext highlighter-rouge">a2b</code> <code class="language-plaintext highlighter-rouge">a3b</code></p>
+
+<p><img src="/img/posts/reg-2.svg" alt="https://regexper.com/#%2Fa%5B123%5Db%2F" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">/a</span><span class="se">[</span><span class="sr">123</span><span class="se">]</span><span class="sr">b/g</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">a0b a1b a2b a3b a4b</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">reg</span><span class="p">);</span>
+<span class="c1">// (3) ["a1b", "a2b", "a3b"]</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="范围表示法">范围表示法</h3>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">[123456abcdefGHIJKLM]</code> 可以表示成 <code class="language-plaintext highlighter-rouge">[1-6a-fG-M]</code></p>
+
+<p>如果要表示 <code class="language-plaintext highlighter-rouge">a</code> <code class="language-plaintext highlighter-rouge">-</code> <code class="language-plaintext highlighter-rouge">z</code> 的话要写成 <code class="language-plaintext highlighter-rouge">[-az]</code> <code class="language-plaintext highlighter-rouge">[az-]</code> <code class="language-plaintext highlighter-rouge">[a\-z]</code>，要么再开头要么在结尾要么转义</p>
+
+<h3 id="排除字符组">排除字符组</h3>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">[^abc]</code>，除了 <code class="language-plaintext highlighter-rouge">a</code> <code class="language-plaintext highlighter-rouge">b</code> <code class="language-plaintext highlighter-rouge">c</code> 的都符合条件</p>
+
+<h3 id="常见简写">常见简写</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>字符组</th>
+      <th>含义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>\d</td>
+      <td><code class="language-plaintext highlighter-rouge">[0-9]</code></td>
+    </tr>
+    <tr>
+      <td>\D</td>
+      <td><code class="language-plaintext highlighter-rouge">[^0-9]</code></td>
+    </tr>
+    <tr>
+      <td>\w</td>
+      <td><code class="language-plaintext highlighter-rouge">[0-9a-zA-Z_]</code></td>
+    </tr>
+    <tr>
+      <td>\W</td>
+      <td><code class="language-plaintext highlighter-rouge">[^0-9a-zA-Z_]</code></td>
+    </tr>
+    <tr>
+      <td>\s</td>
+      <td><code class="language-plaintext highlighter-rouge">[\t\v\n\r\f]</code> 空白字符，包括空格、水平制表符、垂直制表符、换行符、回车符、换页符</td>
+    </tr>
+    <tr>
+      <td>\S</td>
+      <td><code class="language-plaintext highlighter-rouge">[^\t\v\n\r\f]</code> 非空白字符</td>
+    </tr>
+    <tr>
+      <td>.</td>
+      <td>[^\n\r\u2028\u2029] 所有字符，换行符、回车符、行分隔符和段分隔符除外</td>
+    </tr>
+    <tr>
+      <td>匹配所有</td>
+      <td><code class="language-plaintext highlighter-rouge">[\d\D]</code> <code class="language-plaintext highlighter-rouge">[\w\W]</code> <code class="language-plaintext highlighter-rouge">[\s\S]</code> <code class="language-plaintext highlighter-rouge">[^]</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="量词">量词</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>字符组</th>
+      <th>含义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">{m,}</code></td>
+      <td>至少 <code class="language-plaintext highlighter-rouge">m</code> 次</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">{m,n}</code></td>
+      <td><code class="language-plaintext highlighter-rouge">m</code> 到 <code class="language-plaintext highlighter-rouge">n</code> 次</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">{m}</code></td>
+      <td><code class="language-plaintext highlighter-rouge">m</code> 次</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?</code></td>
+      <td><code class="language-plaintext highlighter-rouge">{0,1}</code> 没有或者一次</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">+</code></td>
+      <td><code class="language-plaintext highlighter-rouge">{1,}</code> 一次或者更多</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">*</code></td>
+      <td><code class="language-plaintext highlighter-rouge">{0,}</code> 任意次数</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>比如</p>
+
+<p><code class="language-plaintext highlighter-rouge">/a{1,}b{2,4}c{2}d?e+f*/</code></p>
+
+<p><img src="/img/posts/reg-3.svg" alt="https://regexper.com/#%2Fa%7B1%2C%7Db%7B2%2C4%7Dc%7B2%7Dd%3Fe%2Bf*%2F" /></p>
+
+<h3 id="贪婪和惰性匹配">贪婪和惰性匹配</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">/</span><span class="se">\d{2,5}</span><span class="sr">/g</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">123 1234 12345 123456</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">reg</span><span class="p">));</span>
+<span class="c1">// (4) ["123", "1234", "12345", "12345"]</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它是贪婪的，尽可能匹配更多的数字</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">/</span><span class="se">\d{2,5}?</span><span class="sr">/g</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">123 1234 12345 123456</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">reg</span><span class="p">));</span>
+<span class="c1">// (8) ["12", "12", "34", "12", "34", "12", "34", "56"]</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以在量词后面加上 <code class="language-plaintext highlighter-rouge">?</code> 表示惰性的，尽可能少匹配</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>贪婪量词</th>
+      <th>惰性量词</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">{m,}</code></td>
+      <td><code class="language-plaintext highlighter-rouge">{m,}?</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">{m,n}</code></td>
+      <td><code class="language-plaintext highlighter-rouge">{m,n}?</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">?</code></td>
+      <td><code class="language-plaintext highlighter-rouge">??</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">+</code></td>
+      <td><code class="language-plaintext highlighter-rouge">+?</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">*</code></td>
+      <td><code class="language-plaintext highlighter-rouge">*?</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code class="language-plaintext highlighter-rouge">/a{1,}?b{2,4}?d??e+?f*?/</code></p>
+
+<p><img src="/img/posts/reg-4.svg" alt="https://regexper.com/#%2Fa%7B1%2C%7D%3Fb%7B2%2C4%7D%3Fd%3F%3Fe%2B%3Ff*%3F%2F" /></p>
+
+<h3 id="多选分支">多选分支</h3>
+
+<p>选择多个子模式中的一个</p>
+
+<p><code class="language-plaintext highlighter-rouge">(p1|p2|p3)</code>，这里是三个子模式，用 <code class="language-plaintext highlighter-rouge">|</code> 管道符分开，表示其中任意一个，比如要匹配 <code class="language-plaintext highlighter-rouge">good</code> 和 <code class="language-plaintext highlighter-rouge">nice</code>，使用 <code class="language-plaintext highlighter-rouge">(good|nice)</code></p>
+
+<p>另外如果我们用 <code class="language-plaintext highlighter-rouge">/good|goodbye/</code> 匹配 <code class="language-plaintext highlighter-rouge">goodbye</code> 得到的是 <code class="language-plaintext highlighter-rouge">good</code>，用 <code class="language-plaintext highlighter-rouge">/goodbye|good/</code> 匹配 <code class="language-plaintext highlighter-rouge">goodbye</code> 得到的是 <code class="language-plaintext highlighter-rouge">goodbye</code>，所以它也是惰性的，匹配到了就停止</p>
+
+<h3 id="案例分析">案例分析</h3>
+
+<h4 id="匹配-16-进制颜色值">匹配 16 进制颜色值</h4>
+
+<p>要求匹配：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>#ffbbad
+#Fc01DF
+#FFF
+#ffE
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">/#([0-9a-zA-Z]{3}|[0-9a-zA-Z]{6})/</code></p>
+
+<p><img src="/img/posts/reg-5.svg" alt="https://regexper.com/#%2F%23%28%5B0-9a-zA-Z%5D%7B3%7D%7C%5B0-9a-zA-Z%5D%7B6%7D%29%2F" /></p>
+
+<h4 id="匹配时间">匹配时间</h4>
+
+<p>要求匹配：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>23:59
+02:07
+7:9
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">/^(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])$/</code></p>
+
+<p><img src="/img/posts/reg-6.svg" alt="https://regexper.com/#%2F%5E%280%3F%5B0-9%5D%7C1%5B0-9%5D%7C2%5B0-3%5D%29%3A%280%3F%5B0-9%5D%7C%5B1-5%5D%5B0-9%5D%29%24%2F" /></p>
+
+<h4 id="匹配日期">匹配日期</h4>
+
+<p>要求匹配：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>2017-06-10
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/</code></p>
+
+<p><img src="/img/posts/reg-7.svg" alt="https://regexper.com/#%2F%5E%5B0-9%5D%7B4%7D-%280%5B1-9%5D%7C1%5B0-2%5D%29-%280%5B1-9%5D%7C%5B12%5D%5B0-9%5D%7C3%5B01%5D%29%24%2F" /></p>
+
+<h4 id="window-操作系统文件路径">window 操作系统文件路径</h4>
+
+<p>要求匹配：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>F:\study\javascript\regex\regular expression.pdf
+F:\study\javascript\regex\
+F:\study\javascript
+F:\
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">/^[a-zA-Z]:\\([^\\:*&lt;&gt;|"?\r\n/]+\\)*([^\\:*&lt;&gt;|"?\r\n/]+)?$/</code></p>
+
+<p>一开始代表的是 <code class="language-plaintext highlighter-rouge">[a-zA-Z]</code> 中的一个单词，配上 <code class="language-plaintext highlighter-rouge">:\\</code></p>
+
+<p>接下来是一些不能作为文件夹名的单词 <code class="language-plaintext highlighter-rouge">[^\\:*&lt;&gt;|"?\r\n/]</code> ,我们给它加上 <code class="language-plaintext highlighter-rouge">+</code> 代表 1 个或多个这样的字符，在后面跟上 <code class="language-plaintext highlighter-rouge">\\</code> ，前面这一串可以出现 0 次或者更多，所有包起来加个 <code class="language-plaintext highlighter-rouge">*</code></p>
+
+<p>最后可以不是文件夹，所以不会有 <code class="language-plaintext highlighter-rouge">\</code>，所以我们在最后再补上 <code class="language-plaintext highlighter-rouge">([^\\:*&lt;&gt;|"?\r\n/]+)?</code>，它是可选的，所以用 <code class="language-plaintext highlighter-rouge">?</code></p>
+
+<p><img src="/img/posts/reg-8.svg" alt="https://regexper.com/#%2F%5E%5Ba-zA-Z%5D%3A%5C%5C%28%5B%5E%5C%5C%3A*%3C%3E%7C%22%3F%5Cr%5Cn%2F%5D%2B%5C%5C%29*%28%5B%5E%5C%5C%3A*%3C%3E%7C%22%3F%5Cr%5Cn%2F%5D%2B%29%3F%24%2F" /></p>
+
+<h4 id="匹配-id">匹配 ID</h4>
+
+<p>要求从</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>&lt;div id="container" class="main"&gt;&lt;/div&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>提取出 id=”container”。</p>
+
+<p><code class="language-plaintext highlighter-rouge">/id="[^"]*"/</code></p>
+
+<p><img src="/img/posts/reg-9.svg" alt="https://regexper.com/#%2Fid%3D%22%5B%5E%22%5D*%22%2F" /></p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/07/20/hello-world/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Hello World"
+            >
+              Previous<br />
+              <span>Hello World</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/07/21/regular-2/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《JS 正则迷你书》笔记2 - 位置匹配"
+            >
+              Next<br />
+              <span>《JS 正则迷你书》笔记2 - 位置匹配</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2020/07/21/regular-1";
+  var disqus_url = "https://cody1991.cn/2020/07/21/regular-1/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

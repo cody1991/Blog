@@ -1,0 +1,9 @@
+.task-list {
+  list-style: none;
+}
+
+.task-list input[type="checkbox"] {
+  margin-right: 6px;
+  position: relative;
+  top: 1px;
+}

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:description"
+    content="记录下来，变成自己的东西"
+  />
+  
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/page7/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/page7/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>cody1991</h1>
+          <span class="subheading">记录下来，变成自己的东西</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    
+
+    <!-- USE SIDEBAR -->
+    <!-- PostList Container -->
+    <div
+      class="col-lg-8 col-lg-offset-1 col-md-8 col-md-offset-1 col-sm-12 col-xs-12 postlist-container"
+    >
+                                                     
+<div class="post-preview">
+  <a href="/2021/03/16/running/">
+    <h2 class="post-title">[置顶] 跑起来～～</h2>
+    
+    <div class="post-content-preview">
+       始于 2021 年 03 月 16 号
+
+
+
+
+  2021 年
+    
+      03 月
+        
+          29 号: 1.7 公里 （最近比较忙= =）
+          25 号: 3.2 公里 （进步一丢丢 🐶）
+          23 号: 3.1 公里 （进步一丢丢 🐱）
+          21 号: 3 公里 （最近偷懒了= =）
+       ... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on 2021-03-16
+  </p>
+</div>
+<hr />
+    
+<div class="post-preview">
+  <a href="/2020/12/27/life-list/">
+    <h2 class="post-title">[置顶] 生活清单</h2>
+    
+    <div class="post-content-preview">
+       始于 2020 年 12 月 27 号
+
+
+  
+    2021 年
+
+    
+      
+        电影
+
+        
+          在看
+          想看
+          看完
+        
+      
+      
+        电视剧
+
+        
+          看完
+            
+              想见你... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on 2020-12-27
+  </p>
+</div>
+<hr />
+                                                                                                           
+<div class="post-preview">
+  <a href="/2020/08/01/leetcode-122/">
+    <h2 class="post-title">LeetCode 122. 买卖股票的最佳时机 II</h2>
+    
+    <div class="post-content-preview">
+       思路：其实很简单可以发现相邻两个数组如果是递增的，把差值加上就是最后的结果了
+
+122. 买卖股票的最佳时机 II
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function (prices) {
+  if (p... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-08-01</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/28/algorithm-learn/">
+    <h2 class="post-title">算法学习</h2>
+    
+    <div class="post-content-preview">
+       from 小浩算法
+
+这个系列把上面的题目一个个过完
+
+快速查找题目 https://leetcode-cn.com/problemset/all/?search=1
+ 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-28</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/25/process-8/">
+    <h2 class="post-title">从输入URL到页面加载的过程（8） - CSS的可视化格式模型</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+这一篇基本是 copy 下来的，对于这部分 css 不打算投入太多去看
+
+CSS 的可视化格式模型
+
+
+  CSS 中规定每一个元素都有自己的盒子模型（相当于规定了这个元素如何显示）
+  然后可视化格式模型则是把这些盒子按照规则... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-25</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/25/process-7/">
+    <h2 class="post-title">从输入URL到页面加载的过程（7） - 解析页面流程</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+解析页面流程
+
+流程简介
+
+
+  解析 html，生成 DOM 树
+  解析 css，生成 css 规则树
+  合并 dom 树 和 css 规则树，生成 render 树
+  布局 render 树 (layout/relow... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-25</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/25/process-6/">
+    <h2 class="post-title">从输入URL到页面加载的过程（6） - 单独拎出来的缓存问题，http缓存</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+单独拎出来的缓存问题，http 缓存
+
+缓存可以分为 强缓存 和 协商缓存
+
+
+  强缓存时 200 from cache，浏览器判断本地是否过期，未过期直接使用，不发 http 请求
+  协商缓存 304 会发起请求，服务器来... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-25</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/25/process-5/">
+    <h2 class="post-title">从输入URL到页面加载的过程（5） - 后台和前台的 http 交互</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+后台和前台的 http 交互
+
+http 信息载体
+
+报文一般包含了 通用头部 响应/请求头部 响应/请求体
+
+通用头部
+
+
+  Request URL 请求的 web 服务器地址
+  Request Method 请求的方法（... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-25</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/25/process-4/">
+    <h2 class="post-title">从输入URL到页面加载的过程（4） - 从服务器接收到请求到后台接收到请求</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+从服务器接收到请求到后台接收到请求
+
+负载均衡
+
+若干个服务器组成一个集群，配合反向代理实现负载均衡
+
+用户发起的请求都指向了调度服务器（反向代理服务器，比如装了 nginx 控制负载均衡），调度服务器根据调度算法，分配不同的请... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-25</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/25/process-3/">
+    <h2 class="post-title">从输入URL到页面加载的过程（3） - 开启网络线程到发出一个完整的http请求</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+开启网络线程到发出一个完整的 http 请求
+
+这一部分主要是 dns 查询， tcp/ip 请求，五层因特网协议栈等
+
+DNS 查询得到 IP
+
+输入的是主机名字的话，需要解析成 ip
+
+
+  如果浏览器有缓存，直接用浏览器缓... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-25</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/24/process-9/">
+    <h2 class="post-title">从输入URL到页面加载的过程（9） - js 解析过程</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+js 解析过程
+
+js 的解释阶段
+
+js 是解释性语言，不需要提前编译，由解释器实时运行
+
+引擎对 js 的处理过程简单如下：
+
+
+  读取代码，进行词法分析 Lexical analysis，然后把代码分解成词元 token... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-24</bold>
+  </p>
+</div>
+<hr />
+  
+<div class="post-preview">
+  <a href="/2020/07/24/process-2/">
+    <h2 class="post-title">从输入URL到页面加载的过程（2） - 从浏览器接收 `url` 到开启网络请求线程</h2>
+    
+    <div class="post-content-preview">
+       from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+
+作为进阶回头再来看看：从输入 URL 到页面加载完成的过程中都发生了什么事情？
+
+从浏览器接收 url 到开启网络请求线程
+
+浏览器是多进程的，有一个主控进程，每个 tab 页面都会打开一个新的进程，但是有时候会合并
+
+进程可能包含下面几个
+
+
+  浏览器进程，负责协调主控，只有一个
+  第三方插件进程，每个... 
+    </div>
+  </a>
+  <p class="post-meta">
+    Posted by cody1991 on <bold>2020-07-24</bold>
+  </p>
+</div>
+<hr />
+ 
+
+<!-- Pager -->
+
+<ul class="pager">
+  
+  <li class="previous">
+    <a
+      href="/page6"
+      >&larr; Newer Posts</a
+    >
+  </li>
+   
+  <li class="next">
+    <a
+      href="/page8"
+      >Older Posts &rarr;</a
+    >
+  </li>
+  
+</ul>
+
+
+    </div>
+    <!-- Sidebar Container -->
+    <div
+      class="col-lg-3 col-lg-offset-0 col-md-3 col-md-offset-0 col-sm-12 col-xs-12 sidebar-container"
+    >
+      <!-- Featured Tags -->
+      
+
+
+<section>
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+      <!-- Short About -->
+      <section class="visible-md visible-lg">
+  <hr>
+  <h5><a href="/about/">ABOUT ME</a></h5>
+  <div class="short-about">
+    
+    <img src="/img/cody1991.jpeg" />
+    
+    
+    <p>For the next quantum leap<br>离开世界之前，一切都是过程</p>
+    
+    <!-- SNS Link -->
+    
+
+
+<ul class="list-inline">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+  </div>
+</section>
+
+      <!-- Friends Blog -->
+      
+    </div>
+    
+  </div>
+</div>
+
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

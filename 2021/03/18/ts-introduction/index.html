@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="TypeScript 入门笔记 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="1-0 简介
+"
+  />
+   <meta property="article:published_time" content="2021-03-18T00:00:00Z">   
+  <meta property="article:tag" content="typescript" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/18/ts-introduction/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    TypeScript 入门笔记 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/18/ts-introduction/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=typescript" title="typescript">typescript</a>
+                        
+                    </div>
+                    <h1>TypeScript 入门笔记</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 18, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="1-0-简介">1-0 简介</h1>
+
+<p>TypeScript 主要添加了类型系统和对 ES6 的支持</p>
+
+<p>类型系统按照「类型检查的时机」来分类，可以分为动态类型和静态类型。</p>
+
+<ul>
+  <li>typescript 是静态类型，js 是动态类型</li>
+  <li>它们都是弱类型的，可以隐式类型转换</li>
+</ul>
+
+<p>ts 和 js 可以共存，新需求用 ts，在慢慢去调整老的代码</p>
+
+<p>ts 如果编译报错了，还是能生成 js 文件，可以调整 noEmitOnError 的配置</p>
+
+<h1 id="1-1-基础">1-1 基础</h1>
+
+<h2 id="1-1-1-原始数据类型">1-1-1 原始数据类型</h2>
+
+<h3 id="boolean">boolean</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">isDone</span><span class="p">:</span> <span class="nx">boolean</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>定义 boolean 类型。通过 <code class="language-plaintext highlighter-rouge">new Boolean(true)</code> 的并不是基础类型 <code class="language-plaintext highlighter-rouge">boolean</code>，用的是 <code class="language-plaintext highlighter-rouge">Boolean</code>，但是一般也不会这么去定义，比较少用</p>
+
+<h3 id="number">number</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">aNumber</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="string">string</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">aString</span><span class="p">:</span> <span class="kr">string</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="void">void</h3>
+
+<p>空值类型只能是 <code class="language-plaintext highlighter-rouge">undefined</code> 或者 <code class="language-plaintext highlighter-rouge">null</code> 进行赋值</p>
+
+<p>不过默认情况下 ts-config 的配置是：<code class="language-plaintext highlighter-rouge">strictNullChecks: true</code>，所以 <code class="language-plaintext highlighter-rouge">void</code> 也不能赋值为 <code class="language-plaintext highlighter-rouge">null</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">void</code> 也不能赋值给其他类型</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">aVoid</span><span class="p">:</span> <span class="k">void</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span> <span class="c1">// or null;</span>
+
+<span class="kd">function</span> <span class="nx">aVoidFunc</span><span class="p">():</span> <span class="k">void</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">没有返回值的函数，返回一个 undefined，是一个空值类型</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="null--undefined">null / undefined</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">aNull</span><span class="p">:</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">aUndefined</span><span class="p">:</span> <span class="kc">undefined</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><del>另外他们两个是所有类型的子类型，可以赋值给其他类型。</del></p>
+
+<p>严格模式下都不行</p>
+
+<p><a href="https://www.typescriptlang.org/play?ts=4.2.3#code/MYewdgzgLgBAlhAIuApgLhgIxCANigQzBgF4YoAnAVxQG4AoUSWAgOSoFtMUKMxPuFUjACMDJtBgEAypThgA5hmgV5C4QHIAFily4QGho3CSCANRBwAJhgBulq8KpgrKAGbyUjgPTeYIIX49IzdnYCg4cCkLawAxMIAKAEo0e2sYAG96GBgJPBQAOn0FBI1AQptASHNAFfjAPbVAHgVAELdAX8VAB1NAGH-awAA5QCo5GGdXDzAvNsB6Mx7ALy86wG8fQGj1DSSGAF96Y2Ypdj0+Kj1hINxxExYAVRd3Txs+08GvJyvz2iA">demo</a></p>
+
+<h2 id="1-1-2-任意值">1-1-2 任意值</h2>
+
+<p>任意值其实就是可以赋值任意值的类型</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">aAny</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="mi">123</span><span class="p">;</span>
+<span class="nx">aAny</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">string</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// 赋值其他类型不会报错</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>对任意值的任何操作（包括获取属性或者方法调用）返回的也是任意值，所以下面的代码不会报错</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">aChainAny</span><span class="p">:</span> <span class="kr">any</span><span class="p">;</span>
+
+<span class="nx">aChainAny</span><span class="p">.</span><span class="nx">a</span><span class="p">().</span><span class="nx">b</span><span class="p">().</span><span class="nx">c</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>未声明类型，它的类型为任意值</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/DYUwLgBAhgggdgTwFxURAvBAjAJgMwDcAUEaJFAMIAWUAlnPMtIsUZTfYwHRQAUAlFwBGArgGMBBIA">demo</a></p>
+
+<h2 id="1-1-3-类型推断">1-1-3 类型推断</h2>
+
+<p>如果我们没有明确指定类型，但是又进行了赋值，ts 会进行类型推断</p>
+
+<p>比如下面这段代码会报错 <code class="language-plaintext highlighter-rouge">Type 'string' is not assignable to type 'number'.</code></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">aAny</span> <span class="o">=</span> <span class="mi">123</span><span class="p">;</span>
+<span class="nx">aAny</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">string</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?#code/DYUwLgBAhgggdgTwgXggRgEwGYDcAoWRFCAcgGcwAnASzgHMT8g">demo</a></p>
+
+<h2 id="1-1-4-联合类型">1-1-4 联合类型</h2>
+
+<p>联合类型是我们前面提到的一些类型的集合，比如下面的 <code class="language-plaintext highlighter-rouge">aUnionValue</code> 可以赋值为多个字符串或者数字，但是不可以是其他类型</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">aUnionValue</span><span class="p">:</span> <span class="kr">number</span> <span class="o">|</span> <span class="kr">string</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nx">aUnionValue</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">123</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如果要访问联合类型值某个属性或者方法，要联合类型里面的类型都存在才可以，否则报错</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">aUnionFunc</span><span class="p">(</span><span class="nx">args</span><span class="p">:</span> <span class="kr">number</span> <span class="o">|</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// - Property 'length' does not exist on type 'string | number'.</span>
+<span class="c1">//  Property 'length' does not exist on type 'number'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?#code/DYUwLgBAhgqgdgSwPZwGpWAVxALgnTAWwCMQAnCAHwgGcwyE4BzCAXggEYBuAKFkRTosINhADkHAEwBmMbx4B6BRABmmOAGMwyONHg6AYuo0AKKGSY08BEuSq16jJgEoIAb0XKI3iBpQ0kUAA6YCQmMwsaEJBmMAALZ14lCABfIA">demo</a></p>
+
+<h2 id="1-1-5-对象的类型---接口">1-1-5 对象的类型 - 接口</h2>
+
+<p>使用接口定义对象的类型</p>
+
+<p>接口是一个行为的抽象，需要类去实现它</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">People</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cody</span><span class="p">:</span> <span class="nx">People</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们定义一个 <code class="language-plaintext highlighter-rouge">People</code> 的接口，又定义了一个 <code class="language-plaintext highlighter-rouge">People</code> 类型的变量 <code class="language-plaintext highlighter-rouge">cody</code>。<code class="language-plaintext highlighter-rouge">cody</code>的形状一定要和 <code class="language-plaintext highlighter-rouge">People</code>一样才行</p>
+
+<p>这里如果 <code class="language-plaintext highlighter-rouge">cody</code> 少了 <code class="language-plaintext highlighter-rouge">age</code> 属性，或者多了一个 <code class="language-plaintext highlighter-rouge">sex</code> 属性，都会报错</p>
+
+<p>不过我们可以通过 <code class="language-plaintext highlighter-rouge">?</code> 来申明一个可选的字段，比如</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">People</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">sex</span><span class="p">?:</span> <span class="dl">'</span><span class="s1">male</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cody</span><span class="p">:</span> <span class="nx">People</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这个时候 <code class="language-plaintext highlighter-rouge">sex</code> 属性不一定要去指定</p>
+
+<p>我们可以添加任意属性，比如</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">People</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">sex</span><span class="p">?:</span> <span class="dl">'</span><span class="s1">male</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">[</span><span class="nx">prop</span><span class="p">:</span> <span class="kr">string</span><span class="p">]:</span> <span class="kr">any</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cody</span><span class="p">:</span> <span class="nx">People</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+  <span class="na">hahaha</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">[prop: string]: any;</code> 的属性值类型必须是所有值类型的联合类型，如果写成了 <code class="language-plaintext highlighter-rouge">[prop: string]: number</code> 那么会报错。下面是一个不会报错的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">People</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">sex</span><span class="p">?:</span> <span class="dl">'</span><span class="s1">male</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">[</span><span class="nx">prop</span><span class="p">:</span> <span class="kr">string</span><span class="p">]:</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cody</span><span class="p">:</span> <span class="nx">People</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+  <span class="na">hahaha</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们也可以指定只读类型的属性</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">People</span> <span class="p">{</span>
+  <span class="k">readonly</span> <span class="nx">id</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">sex</span><span class="p">?:</span> <span class="dl">'</span><span class="s1">male</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">[</span><span class="nx">prop</span><span class="p">:</span> <span class="kr">string</span><span class="p">]:</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cody</span><span class="p">:</span> <span class="nx">People</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+  <span class="na">hahaha</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如果我们去修改 <code class="language-plaintext highlighter-rouge">id</code> 属性值的时候就会报错</p>
+
+<p><a href="https://www.typescriptlang.org/play?ssl=14&amp;ssc=2&amp;pln=1&amp;pc=1#code/JYOwLgpgTgZghgYwgAgAoQPYAcA2KDeAUMiclBHACYYg4CeywlAXMiAK4C2ARtADTFSIOJwisAzmCigA5gG5BJODLFsuvKAtLJxEAB4B+VgHJOcPMeQAfZMZgQzFraQDaWKNglTZAXS-SQGWs1Hmhg9hBKCBhQCEoFAF9CQgQaSWRUyjpWdGw8ZABeZCJtJlYARgFtYVETTLpjKtJlVQAmAE4mkgALOF7eitaAZgEEoA">demo</a></p>
+
+<h2 id="1-1-6-数组的类型">1-1-6 数组的类型</h2>
+
+<p>数组的类型定义有几种，下面一个个看看</p>
+
+<h3 id="type-方式"><code class="language-plaintext highlighter-rouge">type[]</code> 方式</h3>
+
+<p>比如下面这样，也可以和联合类型组合使用的。如果有不在 <code class="language-plaintext highlighter-rouge">type</code> 类型定义的值在的话就会报错。另外进行一些数组的操作，比如 <code class="language-plaintext highlighter-rouge">push()</code> 进去一个不是 <code class="language-plaintext highlighter-rouge">type</code> 类型的话也会报错</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">aArray</span><span class="p">:</span> <span class="p">(</span><span class="kr">number</span> <span class="o">|</span> <span class="kr">string</span><span class="p">)[]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="arraytype-泛型方式"><code class="language-plaintext highlighter-rouge">Array&lt;type&gt;</code> 泛型方式</h3>
+
+<p>下面这个例子和上面的效果是一样的。泛型在后面的章节会再详细阐述</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">bArray</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="kr">number</span> <span class="o">|</span> <span class="kr">string</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="接口形式">接口形式</h3>
+
+<p>上面的效果是一样的。不过就复杂多了。</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">NumberAndStringArray</span> <span class="p">{</span>
+  <span class="p">[</span><span class="nx">index</span><span class="p">:</span> <span class="kr">number</span><span class="p">]:</span> <span class="kr">number</span> <span class="o">|</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">cArray</span><span class="p">:</span> <span class="nx">NumberAndStringArray</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>但是我们可以用这种方式来定义类数组</p>
+
+<p>函数的 <code class="language-plaintext highlighter-rouge">arguments</code> 是类数组，如果我们用数组的方式给它定义，会报错。我们看看下面的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">aFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">args</span><span class="p">:</span> <span class="kr">number</span><span class="p">[]</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// - Type 'IArguments' is missing the following properties from type 'number[]': pop, push, concat, join, and 24 more.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>有个简单的修复方法是如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">bFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">args</span><span class="p">:</span> <span class="nx">IArguments</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ts</code> 给我们内置了一些接口，比如常用的 <code class="language-plaintext highlighter-rouge">IArguments</code> , <code class="language-plaintext highlighter-rouge">NodeList</code> , <code class="language-plaintext highlighter-rouge">HTMLCollection</code></p>
+
+<p>当然我们也可以自己实现一下 <code class="language-plaintext highlighter-rouge">IArguments</code></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">MyNumberArguments</span> <span class="p">{</span>
+  <span class="p">[</span><span class="nx">index</span><span class="p">:</span> <span class="kr">number</span><span class="p">]:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">length</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">callee</span><span class="p">:</span> <span class="nb">Function</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">cFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">args</span><span class="p">:</span> <span class="nx">MyNumberArguments</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?#code/DYUwLgBAhgggTnKBPAXBAFAOwK4FsBGIcAPgM5hwCWmA5gJQDaAuhALwQMCMANAEzcBmbgBZuAVm4ByTpKYBuAFALQkfPESoI65AB4cBImQrUaAPjYQOPfkNETpsxQupgiAMygBjEBAByeQjgYTAATAGVjWm0kCABvBUtLBmoQkAAPNH1ApkyAw3IqWkUAXyUVCE9olH8DINCIwppoiy4+QRFxKRl5JQB6Xog3bExPMEoAe0xoADFhz3Q6OIV+xMtyqDgaUlza5gsNmjwQTDBSRRXVz0nScdAAOmBxmnQD0jplgdKPwbmxyYh8LMRgslhdEutNtsIABJeCHXDHU77TZHE5nb6Xa63EAPJ4vSHvFZfFzuLw+ACySBqgThqKR8Q4KXSO2yKCyREUEFAtDAAAsWRyEp4oMBQCA0EDRhNMAovkMRn8pp5JSCGRCtmhKdSiLSEWjkfDEeiKlj7o9nq93sUgA">demo</a></p>
+
+<h2 id="1-1-7-函数类型">1-1-7 函数类型</h2>
+
+<p>函数有输入和输出，都要考虑类型的把控</p>
+
+<h3 id="函数声明">函数声明</h3>
+
+<p>看看下面简单的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// sum(1) - Expected 2 arguments, but got 1.</span>
+<span class="c1">// sum(1, 2, 3) - Expected 2 arguments, but got 3.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>参数数量需要严格一样</p>
+
+<h3 id="函数表达式">函数表达式</h3>
+
+<p>我们可以改写下上面的 <code class="language-plaintext highlighter-rouge">sum</code> 函数声明，用函数表达式的方式重新定义一下</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">sum2</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不过就会发现一个问题，<code class="language-plaintext highlighter-rouge">sum2</code> 本身就没有定义类型了，我们给它也加上</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">sum2</span><span class="p">:</span> <span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kr">number</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span>
+  <span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span>
+  <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span>
+<span class="p">):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这里的 <code class="language-plaintext highlighter-rouge">(a: number, b: number) =&gt; number</code> 左边是输入，右边是输出，和 <code class="language-plaintext highlighter-rouge">ES6</code> 的箭头函数不一样，不要混淆了</p>
+
+<h3 id="接口定义函数形状">接口定义函数形状</h3>
+
+<p>下面改用接口的方式定义也是可以的</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">SumFuncShape</span> <span class="p">{</span>
+  <span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">sum3</span><span class="p">:</span> <span class="nx">SumFuncShape</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="可选参数">可选参数</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">aFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">b</span><span class="p">?:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">a</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>和接口里面定义可选的属性是一样的做法 <code class="language-plaintext highlighter-rouge">?:</code>。然后可选参数后面不能再加入其他参数了，只能放在最后面</p>
+
+<h3 id="默认值">默认值</h3>
+
+<p>和 <code class="language-plaintext highlighter-rouge">ES6</code> 的语法意义</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">bFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">string</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">default</span><span class="dl">'</span><span class="p">):</span> <span class="kr">string</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="剩余参数">剩余参数</h3>
+
+<p>和 <code class="language-plaintext highlighter-rouge">ES6</code> 的语法意义</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">cFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="p">...</span><span class="nx">b</span><span class="p">:</span> <span class="kr">string</span><span class="p">[]):</span> <span class="kr">string</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">.</span><span class="nx">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="重载">重载</h3>
+
+<p>重载的一个目的：函数可以在不同的参数数量或者类型的情况下，做出不同的处理。</p>
+
+<p>我们先看一下一个简单的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">a</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">number</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">));</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不过有个问题，输入是 <code class="language-plaintext highlighter-rouge">string</code> 返回 <code class="language-plaintext highlighter-rouge">number</code> 或者 输入是 <code class="language-plaintext highlighter-rouge">number</code> 返回 <code class="language-plaintext highlighter-rouge">string</code> 的话，它是校验不了的，一样可以通过。我们需要优化下</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">a</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">number</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">));</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>重复定义了这个函数，最后才是真正的实现，最终能保证我们想要的结果</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/GYVwdgxgLglg9mABAZxAWwBQEMBcizoBGApgE4A0iheBaJpAlDUWYgN4BQi3ipxUIUkiyIA1FQDcHAL4cOAenkp0GAIwMFS1JlWUATJQDMGjgBt+ytHrzZmdMpWr4WjRAF4AfM-ul3iUJCwCIi23vSOdvRMYaycPLz8gsJikjJyMGBQZMBYEMSIAMroAGLgEAUAFlgADvlxPKG04VSRZNFNZFKyZhbahnhFaKWQlTX5bv5lQUiNLhExjK2+9dx8AkKIIuKEXXIB0PDCwxChyFCkGQDmjgD8eGcXYJfRD1fsXDwwwCGEDAnryW2UniaySm12HH20yox1O5yu81eTz8AHIACbEHIgUxQFEveHIlb-MFbVLdKGHRAQWG4FAE66IAB0zKcSMuAG0ALr4x6Xd4gxIbUmERkAKzgGQwDAhFOCaJp93pPKuUllSHlZVmPnaLlVU0pGsgcN5iAAPgtlcjzR1lh9uF8QlAAJ61ODfERuT2IFE2vH8+I8UEbAByLmwjKgcAK9KljOQ1VMMCgGBReMZfAAbmRkMRY+LJamGNK7YhpIhiKYc-6A8ShXGE0mU2nM9ncwwxRKwE2NPFZNIgA">demo</a></p>
+
+<h2 id="1-1-8-类型断言">1-1-8 类型断言</h2>
+
+<p>类型断言：手动指定一个值的类型</p>
+
+<p>语法是 <code class="language-plaintext highlighter-rouge">值 as 类型 </code></p>
+
+<h3 id="联合类型中使用">联合类型中使用</h3>
+
+<p>我们可以用类型断言，去断言值为联合类型中的一种类型，否则我们使用值的时候，只能用联合类型的公共属性和方法</p>
+
+<p>下面这段代码会报错：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Cat</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nx">miaomiaomiao</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Fish</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nx">huashui</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">doAction</span><span class="p">(</span><span class="nx">animal</span><span class="p">:</span> <span class="nx">Cat</span> <span class="o">|</span> <span class="nx">Fish</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">animal</span><span class="p">.</span><span class="nx">miaomiaomiao</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// - Property 'miaomiaomiao' does not exist on type 'Cat | Fish'.</span>
+<span class="c1">// - Property 'miaomiaomiao' does not exist on type 'Fish'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们简单调整下 <code class="language-plaintext highlighter-rouge">doAction</code> 函数</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">doAction</span><span class="p">(</span><span class="nx">animal</span><span class="p">:</span> <span class="nx">Cat</span> <span class="o">|</span> <span class="nx">Fish</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">(</span><span class="nx">animal</span> <span class="k">as</span> <span class="nx">Cat</span><span class="p">).</span><span class="nx">miaomiaomiao</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不过这种方法其实不好，只是欺骗了一下 ts 编译器。运行时如果调用函数传入的参数是 Fish 就报错了</p>
+
+<p>如下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">fish</span><span class="p">:</span> <span class="nx">Fish</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">fish</span><span class="dl">'</span><span class="p">,</span>
+  <span class="nx">huashui</span><span class="p">()</span> <span class="p">{},</span>
+<span class="p">};</span>
+
+<span class="nx">doAction</span><span class="p">(</span><span class="nx">fish</span><span class="p">);</span>
+
+<span class="c1">// - animal.miaomiaomiao is not a function</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们也可以把某个值断言为具体的其他子类，比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">ApiError</span> <span class="kd">extends</span> <span class="nb">Error</span> <span class="p">{</span>
+  <span class="nl">code</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">HttpError</span> <span class="kd">extends</span> <span class="nb">Error</span> <span class="p">{</span>
+  <span class="nl">statusCode</span><span class="p">:</span> <span class="kr">number</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">isApiError</span><span class="p">(</span><span class="nx">error</span><span class="p">:</span> <span class="nb">Error</span><span class="p">):</span> <span class="nx">boolean</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="p">(</span><span class="nx">error</span> <span class="k">as</span> <span class="nx">ApiError</span><span class="p">).</span><span class="nx">code</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">number</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">httpError</span><span class="p">:</span> <span class="nx">HttpError</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">statusCode</span><span class="p">:</span> <span class="mi">304</span><span class="p">,</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">not found</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">message</span><span class="p">:</span> <span class="dl">'</span><span class="s1">not found</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">isApiError</span><span class="p">(</span><span class="nx">httpError</span><span class="p">));</span> <span class="c1">// false</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>首先我们函数传入的参数是一个 <code class="language-plaintext highlighter-rouge">Error</code> 类型，那么 <code class="language-plaintext highlighter-rouge">ApiError</code> 和 <code class="language-plaintext highlighter-rouge">HttpError</code> 都可以作为参数传入。另外我们在判断是否存在 <code class="language-plaintext highlighter-rouge">code</code> 以及判断是否为数字的时候，如果是直接使用 <code class="language-plaintext highlighter-rouge">Error</code> 来判断的话， <code class="language-plaintext highlighter-rouge">ts</code> 会报错，因为 <code class="language-plaintext highlighter-rouge">Error</code> 类上面没有 <code class="language-plaintext highlighter-rouge">code</code> 属性，所以这里使用了断言，断言成了一个 <code class="language-plaintext highlighter-rouge">ApiError</code> 来进行判断。如果不是 <code class="language-plaintext highlighter-rouge">ApiError</code> 的话也没有问题，判断成了 <code class="language-plaintext highlighter-rouge">undefined</code> 返回 <code class="language-plaintext highlighter-rouge">false</code> ，正常运行</p>
+
+<p>有一个更加简单的方法，我们可以去判断</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">ApiError</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>但是这里存在一个问题，可能 <code class="language-plaintext highlighter-rouge">HttpError</code> 和 <code class="language-plaintext highlighter-rouge">ApiError</code> 不是一个类，而是接口，那实际上通过 <code class="language-plaintext highlighter-rouge">instanceof</code> 判断的话会有问题</p>
+
+<p>看看下面的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">ApiError</span> <span class="kd">extends</span> <span class="nb">Error</span> <span class="p">{</span>
+  <span class="nl">code</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">HttpError</span> <span class="kd">extends</span> <span class="nb">Error</span> <span class="p">{</span>
+  <span class="nl">statusCode</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// - 'ApiError' only refers to a type, but is being used as a value here.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>嗯，报错了。</p>
+
+<p>这个时候换回断言的写法，又恢复正常了。</p>
+
+<h3 id="断言为-any">断言为 <code class="language-plaintext highlighter-rouge">any</code></h3>
+
+<p>看一段简单的代码</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="c1">// - Property 'foo' does not exist on type 'Window &amp;amp; typeof globalThis'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们想在 <code class="language-plaintext highlighter-rouge">window</code> 上加一个全局的变量 <code class="language-plaintext highlighter-rouge">foo</code> 但是 <code class="language-plaintext highlighter-rouge">ts</code> 不允许，提示不存在这个属性。这个时候我们可以进行下面的操作</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="p">(</span><span class="nb">window</span> <span class="k">as</span> <span class="kr">any</span><span class="p">).</span><span class="nx">foo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>代码就正常运行了，因为 <code class="language-plaintext highlighter-rouge">any</code> 类型是可以调用任何属性和方法的，不会报错</p>
+
+<p>但是我们大部分情况下，除非非常有把握，都不要断言为 <code class="language-plaintext highlighter-rouge">any</code> ，很有可能导致变异阶段 <code class="language-plaintext highlighter-rouge">ts</code> 发现不了问题，而在运行时程序出错。</p>
+
+<h3 id="把-any-对象断言为具体的类型">把 <code class="language-plaintext highlighter-rouge">any</code> 对象断言为具体的类型</h3>
+
+<p>第三方库，或者别人遗留的，或者一些其他问题，可能某个值是 <code class="language-plaintext highlighter-rouge">any</code> 类型。我们最好的实践就是去进行断言处理</p>
+
+<p>比如我们有这么一个函数：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">getCache</span><span class="p">(</span><span class="nx">key</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">any</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nb">window</span> <span class="k">as</span> <span class="kr">any</span><span class="p">).</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它返回的是一个 <code class="language-plaintext highlighter-rouge">any</code> 类型，那其实在我们获取到 <code class="language-plaintext highlighter-rouge">cache</code> 以后的继续处理，类型是没有保障的。我们可以使用断言处理：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">tom</span> <span class="o">=</span> <span class="nx">getCache</span><span class="p">(</span><span class="dl">'</span><span class="s1">tom</span><span class="dl">'</span><span class="p">)</span> <span class="k">as</span> <span class="nx">Cat</span><span class="p">;</span>
+<span class="nx">tom</span><span class="p">.</span><span class="nx">miaomiaomiao</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不过这里也存在返回的对象不是 <code class="language-plaintext highlighter-rouge">Cat</code> 类的情况，也会报错。但是算是一种补救手段</p>
+
+<p>我们有一个更好的方法来处理，最优解：查看 <a href="https://www.typescriptlang.org/play?ssl=1&amp;ssc=1&amp;pln=14&amp;pc=1#code/JYOwLgpgTgZghgYwgAgMJzMg3gKGf5EOAWwgC5kBnMKUAcwG48Djg4B7Vjr9gCgEoKAN3bAAJkwC+OGTACuIBGGDsQyOhDDoEACwgAeACoA+XgGsIATwrVaIOoOSHszfFE1yoa3gHdQY9h9kOEpgkEt+ADoERD0AbQtLAF0pGQRVamQwTmQAXnVNbT19dDBTAHJs4nL+ZCYqyJ4mtj5+JhwgA">泛型的例子 demo</a></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Cat</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nx">miaomiaomiao</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">getCache</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">key</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="nx">T</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nb">window</span> <span class="k">as</span> <span class="kr">any</span><span class="p">).</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">tom</span> <span class="o">=</span> <span class="nx">getCache</span><span class="o">&lt;</span><span class="nx">Cat</span><span class="o">&gt;</span><span class="p">(</span><span class="dl">'</span><span class="s1">tom</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">tom</span><span class="p">.</span><span class="nx">miaomiaomiao</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?#code/JYOwLgpgTgZghgYwgAgMJzMg3gKGf5EOAWwgC5kBnMKUAcwG48Djg4B7Vjr9gCgEoKAN3bAAJkwC+OHKEixEKAGLBKAC2zN8RUhWq0QjLcjUBXOOtPABw0RJzScMUyARhg7EMjHsAgm48QXjgQYGI4ABsKdEwAH2QVdX5NAmRg0PCI5As0DH4AOh4itj5+KRkET2pkGFU1CkSNAF4Ugh1yZAByWvVOgBpjMwsza2SsZGlHAHop7z8Az14etTKZGeQECItKZF8AB2AAUSgodihkCAAPSBAxHePT89x11MqxDpBTYgAjaGQWgAMTHW01mm22yAAEmAwHsHmcLtcILd7icEc9ZqlqBhTJRUOx3hRPj8-i0AEwAoE4EEyOTQeBIXYHeHnK43O7IFmtfBvD5fX5QcqycD0xRQmFwtGspEozlS7lUMA4vEEvkkwUOGTOVzuTzIVT7I5S3jQR4UFmCZDfdjsCIQEIK4AwNJgACeewg7GdJvlOUNFvyvP+TRanWJAs6Y2MqSgEDApigXhopggTFS0lS6ydaVNCNA2Ncnud-qlUczmIIsfjieQydTxhpMbjCa88AilHrjjtmDUEpZFGhsK5LVwWKV8ZVhOQAGYAQAWAapdoUMPsTAwdguMT9YykSiUOB0Dqr9eb26dTU4SogSi2iD5CLsOi8A3M429oel1ZrWYAd1APi-vkG7sP8yAAIxMLw-63Owv7ZDsISugUIFgZBFRVHeD5Prw0EAXBCHZCAyHATa37agsXhHmA6AIGoEC8AA1hArp6DQ9CWkhCpVi2aQwYBhFIQUCCIPRADazGugAukK17VGAnBgdRtH0bwnQKcQkaETETAaYUJTFBwAgMEAA">上面其他例子的 demo</a></p>
+
+<h3 id="断言限制">断言限制</h3>
+
+<p>如果 A 兼容 B，A 可以断言为 B，B 也可以断言为 A。看下下面的代码是没有报错的</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">Cat</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nx">run</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">tom</span><span class="p">:</span> <span class="nx">Cat</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Tom</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">run</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+<span class="kd">let</span> <span class="nx">animal</span><span class="p">:</span> <span class="nx">Animal</span> <span class="o">=</span> <span class="nx">tom</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ts</code> 是结构类型系统，类型之间的对比只会比较它们最终的结构，而会忽略它们定义时的关系。</p>
+
+<p><code class="language-plaintext highlighter-rouge">Cat</code> 包含了 <code class="language-plaintext highlighter-rouge">Animal</code> 中的所有属性，除此之外，它还有一个额外的方法 run。<code class="language-plaintext highlighter-rouge">ts</code> 并不关心 <code class="language-plaintext highlighter-rouge">Cat</code> 和 <code class="language-plaintext highlighter-rouge">Animal</code> 之间定义时是什么关系，而只会看它们最终的结构有什么关系。这里与 <code class="language-plaintext highlighter-rouge">Cat extends Animal</code> 是等价的：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">Cat</span> <span class="kd">extends</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="nx">run</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>那么也不难理解为什么 <code class="language-plaintext highlighter-rouge">Cat</code> 类型的 <code class="language-plaintext highlighter-rouge">tom</code> 可以赋值给 <code class="language-plaintext highlighter-rouge">Animal</code> 类型的 <code class="language-plaintext highlighter-rouge">animal</code> 了，就像面向对象编程中我们可以将子类的实例赋值给类型为父类的变量</p>
+
+<p><code class="language-plaintext highlighter-rouge">ts</code> 中的专业说法是，<code class="language-plaintext highlighter-rouge">Animal</code> 兼容 <code class="language-plaintext highlighter-rouge">Cat</code></p>
+
+<p>所以如果兼容的话他们也可以互相断言了 ，下面代码不会报错</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">testAnimal</span><span class="p">(</span><span class="nx">animal</span><span class="p">:</span> <span class="nx">Animal</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">animal</span> <span class="k">as</span> <span class="nx">Cat</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">testCat</span><span class="p">(</span><span class="nx">cat</span><span class="p">:</span> <span class="nx">Cat</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">cat</span> <span class="k">as</span> <span class="nx">Animal</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>允许 <code class="language-plaintext highlighter-rouge">animal as Cat</code> 是因为「父类可以被断言为子类」</li>
+  <li>允许 <code class="language-plaintext highlighter-rouge">cat as Animal</code> 是因为既然子类拥有父类的属性和方法，那么被断言为父类，获取父类的属性、调用父类的方法，就不会有任何问题，故「子类可以被断言为父类」</li>
+</ul>
+
+<p>但是这里简化的父类子类的关系来表达类型的兼容性，而实际上 <code class="language-plaintext highlighter-rouge">ts</code> 在判断类型的兼容性时，比这种情况复杂很多</p>
+
+<p>总之</p>
+
+<ul>
+  <li>若 <code class="language-plaintext highlighter-rouge">A</code> 兼容 <code class="language-plaintext highlighter-rouge">B</code> ，那么 <code class="language-plaintext highlighter-rouge">A</code> 能够被断言为 <code class="language-plaintext highlighter-rouge">B</code> ， <code class="language-plaintext highlighter-rouge">B</code> 也能被断言为 <code class="language-plaintext highlighter-rouge">A</code> 。</li>
+  <li>若 <code class="language-plaintext highlighter-rouge">B</code> 兼容 <code class="language-plaintext highlighter-rouge">A</code> ，那么 <code class="language-plaintext highlighter-rouge">A</code> 能够被断言为 <code class="language-plaintext highlighter-rouge">B</code> ， <code class="language-plaintext highlighter-rouge">B</code> 也能被断言为 <code class="language-plaintext highlighter-rouge">A</code> 。</li>
+</ul>
+
+<p>所以</p>
+
+<p>要使得 <code class="language-plaintext highlighter-rouge">A</code> 能够被断言为 <code class="language-plaintext highlighter-rouge">B</code> ，只需要 <code class="language-plaintext highlighter-rouge">A</code> 兼容 <code class="language-plaintext highlighter-rouge">B</code> 或 <code class="language-plaintext highlighter-rouge">B</code> 兼容 <code class="language-plaintext highlighter-rouge">A</code> 即可。也为了在类型断言时的安全考虑，毕竟毫无根据的断言是非常危险的</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/JYOwLgpgTgZghgYwgAgIImAWzgG2QbwChkTkQ5MIAuZAZzClAHMBuQgX0NElkRQGE4YAsVLlKNeoxCtRJKAFcQACgCUNAG4B7YABM2nQjgjCwWzDUHCAvCNJkK1ZAHIAKuecAaOckUgaasjWAHwEyAhaILRaxgB0OFpMys5+zqrInOxsxsJwGNg4NOhYuEHIZphshDBKCGDAkeUQ9MUFynklhWj5uOlE9lAmClAgyO09eHC0yFaqBtW19Y2Q9FbKCEKWQn0+g2DDo+tCyFPdnXMcQA">demo 地址</a></p>
+
+<h2 id="1-1-9-声明文件">1-1-9 声明文件</h2>
+
+<h2 id="1-1-10-内置对象">1-1-10 内置对象</h2>
+
+<p><code class="language-plaintext highlighter-rouge">js</code> 的很多内置对象，<code class="language-plaintext highlighter-rouge">ts</code> 已经帮我们做好定义了</p>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">Boolean</code> <code class="language-plaintext highlighter-rouge">Error</code> <code class="language-plaintext highlighter-rouge">Date</code> <code class="language-plaintext highlighter-rouge">RegExp</code></p>
+
+<p>另外 <code class="language-plaintext highlighter-rouge">ts</code> 也内置了 <code class="language-plaintext highlighter-rouge">Dom</code> 相关的类型</p>
+
+<p>比如 <code class="language-plaintext highlighter-rouge">Document</code> 、 <code class="language-plaintext highlighter-rouge">HTMLElement</code> 、 <code class="language-plaintext highlighter-rouge">Event</code> 、 <code class="language-plaintext highlighter-rouge">NodeList</code></p>
+
+<p>我们可以直接拿来定义值的类型</p>
+
+<p>比如我们使用</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="dl">'</span><span class="s1">2</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="c1">// - Argument of type 'string' is not assignable to parameter of type 'number'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ts</code> 已经内置了它的定义，如</p>
+
+<blockquote>
+  <p>(method) Math.pow(x: number, y: number): number
+Returns the value of a base expression taken to a specified power.
+@paramx — The base value of the expression.
+@paramy — The exponent value of the expression.</p>
+</blockquote>
+
+<p>类似于</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nb">Math</span> <span class="p">{</span>
+  <span class="cm">/**
+   * Returns the value of a base expression taken to a specified power.
+   * @param x The base value of the expression.
+   * @param y The exponent value of the expression.
+   */</span>
+  <span class="nx">pow</span><span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">y</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>又比如：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">targetCurrent</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// - Property 'targetCurrent' does not exist on type 'MouseEvent'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">e</code> 被推断为 <code class="language-plaintext highlighter-rouge">MouseEvent</code> 但是它上面没有 <code class="language-plaintext highlighter-rouge">targetCurrent</code> 属性</p>
+
+<p>它的类型定义是这样的</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Document</span>
+  <span class="kd">extends</span> <span class="nx">Node</span><span class="p">,</span>
+    <span class="nx">GlobalEventHandlers</span><span class="p">,</span>
+    <span class="nx">NodeSelector</span><span class="p">,</span>
+    <span class="nx">DocumentEvent</span> <span class="p">{</span>
+  <span class="nx">addEventListener</span><span class="p">(</span>
+    <span class="kd">type</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+    <span class="nx">listener</span><span class="p">:</span> <span class="p">(</span><span class="nx">ev</span><span class="p">:</span> <span class="nx">MouseEvent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kr">any</span><span class="p">,</span>
+    <span class="nx">useCapture</span><span class="p">?:</span> <span class="nx">boolean</span>
+  <span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 第一个参数是 字符串类型的 type 字段，第二个是一个函数，它接收一个类型为 MouseEvent 的 `ev` 参数，返回 any 类型，第三个参数是可选的一个 boolean 类型的 useCapture 参数</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如果要写 <code class="language-plaintext highlighter-rouge">node.js</code> 的话，可以安装下面的库，提供了一些类型声明</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>npm install @types/node --save-dev
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?#code/LIQwLgFgdADg9gdwBQEYA0ByATBglAbgChCATOAYwFcBbAUwDswoQSSBRANwbABkBLAM5gGtAE5IM5ADZ9yAawxoABADNK9cmD5x6SWriUBvQktNLyOgXCm0oUuAHM9UMCFEPaYAMKVRo7gSEAL4EQA">demo 地址</a></p>
+
+<h1 id="1-2-进阶">1-2 进阶</h1>
+
+<h2 id="1-2-1-类型别名">1-2-1 类型别名</h2>
+
+<p>常用语联合类型，给类型改个名</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">type</span> <span class="nx">Name</span> <span class="o">=</span> <span class="kr">string</span><span class="p">;</span>
+<span class="kd">type</span> <span class="nx">NameResolver</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="kr">string</span><span class="p">;</span>
+<span class="kd">type</span> <span class="nx">NameOrResolver</span> <span class="o">=</span> <span class="nx">Name</span> <span class="o">|</span> <span class="nx">NameResolver</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">n</span><span class="p">:</span> <span class="nx">NameOrResolver</span><span class="p">):</span> <span class="nx">Name</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">n</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">string</span><span class="dl">'</span><span class="p">)</span> <span class="k">return</span> <span class="nx">n</span><span class="p">;</span>
+  <span class="k">else</span> <span class="k">return</span> <span class="nx">n</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?ssl=1&amp;ssc=1&amp;pln=8&amp;pc=2#code/C4TwDgpgBAcghgW2gXigZ2AJwJYDsDmA3AFCiSyIQBKEaA9gDYBuEmUqAFAJTsB86WPEVLho8JAHlMNes1bsKSKAB9F1WoxaYSxAGYBXXAGNg2Orij4IwcRA64AXGqkzNrLk9tQA3sSj+obF0oDjIIOmCLZGioAHIMHAJYnkxrfUwLXBIAqAgGNGhU4HTM7hIAXyA">demo 地址</a></p>
+
+<h2 id="1-2-2-字符串字面类型">1-2-2 字符串字面类型</h2>
+
+<p>使用别名来创建字符串字面类型</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">type</span> <span class="nx">EventNames</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">click</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">scroll</span><span class="dl">'</span> <span class="o">|</span> <span class="dl">'</span><span class="s1">mousemove</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">handleEvent</span><span class="p">(</span><span class="nx">ele</span><span class="p">:</span> <span class="nx">Element</span><span class="p">,</span> <span class="nx">event</span><span class="p">:</span> <span class="nx">EventNames</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ele</span><span class="p">,</span> <span class="nx">event</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">handleEvent</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">handleEvent</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dbclick</span><span class="dl">'</span><span class="p">);</span>
+<span class="c1">// - Argument of type '"dbclick"' is not assignable to parameter of type 'EventNames'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">dbclick</code> 不在 <code class="language-plaintext highlighter-rouge">EventNames</code> 定义的字面类型里面，所以会报错</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/C4TwDgpgBAogbhAdsAcgQwLYQM5QLxQDkAxgDYCWxA1oVAD5HbEBOA9qabQ4RqwK7YIvBIQDcAKHEAzPomLByrRFAAWaRABNSEeEmAAKCNoBcsbVmQAaKBATJTu5OizYAlFADe4qD6jEl2OwQAHSkrADmhtrWtnquEgC+kmqa2o4GGqzEfBbAwQBGrBog1iQU1ISu4ilaOnYZWTl6BUUlRBr5ZJQ0rkA">demo</a></p>
+
+<h2 id="1-2-3-元组">1-2-3 元组</h2>
+
+<p>数组一般情况下是相同类型的值的集合，而元组是不同类型的值的集合，看看下面的 <code class="language-plaintext highlighter-rouge">demo</code></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">let</span> <span class="nx">aTunple</span><span class="p">:</span> <span class="p">[</span><span class="kr">string</span><span class="p">,</span> <span class="kr">number</span><span class="p">,</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">boolean</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="kc">true</span><span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外发现</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nx">aTunple</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nx">aTunple</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">new</span> <span class="nb">Boolean</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="c1">// - Argument of type 'Boolean' is not assignable to parameter of type 'string | number | boolean'.</span>
+<span class="c1">// - Type 'Boolean' is not assignable to type 'true'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不能加入 元组 中定义的类型集合的其他类型值</p>
+
+<p><a href="https://www.typescriptlang.org/play?ssl=1&amp;ssc=1&amp;pln=8&amp;pc=22#code/DYUwLgBAhgKgrgOwA6gFwQNoGcwCcCWCA5gDQQJwC2ARiLmRTXWdQPauhQIC6EAvJgDkAY1YATAJ6CyARgBMAZjIAWMnjghuAbgBQO2IhQgAdEjhYAFgAoZASl0B6B9HjJQp89YQgA7hABC7JwINrb2egZuJpb4AGZgVrZ6oghYHCbArERWkUb2QA">demo 地址</a></p>
+
+<h2 id="1-2-4-枚举">1-2-4 枚举</h2>
+
+<p>枚举一般是用在值在一定范围内的情况，比如下面的例子，一周七天只有限定的几个值</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kr">enum</span> <span class="nx">Days</span> <span class="p">{</span>
+  <span class="nx">Sun</span><span class="p">,</span>
+  <span class="nx">Mon</span><span class="p">,</span>
+  <span class="nx">Tue</span><span class="p">,</span>
+  <span class="nx">Wed</span><span class="p">,</span>
+  <span class="nx">Thu</span><span class="p">,</span>
+  <span class="nx">Fri</span><span class="p">,</span>
+  <span class="nx">Sat</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>枚举值是从 <code class="language-plaintext highlighter-rouge">0</code> 开始的，枚举值到枚举名也会有映射关系，我们看看 <code class="language-plaintext highlighter-rouge">ts</code> 转 <code class="language-plaintext highlighter-rouge">js</code> 是怎样的：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">Days</span><span class="p">;</span>
+<span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">Days</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Sun</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Sun</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Mon</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Mon</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Tue</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tue</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Wed</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Wed</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Thu</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Thu</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Fri</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Fri</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days</span><span class="p">[(</span><span class="nx">Days</span><span class="p">[</span><span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">})(</span><span class="nx">Days</span> <span class="o">||</span> <span class="p">(</span><span class="nx">Days</span> <span class="o">=</span> <span class="p">{}));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>简单测试一下：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Days</span><span class="p">.</span><span class="nx">Sun</span> <span class="o">===</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Days</span><span class="p">.</span><span class="nx">Sat</span> <span class="o">===</span> <span class="mi">6</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Days</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// true</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外我们可以给枚举值赋值，没有赋值的枚举值就会跟着上一个枚举值递增。看下具体的例子就知道什么意思了</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kr">enum</span> <span class="nx">Days2</span> <span class="p">{</span>
+  <span class="nx">Sun</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+  <span class="nx">Mon</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">Tue</span><span class="p">,</span>
+  <span class="nx">Wed</span><span class="p">,</span>
+  <span class="nx">Thu</span><span class="p">,</span>
+  <span class="nx">Fri</span><span class="p">,</span>
+  <span class="nx">Sat</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>会被转成</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">Days2</span><span class="p">;</span>
+<span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">Days2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Sun</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Sun</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Mon</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Mon</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Tue</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tue</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Wed</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Wed</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Thu</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Thu</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Fri</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Fri</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days2</span><span class="p">[(</span><span class="nx">Days2</span><span class="p">[</span><span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">})(</span><span class="nx">Days2</span> <span class="o">||</span> <span class="p">(</span><span class="nx">Days2</span> <span class="o">=</span> <span class="p">{}));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外也有可能出现覆盖的情况，但是 <code class="language-plaintext highlighter-rouge">ts</code> 不会报错。看下第三个例子：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kr">enum</span> <span class="nx">Days3</span> <span class="p">{</span>
+  <span class="nx">Sun</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="nx">Mon</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">Tue</span><span class="p">,</span>
+  <span class="nx">Wed</span><span class="p">,</span>
+  <span class="nx">Thu</span><span class="p">,</span>
+  <span class="nx">Fri</span><span class="p">,</span>
+  <span class="nx">Sat</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>编译后的结果</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">Days3</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Sun</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Sun</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Mon</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Mon</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Tue</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tue</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Wed</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Wed</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Thu</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Thu</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Fri</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Fri</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">Days3</span><span class="p">[(</span><span class="nx">Days3</span><span class="p">[</span><span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Sat</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">})(</span><span class="nx">Days3</span> <span class="o">||</span> <span class="p">(</span><span class="nx">Days3</span> <span class="o">=</span> <span class="p">{}));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Days3[3]</code> 原本是 <code class="language-plaintext highlighter-rouge">Sun</code>，后面被 <code class="language-plaintext highlighter-rouge">Wed</code> 覆盖了。这种情况最好自己规避</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/KYOwrgtgBAIghgTwM5QN4CgpagZTCAGigFkB7QqAFTGCIHVgATIygCzCIDEAnASyJxwALugC+6AMbkkpADbAAdLNIBzABTxkCvCCgBeA1AAMASgDck6XMXL1mpNuH7DANnPpLIGfKWqNiJABtFwBdZz0oAHJBIUiTD1BIWACAJjRMbB19KAB2IjJdCIBGFhp6JhZ2Lj4BYTEE8Gh7AGZ07Fx8bOb88mySqjKoBmYqKqgeflw60SA">demo 地址</a></p>
+
+<h2 id="1-2-5-类">1-2-5 类</h2>
+
+<p><code class="language-plaintext highlighter-rouge">ts</code> 中对类新增了三个修饰符</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">public</code>: 默认属性和方法都是这个修饰符，代表共有的，外部都可以访问到</li>
+  <li><code class="language-plaintext highlighter-rouge">private</code>: 代表这个属性和方法是私有的，只有这个类可以访问</li>
+  <li><code class="language-plaintext highlighter-rouge">protected</code>: 和 <code class="language-plaintext highlighter-rouge">private</code> 类似，但是子类可以访问</li>
+</ul>
+
+<p>看一下简单的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Animal</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cat</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+
+<span class="c1">// - Property 'name' is private and only accessible within class 'Animal'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外可以发现子类继承也是不行的</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Cat</span> <span class="kd">extends</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// - Property 'name' is private and only accessible within class 'Animal'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不过我们可以改成 <code class="language-plaintext highlighter-rouge">protected</code>修复符，上面的报错就没有了</p>
+
+<p>不过实例去访问 <code class="language-plaintext highlighter-rouge">name</code> 属性还是一样会报错</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>- Property 'name' is protected and only accessible within class 'Animal' and its subclasses.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>只有 <code class="language-plaintext highlighter-rouge">Animal</code> 和它的子类，这里就是 <code class="language-plaintext highlighter-rouge">Cat</code> 类，可以访问这个属性</p>
+
+<p>另外我们看看如果把 <code class="language-plaintext highlighter-rouge">Animal</code> 的 构造函数设置为 <code class="language-plaintext highlighter-rouge">private</code> 也会报错</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>- Cannot extend a class 'Animal'. Class constructor is marked as private.
+- Constructor of class 'Animal' is private and only accessible within the class declaration.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>无法继承。</p>
+
+<p>如果把 <code class="language-plaintext highlighter-rouge">Animal</code> 的构造函数设置为 <code class="language-plaintext highlighter-rouge">protected</code> 的话，无法实例化</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>- Constructor of class 'Animal' is protected and only accessible within the class declaration.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>但是如果是实例话 <code class="language-plaintext highlighter-rouge">Cat</code> 类的话还是可以的，<code class="language-plaintext highlighter-rouge">Cat</code> 有访问父类为 <code class="language-plaintext highlighter-rouge">protected</code> 的构造函数。</p>
+
+<p>另外可以发现我们对属性的修饰符是单独拎出来写的，可以进行下面的简化</p>
+
+<p>比如</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="k">protected</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">protected</span> <span class="kd">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>和下面是等价的</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="k">protected</span> <span class="kd">constructor</span><span class="p">(</span><span class="k">protected</span> <span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外还有一个修饰符 <code class="language-plaintext highlighter-rouge">readonly</code>，它需要在其他修饰符后面。我们再调整下上面的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="k">protected</span> <span class="kd">constructor</span><span class="p">(</span><span class="k">protected</span> <span class="k">readonly</span> <span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Cat</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">cat</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">haha</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// - Property 'name' is protected and only accessible within class 'Animal' and its subclasses.</span>
+<span class="c1">// - Cannot assign to 'name' because it is a read-only property.</span>
+
+<span class="c1">// 如果 readonly 写在了 protected 前面的话，也会有下面的报错：'protected' modifier must precede 'readonly' modifier.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上面关于类的时候，代码在 <a href="https://www.typescriptlang.org/play?#code/MYGwhgzhAECCB2BLAtmE0DeAoavoHp9oAHAJ0QDcwAXAU2njGVoG4c8yB7O4OgE2jBO8CNVIBXXp1IAKLj37RStMH2EgAngya0AXNFHl4AcwCUmdrgC+WG1lCQYAYRrRaADzrw+MBCjTYeILChpLU0jKMzLqGiCbmgUF4EOLEtLJRtKZsSXhCIpwgtAB0IJzGMtQAFogQxZnZltA2dvmigq4AvAy0AO7QLtQyAORVtCBlw43ANPU60N2jYFVgw2yEwQVFpeUyM9RzzNlAA">demo 地址</a></p>
+
+<h3 id="抽象类">抽象类</h3>
+
+<p><code class="language-plaintext highlighter-rouge">abstract</code> 定义抽象类，它不能被实例化</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">abstract</span> <span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Animal</span><span class="p">(</span><span class="dl">'</span><span class="s1">cat</span><span class="dl">'</span><span class="p">);</span>
+<span class="c1">// - Cannot create an instance of an abstract class.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们新建一个类继承这个抽象类。继承的子类必须实现抽象类中的抽象方法</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">abstract</span> <span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="kd">abstract</span> <span class="nx">say</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nx">Cat</span> <span class="kd">extends</span> <span class="nx">Animal</span> <span class="p">{}</span>
+<span class="kd">const</span> <span class="nx">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Cat</span><span class="p">(</span><span class="dl">'</span><span class="s1">cat</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="c1">// - Non-abstract class 'Cat' does not implement inherited abstract member 'say' from class 'Animal'.</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们实现一下这个方法，如今可以正常运行没有报错了</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="kd">abstract</span> <span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="kd">abstract</span> <span class="nx">say</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nx">Cat</span> <span class="kd">extends</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="nx">say</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Cat</span><span class="p">(</span><span class="dl">'</span><span class="s1">cat</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">cat</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以看下最终的编译结果， <code class="language-plaintext highlighter-rouge">Animal</code> 抽象类其实也是真实存在的</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">class</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nx">Cat</span> <span class="kd">extends</span> <span class="nx">Animal</span> <span class="p">{</span>
+  <span class="nx">say</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Cat</span><span class="p">(</span><span class="dl">'</span><span class="s1">cat</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">cat</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?#code/IYIwzgLgTsDGEAJYBthjAgggOwJYFthkEBvAKAUqQHttIoBXeaqACgAcGRldYFtg+AKYAuBPVzYA5gEpSFKoti0w1ZEIB0yalNYDhMgNwLKAXxMJQ9OIjDAAnqxliAbtVwATY+bJkUaDABhYEQhAA8IIWwPDBwCInlFO0c5ckUlFTVNbV0IAAtcMA19ISMLcx9lOkRYEIQAXn4hAHcEYIhWAHJaiE6yno1kp0MgA">demo 地址</a></p>
+
+<h2 id="1-2-6-类与接口">1-2-6 类与接口</h2>
+
+<p>实现 <code class="language-plaintext highlighter-rouge">implements</code> 是面向对象中的一个概念。一般类只能继承一个类</p>
+
+<p>但是日常开发中经常不同类之间是有相同特征的，把这一部分抽取出来成为一个接口，类通过 <code class="language-plaintext highlighter-rouge">implements</code> 实现它们的方法，获取更大的灵活度</p>
+
+<p>举个生活中的例子，我们有一个门的类，防盗门继承门，防盗门有警铃的功能，另外又有一个警车的类，它也有警铃的功能，于是我们可以把这个功能抽取出来成为一个接口，让防盗门和警车去实现它就好了</p>
+
+<p>我们代码实现下上面提到的情况</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Alarm</span> <span class="p">{</span>
+  <span class="nx">alarm</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Car</span> <span class="p">{}</span>
+<span class="kd">class</span> <span class="nx">AlarmCar</span> <span class="kd">extends</span> <span class="nx">Car</span> <span class="k">implements</span> <span class="nx">Alarm</span> <span class="p">{</span>
+  <span class="nx">alarm</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">AlarmCar alarm!!!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Door</span> <span class="p">{}</span>
+<span class="kd">class</span> <span class="nx">AlarmDoor</span> <span class="kd">extends</span> <span class="nx">Door</span> <span class="k">implements</span> <span class="nx">Alarm</span> <span class="p">{</span>
+  <span class="nx">alarm</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">AlarmDoor alarm!!!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外我们也可以实现多个接口，比如车还有车灯</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Light</span> <span class="p">{</span>
+  <span class="nx">lightOn</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nx">lightOff</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nx">Car</span> <span class="p">{}</span>
+<span class="kd">class</span> <span class="nx">AlarmCar</span> <span class="kd">extends</span> <span class="nx">Car</span> <span class="k">implements</span> <span class="nx">Alarm</span><span class="p">,</span> <span class="nx">Light</span> <span class="p">{</span>
+  <span class="nx">alarm</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">AlarmCar alarm!!!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">lightOff</span><span class="p">()</span> <span class="p">{}</span>
+  <span class="nx">lightOn</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="接口继承接口">接口继承接口</h3>
+
+<p>另外接口也是可以继承其他接口的，所以我们的类也需要实现接口父类的方法</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">blingbling</span> <span class="p">{</span>
+  <span class="nx">blingbling</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Light</span> <span class="kd">extends</span> <span class="nx">blingbling</span> <span class="p">{</span>
+  <span class="nx">lightOn</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nx">lightOff</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Car</span> <span class="p">{}</span>
+<span class="kd">class</span> <span class="nx">AlarmCar</span> <span class="kd">extends</span> <span class="nx">Car</span> <span class="k">implements</span> <span class="nx">Alarm</span><span class="p">,</span> <span class="nx">Light</span> <span class="p">{</span>
+  <span class="nx">alarm</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">AlarmCar alarm!!!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">lightOff</span><span class="p">()</span> <span class="p">{}</span>
+  <span class="nx">lightOn</span><span class="p">()</span> <span class="p">{}</span>
+  <span class="nx">blingbling</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上面的例子可以在这里查看： <a href="https://www.typescriptlang.org/play?#code/JYOwLgpgTgZghgYwgAgIIBs5QLbIN4BQyxycmOAFAJQBcyAbgPbAAmA3AQL4EGiSyIUAI3SgA5iPH4iJSSAmj51Ok1YduvcNHhJkAGWBiAFmGQQAHpBAsAzsjkKphEslHGwAeRDKGzdjOI3Ew8YGB9Vfw0ETBs7AGEsfGRuaLhYtHJsBKgzSwhreMTgbAAHdAhsfLA7DCxsABp9QxNiZxIyOuokhEYQG0ZygDp0RjEKAHJanGzSTIBCBfGqZIDXZs9QrrxuFyDPb2Xt1YcHLe4omLsAEUZGHLwV1PSp7Bu73KtbZDec4rKKqo1TLSFwdSiHZA9PoDCDDUYTF4-WZ1BZzJYrThAA">demo 地址</a></p>
+
+<h3 id="接口继承类">接口继承类</h3>
+
+<p>接口也可以继承类</p>
+
+<p>我们先看看下面的案例</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Point</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">x</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="k">public</span> <span class="nx">y</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Point3D</span> <span class="kd">extends</span> <span class="nx">Point</span> <span class="p">{</span>
+  <span class="nl">z</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">point</span><span class="p">:</span> <span class="nx">Point3D</span> <span class="o">=</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">z</span><span class="p">:</span> <span class="mi">3</span> <span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>实际上我们声明一个类的时候，也会产生这个类的类型。所以我们既可以用 <code class="language-plaintext highlighter-rouge">Point</code> 创建一个实例，也可以把它当做一个类型，如 <code class="language-plaintext highlighter-rouge">const point: Point = new Point(1, 2);</code></p>
+
+<p>其实等价于下面的写法：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">Point</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="nx">x</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="k">public</span> <span class="nx">y</span><span class="p">:</span> <span class="kr">number</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+<span class="kr">interface</span> <span class="nx">PointInstanceType</span> <span class="p">{</span>
+  <span class="nl">x</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+  <span class="nl">y</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">point</span><span class="p">:</span> <span class="nx">PointInstanceType</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们大概也能理解</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Point3D</span> <span class="kd">extends</span> <span class="nx">Point</span> <span class="p">{</span>
+  <span class="nl">z</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其实等价于</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Point3D</span> <span class="kd">extends</span> <span class="nx">PointInstanceType</span> <span class="p">{</span>
+  <span class="nl">z</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>所以接口继承类，实际上是继承了类的实例的类型，等价于继承了另外一个接口</p>
+
+<p>另外我们发现是不继承 构造函数的，也不会继承静态属性和静态方法。因为我们类的实例，其实也是不包含这些的，很好理解</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/MYGwhgzhAEAKD2BLAdgF2gbwFDV9Y8yEqATgK7CrwkAUADmQEYiLDQAeAXNMmQLaMApiQA00Bs1bQAnt14DhASkw48AXywasKVMIBmYYILhI0ASSKowyIwBVpdY9jwc5-ISQDcq3LJ7vhby0dfUNjBB0AZgARaEF2XWQAExgI80trOwcnH2gALzcFL00sLBBBdDpTVEik7jSa2IBeTFdoAEYxPwAmMQLoSOgtAktxavrqi2JMwXtHaBbkQQB3Ex0aTuhuxU8gA">demo 地址</a></p>
+
+<h2 id="1-2-7-泛型">1-2-7 泛型</h2>
+
+<p>泛型指的是定义函数，接口或者类的时候，不预先指定好类型，在实际用的时候才去指定类型</p>
+
+<p>先看一个简单的例子</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">repeat</span><span class="p">(</span><span class="nx">length</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">value</span><span class="p">:</span> <span class="kr">any</span><span class="p">):</span> <span class="kr">any</span><span class="p">[]</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">index</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">repeat</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">));</span> <span class="c1">// ["cody", "cody", "cody", "cody", "cody"]</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>但是你可以发现，返回的值是 <code class="language-plaintext highlighter-rouge">any[]</code>，我们不能保证返回的数组的项和传入的 <code class="language-plaintext highlighter-rouge">value</code> 的类型一致。进行下面的优化：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">repeat2</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">length</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">value</span><span class="p">:</span> <span class="nx">T</span><span class="p">):</span> <span class="nx">T</span><span class="p">[]</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">index</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">repeat2</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">));</span> <span class="c1">// ["cody", "cody"]</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以看到上面的例子，在函数名 <code class="language-plaintext highlighter-rouge">repeat2</code> 后面加了一个 <code class="language-plaintext highlighter-rouge">&lt;T&gt;</code>，它代表可以输入任意类型的值，但是使用的时候一旦制定了 <code class="language-plaintext highlighter-rouge">T</code> 类型，后面的 <code class="language-plaintext highlighter-rouge">value</code> 参数和 返回的 <code class="language-plaintext highlighter-rouge">T[]</code> 数组都是这种类型了，解决了我们上面提到的问题</p>
+
+<p>我们稍微调整下 <code class="language-plaintext highlighter-rouge">push</code> 的值，会发现报错了。这个如果在原来的 <code class="language-plaintext highlighter-rouge">repeat</code> 函数是不会报错的，因为它并不校验。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>result.push(Number(value));
+
+// - Type 'number[]' is not assignable to type 'T[]'.
+// - Type 'number' is not assignable to type 'T'.
+// - 'T' could be instantiated with an arbitrary type which could be unrelated to 'number'.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们也可以指定多个泛型，比如</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">swap</span><span class="o">&lt;</span><span class="nx">U</span><span class="p">,</span> <span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">arr</span><span class="p">:</span> <span class="p">[</span><span class="nx">U</span><span class="p">,</span> <span class="nx">T</span><span class="p">]):</span> <span class="p">[</span><span class="nx">T</span><span class="p">,</span> <span class="nx">U</span><span class="p">]</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">[</span><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]];</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="泛型约束">泛型约束</h3>
+
+<p>泛型不能任意调取属性或者方法，因为不一定存在，不过我们可以进行约束</p>
+
+<p>比如下面的例子：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">needLength</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">arg</span><span class="p">:</span> <span class="nx">T</span><span class="p">):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">arg</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 这样是会报错的，我们改进下</span>
+
+<span class="kr">interface</span> <span class="nx">LengthWise</span> <span class="p">{</span>
+  <span class="nl">length</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">needLength</span><span class="o">&lt;</span><span class="nx">T</span> <span class="kd">extends</span> <span class="nx">LengthWise</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">arg</span><span class="p">:</span> <span class="nx">T</span><span class="p">):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">arg</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>再看一个例子：</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">copyFields</span><span class="o">&lt;</span><span class="nx">T</span> <span class="kd">extends</span> <span class="nx">S</span><span class="p">,</span> <span class="nx">S</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">target</span><span class="p">:</span> <span class="nx">T</span><span class="p">,</span> <span class="nx">source</span><span class="p">:</span> <span class="nx">S</span><span class="p">):</span> <span class="nx">T</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">field</span> <span class="k">in</span> <span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">target</span><span class="p">[</span><span class="nx">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">source</span> <span class="k">as</span> <span class="nx">T</span><span class="p">)[</span><span class="nx">field</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">target</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="p">{</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">b</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">c</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">d</span><span class="p">:</span> <span class="mi">4</span> <span class="p">};</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">copyFields</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="p">{</span> <span class="na">b</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="na">d</span><span class="p">:</span> <span class="mi">20</span> <span class="p">}));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如果有在 <code class="language-plaintext highlighter-rouge">source</code> 中出现 <code class="language-plaintext highlighter-rouge">target</code> 不存在的字段，就会报错</p>
+
+<h3 id="泛型接口">泛型接口</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">CreateArrayFunc</span> <span class="p">{</span>
+  <span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">length</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span> <span class="nx">value</span><span class="p">:</span> <span class="nx">T</span><span class="p">):</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">arrayFunc</span><span class="p">:</span> <span class="nx">CreateArrayFunc</span> <span class="o">=</span> <span class="kd">function</span> <span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span>
+  <span class="nx">length</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span>
+  <span class="nx">value</span><span class="p">:</span> <span class="nx">T</span>
+<span class="p">):</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="na">arr</span><span class="p">:</span> <span class="nx">T</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">index</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">arr</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">arr</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arrayFunc</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="泛型类">泛型类</h3>
+
+<p>看下例子就好了</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nx">MulType</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="k">public</span> <span class="na">val</span><span class="p">:</span> <span class="nx">T</span><span class="p">)</span> <span class="p">{}</span>
+  <span class="nx">say</span><span class="p">():</span> <span class="nx">T</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">val</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">numberType</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MulType</span><span class="p">(</span><span class="mi">40</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numberType</span><span class="p">.</span><span class="nx">say</span><span class="p">());</span>
+
+<span class="kd">const</span> <span class="nx">numberType2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MulType</span><span class="p">(</span><span class="dl">'</span><span class="s1">123</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numberType2</span><span class="p">.</span><span class="nx">say</span><span class="p">());</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://www.typescriptlang.org/play?ssl=56&amp;ssc=34&amp;pln=46&amp;pc=1#code/GYVwdgxgLglg9mABAJwKYAdUEMoAoA2qYA5lABYBciYIAtgEarIA0iAblviKlVmAJ4BKXgIDaAXUQBvAFCJ5iCAgDOUFKmUh8agLyIJAbjkLgcZIgKo1MMABNUAD0R6ADAcQ37TgDyJCJcndPRwBqEMFpYwUFNE1tADp0EGUyXA4uVEEjaIBfKPUoEGQkWK0oIzyZJTBlOEJ4-DhiXDRMHFwAVlYAciVbfm7BLMQAehH9ACI+-gnWKbh+2cR5xbnppZWZ8RkZUEhYBHU2qAAmbwAVAD5LAMpqOkYWdk5uKnPhRHOJSOjq1XU4rp9OJsiYzBZCNY7I5nIg3B5oT4-ERSGQgoiwhFZNFoqUEkkUmkXplQfI8rirEUShoyhUqio6qgGk0WhhsKdcCcetNBsMxpN1msFlsdvy8VBEslUgA5B5MIkZIZGXbgaDwJDKADuWHQ3gAqqwrrgsMhkFRRAbPuIPqJzqw9ZJsTFKcV9CbkKIAIziVju0QucQgmSVGxQJjALAQVCIAAyKPIAHUYMpo075P5UVQaAwmHSVft1dRUKhbHHbhdEI4w3ZlLH42QkynribiG8PtnHj9nYVXS2GvW82Bi6X67hup6TgBmQbKvZqw5KdD8ABiMFQ+FsygrVaIm8QAGVWPvrlAW1Y3qxakUo1R9x9zl35KZzJY1MA1xuEYgr8go1j8tE-LnPwmCIN0ACiDhQMgkZQN4ADWqD8HAwCfJe0E2MQlzdIofBgHAaiMIgyQlogUBwAiXhkSB0bdMu3TxABCinsgxBWKI77rrYkh6LgP5RogWC1u8HEftxpKIOS3ZUmRZ7lMGMiQogTh6FIglUJ6rD0FQXKKFQk6sLYVAACySUYfyMsyzSLiuYnKLgDisGp2mIJ6LiGTpLiSUqOyhuGkbRgAwmgOCoAAgqaWArqqj6IBc1wZuQWZyk86SvJ8HwRTB-DxXmSnulFy6qlQwXsuFkXRZAsJzgcSAVnoqjIJhCX1slOapcSbZUFlUXxbFfxqO6bzfHoEj5M+EJWJRMKuOiVG+IlaLTU4IR6J6WKCaakqEmlmSSfkaA9kg7p5hZ9SNM0BWVRAnLcsKvI7BA+BCbWACyWjAZgfVpooKjQSA0BmLgST0PgMAQM8+BtpE+RSfIyhRbgwgPj9FJHWRZDJvE6QSXklQDfc7WfdGehDpqiDvfgxO4MZLhZPSNSWRduAdkwxPxAj-BI4Ij1-YTjzEycsJkxTH00WOE7TvTZ1MszrPIILHOI0MMhAA">demo</a></p>
+
+<h2 id="声明合并">声明合并</h2>
+
+<p>如果定义了两个相同的接口，类或者函数，他们会合并起来</p>
+
+<h3 id="函数的合并">函数的合并</h3>
+
+<p>这是我们之前写过的例子，重载多种类型的函数</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">number</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">dFunc</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span><span class="p">):</span> <span class="kr">string</span> <span class="o">|</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">a</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">number</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">));</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">reverse</span><span class="p">().</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="接口合并">接口合并</h3>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kr">interface</span> <span class="nx">Miaomiao</span> <span class="p">{</span>
+  <span class="nl">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Miaomiao</span> <span class="p">{</span>
+  <span class="nl">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">t</span><span class="p">:</span> <span class="nx">Miaomiao</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="na">b</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="类合并">类合并</h3>
+
+<p>和接口合并基本一样</p>
+
+<p><a href="https://www.typescriptlang.org/play?#code/GYVwdgxgLglg9mABAEwGLggCgIYC5EDOUATjGAOYCU+RpFA3AFCiSwIrqQ75ggC2AIwCmxaol6CRTFtHhI0GboRJlyiAD7j+w0TRUUNWycUQBvRokuIYwRJigBPAA5C4t7IgC83xAHIJOr6UZhZWYcRCUCDESABy2iI4AHRQcADK+uSYlEkETgA2MFCYvkFJEQBuIgRC2UkAVnBkJUGUTGEAvohC+TUhYeGR0UjYuQVFLTmV1bU5jc2lbaGWHYyrjGRQIsDYEEKIALIw2HB8x3D9VnhGOgA0a4wbYFvEO3uH52cnl5YCPAnEZaIAD0wMQ11oqnu6wgCCIiD4+COJy+F08P3B+AATAAGe5hP6IAAseIeQA">demo 地址</a></p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/18/http/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="HTTP学习"
+            >
+              Previous<br />
+              <span>HTTP学习</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/19/template/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="JavaScript 模板库分析"
+            >
+              Next<br />
+              <span>JavaScript 模板库分析</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/18/ts-introduction";
+  var disqus_url = "https://cody1991.cn/2021/03/18/ts-introduction/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

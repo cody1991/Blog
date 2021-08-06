@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="从输入URL到页面加载的过程（7） - 解析页面流程 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+"
+  />
+   <meta property="article:published_time" content="2020-07-25T00:00:00Z">   
+  <meta property="article:tag" content="Process" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2020/07/25/process-7/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    从输入URL到页面加载的过程（7） - 解析页面流程 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2020/07/25/process-7/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Process" title="Process">Process</a>
+                        
+                    </div>
+                    <h1>从输入URL到页面加载的过程（7） - 解析页面流程</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on July 25, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>from <a href="http://www.dailichun.com/2018/03/12/whenyouenteraurl.html">从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！</a></p>
+
+<p>作为进阶回头再来看看：<a href="http://fex.baidu.com/blog/2014/05/what-happen/">从输入 URL 到页面加载完成的过程中都发生了什么事情？</a></p>
+
+<h1 id="解析页面流程">解析页面流程</h1>
+
+<h2 id="流程简介">流程简介</h2>
+
+<ol>
+  <li>解析 <code class="language-plaintext highlighter-rouge">html</code>，生成 <code class="language-plaintext highlighter-rouge">DOM</code> 树</li>
+  <li>解析 <code class="language-plaintext highlighter-rouge">css</code>，生成 <code class="language-plaintext highlighter-rouge">css</code> 规则树</li>
+  <li>合并 <code class="language-plaintext highlighter-rouge">dom</code> 树 和 <code class="language-plaintext highlighter-rouge">css</code> 规则树，生成 <code class="language-plaintext highlighter-rouge">render</code> 树</li>
+  <li>布局 <code class="language-plaintext highlighter-rouge">render</code> 树 (<code class="language-plaintext highlighter-rouge">layout</code>/<code class="language-plaintext highlighter-rouge">relow</code>) ，负责各尺寸和位置的计算</li>
+  <li>绘制 <code class="language-plaintext highlighter-rouge">render</code> 树 (<code class="language-plaintext highlighter-rouge">paint</code>)，绘制页面像素信息</li>
+  <li>浏览器会把各层的信息发给 <code class="language-plaintext highlighter-rouge">GPU</code>，<code class="language-plaintext highlighter-rouge">GPU</code> 会把各层的信息合成 <code class="language-plaintext highlighter-rouge">composite</code>，最终显示屏幕上</li>
+</ol>
+
+<p><img src="/img/posts/process-3.png" alt="解析页面流程" /></p>
+
+<h2 id="html-解析构建-dom-树"><code class="language-plaintext highlighter-rouge">html</code> 解析，构建 <code class="language-plaintext highlighter-rouge">dom</code> 树</h2>
+
+<p><code class="language-plaintext highlighter-rouge">bytes</code> -&gt; <code class="language-plaintext highlighter-rouge">characters</code> -&gt; <code class="language-plaintext highlighter-rouge">tokens</code> -&gt; <code class="language-plaintext highlighter-rouge">node</code> -&gt; <code class="language-plaintext highlighter-rouge">dom</code></p>
+
+<p>比如下面一段 <code class="language-plaintext highlighter-rouge">html</code> 代码</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width,initial-scale=1"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">"style.css"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Critical Path<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;p&gt;</span>Hello <span class="nt">&lt;span&gt;</span>web performance<span class="nt">&lt;/span&gt;</span> students!<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;div&gt;&lt;img</span> <span class="na">src=</span><span class="s">"awesome-photo.jpg"</span> <span class="nt">/&gt;&lt;/div&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>浏览器的处理过程</p>
+
+<p><img src="/img/posts/process-4.png" alt="DOM树构建过程" /></p>
+
+<p>其中的重要流程有</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Conversion</code> 转换: 浏览器把获取到的 <code class="language-plaintext highlighter-rouge">html</code> 内容 (<code class="language-plaintext highlighter-rouge">bytes</code>) 基于它的编码转成各个字符</li>
+  <li><code class="language-plaintext highlighter-rouge">Tokenizing</code> 分词: 浏览器按照<code class="language-plaintext highlighter-rouge">html</code>规范把这些分词转换成不同的标记<code class="language-plaintext highlighter-rouge">token</code>，每个<code class="language-plaintext highlighter-rouge">token</code>都有自己独特的含义和规则集</li>
+  <li><code class="language-plaintext highlighter-rouge">Lexing</code> 词法分析: 分词得到一堆的 <code class="language-plaintext highlighter-rouge">token</code>，此时把它们转成对象，这些对象有他们的属性和规则</li>
+  <li><code class="language-plaintext highlighter-rouge">dom</code> 构建: 由于 <code class="language-plaintext highlighter-rouge">html</code> 标记定义的就是不同标签之间的关系，这个关系就像属性结构一样（比如 <code class="language-plaintext highlighter-rouge">body</code> 对象的父节点就是 <code class="language-plaintext highlighter-rouge">HTML</code> 对象，然后段落 <code class="language-plaintext highlighter-rouge">p</code> 对象的父节点就是 <code class="language-plaintext highlighter-rouge">body</code> 对象）</li>
+</ul>
+
+<h2 id="生成-css-规则树">生成 <code class="language-plaintext highlighter-rouge">css</code> 规则树</h2>
+
+<p>类似也是</p>
+
+<p><code class="language-plaintext highlighter-rouge">Bytes</code> → <code class="language-plaintext highlighter-rouge">characters</code> → <code class="language-plaintext highlighter-rouge">tokens</code> → <code class="language-plaintext highlighter-rouge">nodes</code> → <code class="language-plaintext highlighter-rouge">CSSOM</code></p>
+
+<p>比如</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="nt">body</span> <span class="p">{</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">16px</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">span</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">p</span> <span class="nt">span</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">img</span> <span class="p">{</span>
+  <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>最终生成下面的树</p>
+
+<p><img src="/img/posts/process-5.png" alt="css规则树" /></p>
+
+<h2 id="构建渲染树">构建渲染树</h2>
+
+<p>一般渲染树和 <code class="language-plaintext highlighter-rouge">dom</code> 树一一对应，但是也不一定，一些不可见的元素不会出现在渲染树，比如 <code class="language-plaintext highlighter-rouge">head</code> 标签，和 <code class="language-plaintext highlighter-rouge">display:none</code> 等不可见的元素</p>
+
+<p><img src="/img/posts/process-6.png" alt="渲染树" /></p>
+
+<h2 id="渲染">渲染</h2>
+
+<p>有了渲染树就可以开始渲染了，基本流程如下图</p>
+
+<p><img src="/img/posts/process-7.jpg" alt="渲染树" /></p>
+
+<ul>
+  <li>计算 <code class="language-plaintext highlighter-rouge">css</code> 样式</li>
+  <li>构建渲染树</li>
+  <li>布局，主要定位坐标和大小，是否换行，各种 <code class="language-plaintext highlighter-rouge">position</code> <code class="language-plaintext highlighter-rouge">overflow</code> <code class="language-plaintext highlighter-rouge">z-index</code>属性</li>
+  <li>绘制，把图像绘制出来</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">js</code> 动态修改了 <code class="language-plaintext highlighter-rouge">dom</code> 和 <code class="language-plaintext highlighter-rouge">css</code> 的话，会导致重新布局 <code class="language-plaintext highlighter-rouge">layout</code> 或者 渲染<code class="language-plaintext highlighter-rouge">repaint</code></p>
+
+<p>他们是有区别的</p>
+
+<ul>
+  <li>layout，也叫做 <code class="language-plaintext highlighter-rouge">reflow</code> ，就是回流，意味着元素的内容，结构，位置，尺寸发生了变化，需要重新计算样式和渲染树</li>
+  <li>repaint，重绘，以为发生了一些影响外观的变化，比如背景颜色，边框颜色，文字颜色等，只要应用新的样式就好了</li>
+</ul>
+
+<p>回流成本更加高，一个节点的回流经常导致子节点和同级节点的回流，所以优化的方案一般包含了避免回流</p>
+
+<p>什么会引起回流</p>
+
+<ul>
+  <li>改变字体大小</li>
+  <li>页面初始化渲染</li>
+  <li><code class="language-plaintext highlighter-rouge">dom</code> 结构变化</li>
+  <li><code class="language-plaintext highlighter-rouge">render</code> 树变化，比如 <code class="language-plaintext highlighter-rouge">padding</code> 变少了</li>
+  <li>窗口 <code class="language-plaintext highlighter-rouge">resize</code></li>
+  <li>获取某些属性，也会</li>
+</ul>
+
+<p>很多浏览器做了优化，会等到一定量才统一处理</p>
+
+<p>但是除了 <code class="language-plaintext highlighter-rouge">render</code> 树的直接变化，获取一些属性的时候，浏览器为了获取到正确的值也会触发回流，这样浏览器的优化也无效了</p>
+
+<p>比如</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">offset(Top/Left/Width/Height)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">scroll(Top/Left/Width/Height)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">cilent(Top/Left/Width/Height)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">width,height</code></li>
+  <li>调用了 <code class="language-plaintext highlighter-rouge">getComputedStyle()</code> 或者 <code class="language-plaintext highlighter-rouge">IE</code> 的 <code class="language-plaintext highlighter-rouge">currentStyle</code></li>
+</ul>
+
+<p>回流一定伴随着重绘，重绘却可以单独出现</p>
+
+<p>优化方案有下面几个</p>
+
+<ul>
+  <li>减少逐项更改样式，最好一次性更改 <code class="language-plaintext highlighter-rouge">style</code>，或者将样式定义为 <code class="language-plaintext highlighter-rouge">class</code> 并一次性更新</li>
+  <li>避免循环操作 <code class="language-plaintext highlighter-rouge">dom</code>，创建一个 <code class="language-plaintext highlighter-rouge">documentFragment</code> 或 <code class="language-plaintext highlighter-rouge">div</code>，在它上面应用所有 <code class="language-plaintext highlighter-rouge">DOM</code> 操作，最后再把它添加进去</li>
+  <li>避免多次读取 <code class="language-plaintext highlighter-rouge">offset</code> 等属性，无法避免则将它们缓存到变量</li>
+  <li>将复杂的元素绝对定位或固定定位，使得它脱离文档流，否则回流代价会很高</li>
+</ul>
+
+<p>最后看看一个案例</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">s</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">;</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">padding</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">2px</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// 回流 + 重绘</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">border</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">1px solid red</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// 再一次 回流 + 重绘</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">blue</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// 再一次重绘</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">backgroundColor</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">#ccc</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// 再一次 重绘</span>
+<span class="nx">s</span><span class="p">.</span><span class="nx">fontSize</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">14px</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// 再一次 回流 + 重绘</span>
+<span class="c1">// 添加node，再一次 回流 + 重绘</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="dl">"</span><span class="s2">abc!</span><span class="dl">"</span><span class="p">));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="简单层与复合层">简单层与复合层</h2>
+
+<p>上面止步于绘制，但是其实这一步没那么简单，简单介绍下 简单层和复合层</p>
+
+<ul>
+  <li>可以认为默认只有一个复合层，所有的 <code class="language-plaintext highlighter-rouge">dom</code> 都是在这个复合层里面</li>
+  <li>如果开启了硬件加速功能，可以把某个节点变成复合层</li>
+  <li>复合层之间的绘制互不干扰，由 <code class="language-plaintext highlighter-rouge">gpu</code> 控制</li>
+  <li>简单图层中，就算是 <code class="language-plaintext highlighter-rouge">absolute</code> 等布局，变化时不影响整体的回流，但是在同一个图层中，仍然会影响绘制的，因此做动画的性能很低，复合层是独立的，所以动画一般推荐使用复合层</li>
+</ul>
+
+<h2 id="资源外链的下载">资源外链的下载</h2>
+
+<p><code class="language-plaintext highlighter-rouge">html</code> 解析的过程会遇到一些外链，需要单独处理</p>
+
+<p>遇到的资源举例有下面三种</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">CSS</code> 样式资源</li>
+  <li><code class="language-plaintext highlighter-rouge">JS</code> 脚本资源</li>
+  <li><code class="language-plaintext highlighter-rouge">img</code> 图片类资源</li>
+</ul>
+
+<p>当遇到上述的外链时，会单独开启一个下载线程去下载资源（<code class="language-plaintext highlighter-rouge">http1.1</code> 中是每一个资源的下载都要开启一个 <code class="language-plaintext highlighter-rouge">http</code> 请求，对应一个 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 链接）</p>
+
+<h3 id="遇到-css-样式资源">遇到 <code class="language-plaintext highlighter-rouge">CSS</code> 样式资源</h3>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">CSS</code> 下载时异步，不会阻塞浏览器构建 <code class="language-plaintext highlighter-rouge">DOM</code> 树</li>
+  <li>但是会阻塞渲染，也就是在构建 <code class="language-plaintext highlighter-rouge">render</code> 时，会等到 <code class="language-plaintext highlighter-rouge">css</code> 下载解析完毕后才进行（这点与浏览器优化有关，防止 <code class="language-plaintext highlighter-rouge">css</code> 规则不断改变，避免了重复的构建）</li>
+  <li>有例外，<code class="language-plaintext highlighter-rouge">media query</code> 声明的 <code class="language-plaintext highlighter-rouge">CSS</code> 是不会阻塞渲染的</li>
+</ul>
+
+<h3 id="遇到-js-脚本资源">遇到 <code class="language-plaintext highlighter-rouge">JS</code> 脚本资源</h3>
+
+<ul>
+  <li>阻塞浏览器的解析，也就是说发现一个外链脚本时，需等待脚本下载完成并执行后才会继续解析 <code class="language-plaintext highlighter-rouge">HTML</code></li>
+  <li>浏览器的优化，一般现代浏览器有优化，在脚本阻塞时，也会继续下载其它资源（当然有并发上限），但是虽然脚本可以并行下载，解析过程仍然是阻塞的，也就是说必须这个脚本执行完毕后才会接下来的解析，并行下载只是一种优化而已</li>
+  <li><code class="language-plaintext highlighter-rouge">defer</code> 与 <code class="language-plaintext highlighter-rouge">async</code>，普通的脚本是会阻塞浏览器解析的，但是可以加上 <code class="language-plaintext highlighter-rouge">defer</code> 或 <code class="language-plaintext highlighter-rouge">async</code> 属性，这样脚本就变成异步了，可以等到解析完毕后再执行</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">defer</code> 是延迟执行，而 <code class="language-plaintext highlighter-rouge">async</code> 是异步执行</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">async</code> 是异步执行，异步下载完毕后就会执行，不确保执行顺序，一定在 <code class="language-plaintext highlighter-rouge">onload</code> 前，但不确定在 <code class="language-plaintext highlighter-rouge">DOMContentLoaded</code> 事件的前或后</li>
+  <li><code class="language-plaintext highlighter-rouge">defer</code> 是延迟执行，在浏览器看起来的效果像是将脚本放在了 <code class="language-plaintext highlighter-rouge">body</code> 后面一样（虽然按规范应该是在 <code class="language-plaintext highlighter-rouge">DOMContentLoaded</code> 事件前，但实际上不同浏览器的优化效果不一样，也有可能在它后面）</li>
+</ul>
+
+<h3 id="遇到-img-图片类资源">遇到 <code class="language-plaintext highlighter-rouge">img</code> 图片类资源</h3>
+
+<p>遇到图片等资源时，直接就是异步下载，不会阻塞解析，下载完毕后直接用图片替换原有 <code class="language-plaintext highlighter-rouge">src</code> 的地方</p>
+
+<h2 id="loaded-和-domcontentloaded"><code class="language-plaintext highlighter-rouge">loaded</code> 和 <code class="language-plaintext highlighter-rouge">domcontentloaded</code></h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">DOMContentLoaded</code> 事件触发时，仅当 <code class="language-plaintext highlighter-rouge">DOM</code> 加载完成，不包括样式表，图片(譬如如果有 <code class="language-plaintext highlighter-rouge">async</code> 加载的脚本就不一定完成)</li>
+  <li><code class="language-plaintext highlighter-rouge">load</code> 事件触发时，页面上所有的 <code class="language-plaintext highlighter-rouge">DOM</code>，样式表，脚本，图片都已经加载完成了</li>
+</ul>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/07/25/process-6/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="从输入URL到页面加载的过程（6） - 单独拎出来的缓存问题，http缓存"
+            >
+              Previous<br />
+              <span>从输入URL到页面加载的过程（6） - 单独拎出来的缓存问题，http缓存</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/07/25/process-8/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="从输入URL到页面加载的过程（8） - CSS的可视化格式模型"
+            >
+              Next<br />
+              <span>从输入URL到页面加载的过程（8） - CSS的可视化格式模型</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2020/07/25/process-7";
+  var disqus_url = "https://cody1991.cn/2020/07/25/process-7/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

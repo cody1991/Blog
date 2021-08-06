@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="从输入URL到页面加载的过程（5） - 后台和前台的 http 交互 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+"
+  />
+   <meta property="article:published_time" content="2020-07-25T00:00:00Z">   
+  <meta property="article:tag" content="Process" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2020/07/25/process-5/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    从输入URL到页面加载的过程（5） - 后台和前台的 http 交互 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2020/07/25/process-5/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Process" title="Process">Process</a>
+                        
+                    </div>
+                    <h1>从输入URL到页面加载的过程（5） - 后台和前台的 http 交互</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on July 25, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>from <a href="http://www.dailichun.com/2018/03/12/whenyouenteraurl.html">从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！</a></p>
+
+<p>作为进阶回头再来看看：<a href="http://fex.baidu.com/blog/2014/05/what-happen/">从输入 URL 到页面加载完成的过程中都发生了什么事情？</a></p>
+
+<h1 id="后台和前台的-http-交互">后台和前台的 <code class="language-plaintext highlighter-rouge">http</code> 交互</h1>
+
+<p><code class="language-plaintext highlighter-rouge">http</code> 信息载体</p>
+
+<p>报文一般包含了 通用头部 响应/请求头部 响应/请求体</p>
+
+<h2 id="通用头部">通用头部</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Request URL</code> 请求的 <code class="language-plaintext highlighter-rouge">web</code> 服务器地址</li>
+  <li><code class="language-plaintext highlighter-rouge">Request Method</code> 请求的方法（<code class="language-plaintext highlighter-rouge">get</code> <code class="language-plaintext highlighter-rouge">post</code> <code class="language-plaintext highlighter-rouge">delete</code> <code class="language-plaintext highlighter-rouge">put</code> <code class="language-plaintext highlighter-rouge">trace</code> <code class="language-plaintext highlighter-rouge">options</code> <code class="language-plaintext highlighter-rouge">head</code> <code class="language-plaintext highlighter-rouge">connect</code>）</li>
+  <li><code class="language-plaintext highlighter-rouge">Status Code</code> 200 表示成功等</li>
+  <li><code class="language-plaintext highlighter-rouge">Remote Address</code> 请求的远程地址，转成 <code class="language-plaintext highlighter-rouge">ip</code></li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">methods</code>:</p>
+
+<p><code class="language-plaintext highlighter-rouge">HTTP1.0</code> 定义了三种请求方法： <code class="language-plaintext highlighter-rouge">GET</code> <code class="language-plaintext highlighter-rouge">POST</code> <code class="language-plaintext highlighter-rouge">HEAD</code></p>
+
+<p>以及几种 <code class="language-plaintext highlighter-rouge">additional request methods</code>：<code class="language-plaintext highlighter-rouge">PUT</code> <code class="language-plaintext highlighter-rouge">DELETE</code> <code class="language-plaintext highlighter-rouge">LINK</code> <code class="language-plaintext highlighter-rouge">UNLINK</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">HTTP1.1</code> 定义了八种请求方法：<code class="language-plaintext highlighter-rouge">get</code> <code class="language-plaintext highlighter-rouge">post</code> <code class="language-plaintext highlighter-rouge">delete</code> <code class="language-plaintext highlighter-rouge">put</code> <code class="language-plaintext highlighter-rouge">trace</code> <code class="language-plaintext highlighter-rouge">options</code> <code class="language-plaintext highlighter-rouge">head</code> <code class="language-plaintext highlighter-rouge">connect</code></p>
+
+<p>下面是常见的状态码</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">200</code> 表示请求成功</li>
+  <li><code class="language-plaintext highlighter-rouge">304</code> 自上次请求，请求的资源没有发生过变化，请使用本地缓存</li>
+  <li><code class="language-plaintext highlighter-rouge">400</code> 客户端请求有错</li>
+  <li><code class="language-plaintext highlighter-rouge">403</code> 禁止访问，比如未登陆的情况下的返回码</li>
+  <li><code class="language-plaintext highlighter-rouge">404</code> 资源未找到</li>
+  <li><code class="language-plaintext highlighter-rouge">500</code> 服务器内部出错</li>
+  <li><code class="language-plaintext highlighter-rouge">503</code> 服务器不可用</li>
+</ul>
+
+<p>常见的状态码范围</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">1xx</code> 指示信息，表示请求已经接受，继续处理</li>
+  <li><code class="language-plaintext highlighter-rouge">2xx</code> 成功</li>
+  <li><code class="language-plaintext highlighter-rouge">3xx</code> 重定向，表示完成请求需要近一步操作</li>
+  <li><code class="language-plaintext highlighter-rouge">4xx</code> 客户端错误，请求有语法错误或者无法实现</li>
+  <li><code class="language-plaintext highlighter-rouge">5xx</code> 服务端错误，服务器未能完成合法请求</li>
+</ul>
+
+<h2 id="请求响应头部">请求/响应头部</h2>
+
+<p>常用的请求头</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Accept</code> 接收类型，表示浏览器支持的 <code class="language-plaintext highlighter-rouge">MIME</code> 类型，对表服务器返回的 <code class="language-plaintext highlighter-rouge">Content-Type</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Accept-Encoding</code> 浏览器支持的压缩类型，比如 <code class="language-plaintext highlighter-rouge">GZIP</code>，超出类型不支持</li>
+  <li><code class="language-plaintext highlighter-rouge">Content-Type</code> 客户端发出去的实体内容的类型</li>
+  <li><code class="language-plaintext highlighter-rouge">Cache-Control</code> 指定请求和响应遵守的缓存策略，比如 <code class="language-plaintext highlighter-rouge">no-cache</code></li>
+  <li><code class="language-plaintext highlighter-rouge">If-Modified-Since</code> 对应服务器的 <code class="language-plaintext highlighter-rouge">Last-Modified</code>，用来匹配看文件是否修改了，精确到 <code class="language-plaintext highlighter-rouge">1s</code>，是 <code class="language-plaintext highlighter-rouge">http1.0</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Expries</code> 缓存控制，这个时间之前不会请求，直接使用缓存，<code class="language-plaintext highlighter-rouge">http1.0</code> 而且用的是服务器时间</li>
+  <li><code class="language-plaintext highlighter-rouge">Max-age</code> 代表缓存在本地多少秒，有效时间内不会请求，而是使用缓存，<code class="language-plaintext highlighter-rouge">http1.1</code></li>
+  <li><code class="language-plaintext highlighter-rouge">If-None-Match</code> 对应服务器的 <code class="language-plaintext highlighter-rouge">ETag</code>，用来匹配文件是否修改，非常准，<code class="language-plaintext highlighter-rouge">http1.1</code>中</li>
+  <li><code class="language-plaintext highlighter-rouge">Cookie</code> 有 <code class="language-plaintext highlighter-rouge">Cookie</code> 并且同域的时候会带上</li>
+  <li><code class="language-plaintext highlighter-rouge">Connection</code> 浏览器和服务器通信时对于长链接如何处理，<code class="language-plaintext highlighter-rouge">keep-alive</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Host</code> 请求的服务器 <code class="language-plaintext highlighter-rouge">URL</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Orgin</code> 最初的请求从哪里来的，精确到端口，<code class="language-plaintext highlighter-rouge">Origin</code> 比 <code class="language-plaintext highlighter-rouge">Referer</code> 更尊重隐私</li>
+  <li><code class="language-plaintext highlighter-rouge">Referer</code> 该页面的来源 <code class="language-plaintext highlighter-rouge">url</code>，适用于所有类型的请求，会精确到详细页面的地址，<code class="language-plaintext highlighter-rouge">csrf</code> 拦截常用这个</li>
+  <li><code class="language-plaintext highlighter-rouge">User-Agent</code> 用户的客户端信息</li>
+</ul>
+
+<p>常用下响应头</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Access-Control-Allow-Headers</code> 服务器允许的请求头</li>
+  <li><code class="language-plaintext highlighter-rouge">Access-Control-Allow-Methods</code> 服务器允许的请求方法</li>
+  <li><code class="language-plaintext highlighter-rouge">Access-Control-Allow-Origin</code> 服务器允许的请求 <code class="language-plaintext highlighter-rouge">Origin</code> 头部，比如 <code class="language-plaintext highlighter-rouge">*</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Content-Type</code> 服务器返回的实体内容类型</li>
+  <li><code class="language-plaintext highlighter-rouge">Date</code> 服务器发送的时间</li>
+  <li><code class="language-plaintext highlighter-rouge">Cache-Control</code> 告诉客户端什么情况下可以安全的缓存文档</li>
+  <li><code class="language-plaintext highlighter-rouge">Last-Modified</code> 最后的修改时间</li>
+  <li><code class="language-plaintext highlighter-rouge">Expires</code> 应该在什么时候认为文档过期了，从而不缓存</li>
+  <li><code class="language-plaintext highlighter-rouge">Max-age</code> 客户端本地应该缓存多久，开启了 <code class="language-plaintext highlighter-rouge">Cache-Control</code> 后有效</li>
+  <li><code class="language-plaintext highlighter-rouge">ETag</code> 返回实体标签当前值</li>
+  <li><code class="language-plaintext highlighter-rouge">Set-Cookie</code> 设置和页面关联的 <code class="language-plaintext highlighter-rouge">Cookie</code></li>
+  <li><code class="language-plaintext highlighter-rouge">Keep-Alive</code> 如果客户端有 <code class="language-plaintext highlighter-rouge">keep-alive</code>，服务器也会响应</li>
+  <li><code class="language-plaintext highlighter-rouge">Server</code> 服务器相关的信息</li>
+</ul>
+
+<h2 id="请求响应实体">请求/响应实体</h2>
+
+<p>请求实体可以放类似 <code class="language-plaintext highlighter-rouge">a=1&amp;b=2</code> 这样的序列化形式，也可以放表单 <code class="language-plaintext highlighter-rouge">form data</code> 对象，里面夹杂着文件等</p>
+
+<p>响应实体就是服务端处理以后返回的信息</p>
+
+<p>现在接口请求一般是 <code class="language-plaintext highlighter-rouge">json</code> 格式，而页面则是 <code class="language-plaintext highlighter-rouge">html</code> 文件，返回给浏览器解析</p>
+
+<h2 id="crlf">CRLF</h2>
+
+<p><code class="language-plaintext highlighter-rouge">Carriage-Return Line-Feed</code>，代表回车换行，作为分隔符</p>
+
+<p>请求头和实体之间会有一个 <code class="language-plaintext highlighter-rouge">CRLF</code>，响应头和响应实体也会有一个 <code class="language-plaintext highlighter-rouge">CRLF</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>CRLF =&gt; Windows-style
+LF =&gt; Unix Style
+CR =&gt; Mac Style
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="cookie-优化">cookie 优化</h2>
+
+<p><code class="language-plaintext highlighter-rouge">cookie</code> 是浏览器的一种本地存储方式，帮助客户端和服务器通信，常用来验证身份，结合服务器的 <code class="language-plaintext highlighter-rouge">Session</code> 使用</p>
+
+<ol>
+  <li>用户登录</li>
+  <li>服务器生成一个 <code class="language-plaintext highlighter-rouge">Session</code>，有用户的用户名等</li>
+  <li>会有一个 <code class="language-plaintext highlighter-rouge">SessionId</code>，相当于服务器存储中的 <code class="language-plaintext highlighter-rouge">Key</code></li>
+  <li>服务器在登陆页面中写入 <code class="language-plaintext highlighter-rouge">cookie</code>，比如 <code class="language-plaintext highlighter-rouge">jsessionid=xxx</code></li>
+  <li>浏览器本地有了这个，以后访问同域名下的网站都会带上 <code class="language-plaintext highlighter-rouge">cookie</code> ，有效时间内无需再次登陆，</li>
+</ol>
+
+<p>加上 <code class="language-plaintext highlighter-rouge">httpOnly</code> 那么 <code class="language-plaintext highlighter-rouge">js</code> 无法访问了</p>
+
+<p>也可以进行下面的优化，请求静态资源的时候也会加上 <code class="language-plaintext highlighter-rouge">cookie</code> 很浪费，可以把他们放在其他域名下</p>
+
+<p>但是多域名拆分的话，因为域名解析很耗时间，会降低请求速度，我们一般使用 <code class="language-plaintext highlighter-rouge">dns-prefetch</code> 技术，让浏览器空闲的时候提前解析 <code class="language-plaintext highlighter-rouge">dns域名</code></p>
+
+<h2 id="gzip-压缩">gzip 压缩</h2>
+
+<p>压缩格式，浏览器一般都支持，压缩效率很高，一般在 <code class="language-plaintext highlighter-rouge">70%</code>，一般有 <code class="language-plaintext highlighter-rouge">apache</code> <code class="language-plaintext highlighter-rouge">tomcat</code> 服务器开启</p>
+
+<p>还有一些其他的压缩方法，比如 <code class="language-plaintext highlighter-rouge">deflate</code> 但是没有 <code class="language-plaintext highlighter-rouge">gzip</code> 流行和高效</p>
+
+<p>所以一般都是服务器开启了 <code class="language-plaintext highlighter-rouge">gzip</code> 压缩</p>
+
+<h2 id="长连接和短连接">长连接和短连接</h2>
+
+<p>看下这两个在 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 层的定义</p>
+
+<ul>
+  <li>长连接：一个 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 上面可以连续发送多个数据包，在 <code class="language-plaintext highlighter-rouge">tcp</code> 连接保持期间，如果没有数据包发送，需要双方发送检测包维持连接，需要自己做在线维持，比如心跳包</li>
+  <li>短连接：双方有数据交换的时候发起一个连接，发送结束以后就断开</li>
+</ul>
+
+<p>在 <code class="language-plaintext highlighter-rouge">http</code> 层面</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">http1.0</code> 默认都是短连接，每进行一次 <code class="language-plaintext highlighter-rouge">http</code> 请求，建立一次连接，结束了就断开，比如每一个资源请求就发起一个单独的连接</li>
+  <li><code class="language-plaintext highlighter-rouge">http1.1</code> 开始默认用长连接，使用长连接会加上一个 <code class="language-plaintext highlighter-rouge">Connection: keep-alive</code>，在这种情况下网页打开以后服务器和客户端之间传输 <code class="language-plaintext highlighter-rouge">http</code> 的 <code class="language-plaintext highlighter-rouge">tcp</code> 连接不会断开，如果再次访问这个服务器的页面，会继续使用一条已经建立的连接</li>
+</ul>
+
+<p>不过持续时间也是有限制的，一般在服务器进行配置，当然也需要客户端和服务器都支持</p>
+
+<h2 id="http20">http2.0</h2>
+
+<p>下一代规范，说下和 <code class="language-plaintext highlighter-rouge">http1.1</code> 的区别</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">http1.1</code> 中每请求一个资源需要开启一个 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 连接，对应的结果就是每个资源对应一个 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 连接，而 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 本身有并发限制，当资源多的时候就慢下来了</li>
+  <li><code class="language-plaintext highlighter-rouge">http2.0</code> 中一个 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 连接可以请求多个资源，只要一次 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 请求可以返回多个资源，分割成更小的帧请求，速度更加快</li>
+</ul>
+
+<p>所以如果 <code class="language-plaintext highlighter-rouge">http2.0</code> 全面应用，<code class="language-plaintext highlighter-rouge">http1.1</code> 里面的一些优化方法就没必要了，比如打包成精灵图，静态资源多域名拆分等</p>
+
+<ul>
+  <li>多路复用，一个 <code class="language-plaintext highlighter-rouge">tcp/ip</code> 可以请求多个资源</li>
+  <li>首部压缩，<code class="language-plaintext highlighter-rouge">http</code> 头部压缩，减小体积</li>
+  <li>二进制分帧，在应用层和传输层之间加了一个二进制分帧层，改进传输性能，实现低延迟和高吞吐</li>
+  <li>服务器推送，服务器可以对客户端的一个请求发出多个响应，也可以主动通知客户端</li>
+  <li>请求优先级，如果流被赋予了优先级，会基于这个优先级处理，由服务器决定需要多少的资源来处理这个请求</li>
+</ul>
+
+<h2 id="https">https</h2>
+
+<p>在请求前，会建立 <code class="language-plaintext highlighter-rouge">ssl</code>，确保接下来的请求都是加密的，无法轻易截取分析</p>
+
+<p>要把网站升级成 <code class="language-plaintext highlighter-rouge">https</code> 需要后端支持，申请证书什么的</p>
+
+<p>而由于需要建立额外的安全连接和加密等，开销也会更加大</p>
+
+<p>下面我们关心下 <code class="language-plaintext highlighter-rouge">SSL/TLS</code> 握手过程</p>
+
+<ol>
+  <li>浏览器请求一个 <code class="language-plaintext highlighter-rouge">SSL</code> 连接，并向服务器发送一个随机数 <code class="language-plaintext highlighter-rouge">client random</code> 和客户端支持的加密方法，比如 <code class="language-plaintext highlighter-rouge">rsa</code> 加密，这个是明文传输的</li>
+  <li>服务器从中选出一组加密算法和 <code class="language-plaintext highlighter-rouge">hash</code> 算法，回复一个随机数 <code class="language-plaintext highlighter-rouge">server random</code>，并把自己的身份信息以证书的方法返回给客户端（证书包含了服务器的网站地址，非对称加密的公钥，证件颁发机构等信息）</li>
+  <li>浏览器收到了服务器的证书以后
+    <ol>
+      <li>验证证书的合法性（颁发的结构是否合法，包含的地址和访问的地址是否一致），如果可信的会有一个绿色的小锁头</li>
+      <li>用户接收到证书以后，会产生一个新的随机数 <code class="language-plaintext highlighter-rouge">Premaster secret</code>，证书中的公钥和指定的加密方法加密 <code class="language-plaintext highlighter-rouge">Premaster secret</code>，发送给服务器</li>
+      <li>利用 <code class="language-plaintext highlighter-rouge">client random</code> <code class="language-plaintext highlighter-rouge">server random</code> <code class="language-plaintext highlighter-rouge">Premaster secret</code> 通过一定的算法生成 <code class="language-plaintext highlighter-rouge">http</code> 连接传输的对称加密 <code class="language-plaintext highlighter-rouge">key</code> - <code class="language-plaintext highlighter-rouge">session key</code></li>
+      <li>使用约定好的 <code class="language-plaintext highlighter-rouge">hash</code> 算法计算握手信息，并且使用生成的 <code class="language-plaintext highlighter-rouge">session key</code> 对信息进行加密，然后把之前算出来的所有信息返回给服务器</li>
+    </ol>
+  </li>
+  <li>服务器接收到了浏览器的信息
+    <ol>
+      <li>利用已知的加解密算法和自己的私钥进行解密，获得 <code class="language-plaintext highlighter-rouge">Premaster secret</code></li>
+      <li>和浏览器一样的规则生成 <code class="language-plaintext highlighter-rouge">session key</code></li>
+      <li>使用 <code class="language-plaintext highlighter-rouge">session key</code> 解密浏览器发来的握手信息，验证 <code class="language-plaintext highlighter-rouge">hash</code> 和浏览器发过来的是不是一致</li>
+      <li>使用 <code class="language-plaintext highlighter-rouge">session key</code> 加密一段握手信息给浏览器</li>
+    </ol>
+  </li>
+  <li>浏览器解密和计算握手信息的 <code class="language-plaintext highlighter-rouge">hash</code>，如果和服务器发过来的一样，握手结束</li>
+</ol>
+
+<p>之后所有的 <code class="language-plaintext highlighter-rouge">http</code> 请求，使用前面的 <code class="language-plaintext highlighter-rouge">session key</code> 进行对称加密算法加密</p>
+
+<p><img src="/img/posts/process-2.png" alt="SSL/TLS握手" /></p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/07/25/process-4/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="从输入URL到页面加载的过程（4） - 从服务器接收到请求到后台接收到请求"
+            >
+              Previous<br />
+              <span>从输入URL到页面加载的过程（4） - 从服务器接收到请求到后台接收到请求</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/07/25/process-6/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="从输入URL到页面加载的过程（6） - 单独拎出来的缓存问题，http缓存"
+            >
+              Next<br />
+              <span>从输入URL到页面加载的过程（6） - 单独拎出来的缓存问题，http缓存</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2020/07/25/process-5";
+  var disqus_url = "https://cody1991.cn/2020/07/25/process-5/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

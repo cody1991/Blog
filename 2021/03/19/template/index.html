@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="JavaScript 模板库分析 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="数据驱动，以 Vue 来讲的话，一般是 View = new Vue(template, data)，我们的视图是通过 Vue 框架进行模板解析，数据结合之后生成的。
+"
+  />
+   <meta property="article:published_time" content="2021-03-19T00:00:00Z">   
+  <meta property="article:tag" content="JavaScript" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/19/template/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    JavaScript 模板库分析 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/19/template/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=JavaScript" title="JavaScript">JavaScript</a>
+                        
+                    </div>
+                    <h1>JavaScript 模板库分析</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 19, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>数据驱动，以 <code class="language-plaintext highlighter-rouge">Vue</code> 来讲的话，一般是 <code class="language-plaintext highlighter-rouge">View = new Vue(template, data)</code>，我们的视图是通过 <code class="language-plaintext highlighter-rouge">Vue</code> 框架进行模板解析，数据结合之后生成的。</p>
+
+<p>我们看下 <code class="language-plaintext highlighter-rouge">jQuery</code> 创始人一段简单的模板库解析函数 <a href="https://johnresig.com/blog/javascript-micro-templating/">javascript-micro-templating</a></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td><td class="rouge-code"><pre><span class="c1">// Simple JavaScript Templating</span>
+<span class="c1">// John Resig - https://johnresig.com/ - MIT Licensed</span>
+<span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">tmpl</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">tmpl</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Figure out if we're getting a template, or if we need to</span>
+    <span class="c1">// load the template - and be sure to cache the result.</span>
+    <span class="kd">var</span> <span class="nx">fn</span> <span class="o">=</span> <span class="o">!</span><span class="sr">/</span><span class="se">\W</span><span class="sr">/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
+      <span class="p">?</span> <span class="p">(</span><span class="nx">cache</span><span class="p">[</span><span class="nx">str</span><span class="p">]</span> <span class="o">=</span>
+          <span class="nx">cache</span><span class="p">[</span><span class="nx">str</span><span class="p">]</span> <span class="o">||</span> <span class="nx">tmpl</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">innerHTML</span><span class="p">))</span>
+      <span class="p">:</span> <span class="c1">// Generate a reusable function that will serve as a template</span>
+        <span class="c1">// generator (and which will be cached).</span>
+        <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span>
+          <span class="dl">'</span><span class="s1">obj</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">var p=[],print=function(){p.push.apply(p,arguments);};</span><span class="dl">'</span> <span class="o">+</span>
+            <span class="c1">// Introduce the data as local variables using with(){}</span>
+            <span class="dl">"</span><span class="s2">with(obj){p.push('</span><span class="dl">"</span> <span class="o">+</span>
+            <span class="c1">// Convert the template into pure JavaScript</span>
+            <span class="nx">str</span>
+              <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">[\r\t\n]</span><span class="sr">/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1"> </span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;%</span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">'</span><span class="se">\t</span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">((</span><span class="sr">^|%&gt;</span><span class="se">)[^\t]</span><span class="sr">*</span><span class="se">)</span><span class="sr">'/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">$1</span><span class="se">\r</span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\t</span><span class="sr">=</span><span class="se">(</span><span class="sr">.*</span><span class="se">?)</span><span class="sr">%&gt;/g</span><span class="p">,</span> <span class="dl">"</span><span class="s2">',$1,'</span><span class="dl">"</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="se">\t</span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">');</span><span class="dl">"</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">%&gt;</span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">p.push('</span><span class="dl">"</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="se">\r</span><span class="dl">'</span><span class="p">)</span>
+              <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="se">\\</span><span class="s2">'</span><span class="dl">"</span><span class="p">)</span> <span class="o">+</span>
+            <span class="dl">"</span><span class="s2">');}return p.join('');</span><span class="dl">"</span>
+        <span class="p">);</span>
+
+    <span class="c1">// Provide some basic currying to the user</span>
+    <span class="k">return</span> <span class="nx">data</span> <span class="p">?</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">:</span> <span class="nx">fn</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">})();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>简单修改成一个模块，去掉 <code class="language-plaintext highlighter-rouge">cache</code> 等功能，分析最核心的部分：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="rouge-code"><pre><span class="c1">// template.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">template</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span>
+    <span class="dl">'</span><span class="s1">obj</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">var p=[],print=function(){p.push.apply(p,arguments);};</span><span class="dl">'</span> <span class="o">+</span>
+      <span class="c1">// Introduce the data as local variables using with(){}</span>
+      <span class="dl">"</span><span class="s2">with(obj){p.push('</span><span class="dl">"</span> <span class="o">+</span>
+      <span class="c1">// Convert the template into pure JavaScript</span>
+      <span class="nx">str</span>
+        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">[\r\t\n]</span><span class="sr">/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1"> </span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;%</span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">'</span><span class="se">\t</span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">((</span><span class="sr">^|%&gt;</span><span class="se">)[^\t]</span><span class="sr">*</span><span class="se">)</span><span class="sr">'/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">$1</span><span class="se">\r</span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\t</span><span class="sr">=</span><span class="se">(</span><span class="sr">.*</span><span class="se">?)</span><span class="sr">%&gt;/g</span><span class="p">,</span> <span class="dl">"</span><span class="s2">',$1,'</span><span class="dl">"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="se">\t</span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">');</span><span class="dl">"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">%&gt;</span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">p.push('</span><span class="dl">"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="se">\r</span><span class="dl">'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="se">\\</span><span class="s2">'</span><span class="dl">"</span><span class="p">)</span> <span class="o">+</span>
+      <span class="dl">"</span><span class="s2">');}return p.join('');</span><span class="dl">"</span>
+  <span class="p">);</span>
+
+  <span class="c1">// Provide some basic currying to the user</span>
+  <span class="k">return</span> <span class="nx">data</span> <span class="p">?</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">:</span> <span class="nx">fn</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们引入使用一下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="c1">// demo.js</span>
+<span class="kd">const</span> <span class="nx">template</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./template</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span>
+  <span class="nx">template</span><span class="p">(</span>
+    <span class="s2">`&lt;span data-message='&lt;%= 'hello' + 'world' %&gt;'&gt;
+      &lt;%= name ? name: 1+1+1 %&gt;
+      &lt;% print('hello msg'); %&gt;
+     &lt;/span&gt;`</span><span class="p">,</span>
+    <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">codytang</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">)</span>
+<span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>输出了以下结果（把空格去掉了，方便阅读）：</p>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;span data-message='helloworld'&gt; codytang hello msg &lt;/span&gt;</code></p>
+
+<p>接下来一行行来分析下 <code class="language-plaintext highlighter-rouge">template</code> 是如何工作的。</p>
+
+<h2 id="template-函数">template 函数</h2>
+
+<p>我们首先分析一下整个函数的结构和使用方法</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">template</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">data</span> <span class="p">?</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">:</span> <span class="nx">fn</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它接受两个参数，看起来和我们提到的 <code class="language-plaintext highlighter-rouge">View = new Vue(template, data)</code> 很像</p>
+
+<ul>
+  <li>str，即我们的模板</li>
+  <li>data，即我们传入的数据</li>
+</ul>
+
+<p>它的输出有两种，如果传入了数据的话，执行模板的解析，吐出来解析后的 <code class="language-plaintext highlighter-rouge">html</code> 字符串；如果没有传入数据的话，返回这个函数，即可以进行 currying 化。什么意思？我们看看下面的代码</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">str1</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">...</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">myTmp</span> <span class="o">=</span> <span class="nx">template</span><span class="p">(</span><span class="nx">str1</span><span class="p">);</span> <span class="c1">// 它是一个函数</span>
+
+<span class="nx">myTmp</span><span class="p">({</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span> <span class="p">});</span>
+<span class="nx">myTmp</span><span class="p">({</span> <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">b</span><span class="p">:</span> <span class="mi">1</span> <span class="p">});</span>
+<span class="nx">myTmp</span><span class="p">({</span> <span class="na">c</span><span class="p">:</span> <span class="mi">1</span> <span class="p">});</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">myTmp</code> 其实是和 <code class="language-plaintext highlighter-rouge">str1</code> 绑定起来的，这里用到了闭包。 <code class="language-plaintext highlighter-rouge">myTmp</code> 代表的是一个模板，我们传入不同的数据，可以产生不同的模板字符串。</p>
+
+<h2 id="new-function">new Function</h2>
+
+<p>函数也是对象，他们都是 <code class="language-plaintext highlighter-rouge">Function</code> 类型，<code class="language-plaintext highlighter-rouge">Function</code> 是一个构造函数，我们可以通过 <code class="language-plaintext highlighter-rouge">new Function</code> 去创建一个函数。</p>
+
+<p>我们大部分时间认知的其实就只有</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">miaomiaomiao</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="kd">const</span> <span class="nx">wangwangwang</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
+
+<span class="nx">miaomiaomiao</span> <span class="k">instanceof</span> <span class="nb">Function</span><span class="p">;</span> <span class="c1">// true</span>
+<span class="nx">wangwangwang</span> <span class="k">instanceof</span> <span class="nb">Function</span><span class="p">;</span> <span class="c1">// true</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>两种函数声明的方式，其实通过 <code class="language-plaintext highlighter-rouge">new Function</code> 也是可以的，不过不常用。</p>
+
+<p>可以看一个简单的例子</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">sum</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">b</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">return a + b</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">sum</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们看看它的语法</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">new</span> <span class="nb">Function</span> <span class="p">([</span><span class="nx">arg1</span><span class="p">[,</span> <span class="nx">arg2</span><span class="p">[,</span> <span class="p">...</span><span class="nx">argN</span><span class="p">]],]</span> <span class="nx">functionBody</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>
+    <p>arg1, arg2, … argN</p>
+
+    <p>被函数使用的参数的名称必须是合法命名的。参数名称是一个有效的 JavaScript 标识符的字符串，或者一个用逗号分隔的有效字符串的列表;例如“×”，“theValue”，或“a,b”。</p>
+  </li>
+  <li>
+    <p>functionBody</p>
+
+    <p>一个含有包括函数定义的 JavaScript 语句的字符串。</p>
+  </li>
+</ul>
+
+<p>那其实回到我们的 <code class="language-plaintext highlighter-rouge">template</code> 函数，它的结构是</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="dl">'</span><span class="s1">obj</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">...</span><span class="dl">'</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以发现它只有一个参数 <code class="language-plaintext highlighter-rouge">obj</code>，函数体是一串字符串，这字符串我们后面在分析分析</p>
+
+<p>最终我们可以通过 <code class="language-plaintext highlighter-rouge">fn(data)</code> 的方式调用这个函数，传入的 <code class="language-plaintext highlighter-rouge">data</code> 即 <code class="language-plaintext highlighter-rouge">obj</code></p>
+
+<p>想了解更多关于 <code class="language-plaintext highlighter-rouge">new Function</code> 的使用，可以参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a>，上面的大部分例子和说明也是从这里获取的</p>
+
+<h2 id="函数体">函数体</h2>
+
+<p>接下来就是最主要的部门了，我们返回的函数的函数题是怎样的？</p>
+
+<p>为了方便看看最终的结果，我们先创建一个模板：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">myTemplate</span> <span class="o">=</span> <span class="nx">template</span><span class="p">(</span>
+  <span class="s2">`&lt;span data-message='&lt;%= 'hello' + 'world' %&gt;'&gt;
+    &lt;% print('hello msg'); %&gt;
+    &lt;%= name ? name: 1+1+1 %&gt;
+    &lt;% print('hello msg'); %&gt;
+   &lt;/span&gt;`</span>
+<span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>打印了一下模板生成后的函数体内容：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">test</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="p">[],</span>
+    <span class="nx">print</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="kd">with</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">&lt;span data-message='</span><span class="dl">"</span><span class="p">,</span> <span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">world</span><span class="dl">'</span><span class="p">,</span> <span class="dl">"</span><span class="s2">'&gt;     </span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">print</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello msg</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">'</span><span class="s1">     </span><span class="dl">'</span><span class="p">,</span> <span class="nx">name</span> <span class="p">?</span> <span class="nx">name</span> <span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">'</span><span class="s1">     </span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">print</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello msg</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">'</span><span class="s1">    &lt;/span&gt;</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">hello11</span><span class="dl">'</span> <span class="p">}));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它的运行机制很简单，一步步看下来：</p>
+
+<ol>
+  <li>声明一个空的数组 <code class="language-plaintext highlighter-rouge">p</code></li>
+  <li>声明一个函数 <code class="language-plaintext highlighter-rouge">print</code>，它的作用就是把传入的参数 <code class="language-plaintext highlighter-rouge">push</code> 到数组 <code class="language-plaintext highlighter-rouge">p</code> 中，<code class="language-plaintext highlighter-rouge">apply</code> 的使用很简单，就不多说啦。我们在模板中能使用 <code class="language-plaintext highlighter-rouge">print</code> 函数，也是因为在这里进行定义了</li>
+  <li><code class="language-plaintext highlighter-rouge">with</code> 的作用，可以参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/with">with</a>，简单来说就是改变了当前的作用域链。一般执行上下文有一个全局的作用域，每次创建函数的时候会生成一个新的作用域对象，置于执行上下文的顶端，就像栈一样。去查找变量的时候会从顶端一层层查找对应的变量是否存在，直到全局作用域，如果不存在的话返回 <code class="language-plaintext highlighter-rouge">unefined</code>。而使用 <code class="language-plaintext highlighter-rouge">with</code> 的话可理解成强行在顶端加入了一个新的作用域对象，它的优先级也是最高的了。这里指的是 <code class="language-plaintext highlighter-rouge">obj</code> 对象，在这个作用域下的所有对象都会先查找在 <code class="language-plaintext highlighter-rouge">obj</code> 对象上是否存在，比如 <code class="language-plaintext highlighter-rouge">name</code> 变量的话就会去看看 <code class="language-plaintext highlighter-rouge">obj.name</code> 是否存在，否则继续沿着作用域链去查找（自己的理解，可能说的不太好，可以参考官网）</li>
+  <li>我们把解析出来的模板字符串，一个个的 <code class="language-plaintext highlighter-rouge">push</code> 进入到了 <code class="language-plaintext highlighter-rouge">p</code> 数组中</li>
+  <li>最终调用数组上的 <code class="language-plaintext highlighter-rouge">join</code> 函数，把模板字符串合并成一个字符串返回，就是我们要的结果了</li>
+</ol>
+
+<p>可以发现，其实最终产生的函数，是很容易看懂的，那它是怎么生成的呢？</p>
+
+<h2 id="正则表达式">正则表达式</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="nx">str</span>
+  <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">[\r\t\n]</span><span class="sr">/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1"> </span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;%</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">'</span><span class="se">\t</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">((</span><span class="sr">^|%&gt;</span><span class="se">)[^\t]</span><span class="sr">*</span><span class="se">)</span><span class="sr">'/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">$1</span><span class="se">\r</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\t</span><span class="sr">=</span><span class="se">(</span><span class="sr">.*</span><span class="se">?)</span><span class="sr">%&gt;/g</span><span class="p">,</span> <span class="dl">"</span><span class="s2">',$1,'</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="se">\t</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">');</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">%&gt;</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">p.push('</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="se">\r</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="se">\\</span><span class="s2">'</span><span class="dl">"</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其实核心部分就在这里的正则表达式的使用了，我们可以通过一步步的调用，去查看上面模板的函数题是怎么生成的</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">myTemplate</span> <span class="o">=</span> <span class="nx">template</span><span class="p">(</span>
+  <span class="s2">`&lt;span data-message='&lt;%= 'hello' + 'world' %&gt;'&gt;
+    &lt;% print('hello msg'); %&gt;
+    &lt;%= name ? name: 1+1+1 %&gt;
+    &lt;% print('hello msg'); %&gt;
+   &lt;/span&gt;`</span>
+<span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>一步步来看，先简单打印我们的 str 是什么</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>// console.log(str);
+
+<span class="nt">&lt;span</span> <span class="na">data-message=</span><span class="s">'&lt;%= '</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">%</span><span class="nt">&gt;</span>'&gt;
+    <span class="nt">&lt;</span><span class="err">%</span> <span class="na">print</span><span class="err">('</span><span class="na">hello</span> <span class="na">msg</span><span class="err">');</span> <span class="err">%</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;</span><span class="err">%=</span> <span class="na">name</span> <span class="err">?</span> <span class="na">name:</span> <span class="err">1+1+1</span> <span class="err">%</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;</span><span class="err">%</span> <span class="na">print</span><span class="err">('</span><span class="na">hello</span> <span class="na">msg</span><span class="err">');</span> <span class="err">%</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>之后在 <code class="language-plaintext highlighter-rouge">str</code> 上调用了一个 <code class="language-plaintext highlighter-rouge">replace</code> ，<a href="https://regexper.com/#%2F%5B%5Cr%5Ct%5Cn%5D%2Fg">/[\r\t\n]/g</a> 其实就是全局找 回车符，制表符或者换行符，把它们统一成了空格。因为后面要反复用到 <code class="language-plaintext highlighter-rouge">\t</code> <code class="language-plaintext highlighter-rouge">\r</code> 来分别代表 <code class="language-plaintext highlighter-rouge">&lt;%</code> 和 <code class="language-plaintext highlighter-rouge">'</code>，先把模板中原来有的去掉，避免干扰</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>// console.log(str.replace(/[\r\t\n]/g, ' '));
+
+<span class="nt">&lt;span</span> <span class="na">data-message=</span><span class="s">'&lt;%= '</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">%</span><span class="nt">&gt;</span>'&gt;     <span class="nt">&lt;</span><span class="err">%</span> <span class="na">print</span><span class="err">('</span><span class="na">hello</span> <span class="na">msg</span><span class="err">');</span> <span class="err">%</span><span class="nt">&gt;</span>     <span class="nt">&lt;</span><span class="err">%=</span> <span class="na">name</span> <span class="err">?</span> <span class="na">name:</span> <span class="err">1+1+1</span> <span class="err">%</span><span class="nt">&gt;</span>     <span class="nt">&lt;</span><span class="err">%</span> <span class="na">print</span><span class="err">('</span><span class="na">hello</span> <span class="na">msg</span><span class="err">');</span> <span class="err">%</span><span class="nt">&gt;</span>    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>继续往下看。调用了一个 <code class="language-plaintext highlighter-rouge">split</code> 的方法，以 <code class="language-plaintext highlighter-rouge">&lt;%</code> 字符为分隔符，生成一个数组。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="c1">// console.log(str.replace(/[\r\t\n]/g, ' ').split('&lt;%'));</span>
+<span class="p">[</span>
+  <span class="dl">"</span><span class="s2">&lt;span data-message='</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">= 'hello' + 'world' %&gt;'&gt;     </span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2"> print('hello msg'); %&gt;     </span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">= name ? name: 1+1+1 %&gt;     </span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2"> print('hello msg'); %&gt;    &lt;/span&gt;</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>又通过 <code class="language-plaintext highlighter-rouge">join('\t')</code> 的方法把它们拼凑起来了，以制表符为分隔，可以发现现在已经没有 <code class="language-plaintext highlighter-rouge">&lt;%</code> 符号了。所以其实后面都是使用 <code class="language-plaintext highlighter-rouge">\t</code> 来代表 `&lt;%</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>  <span class="c">&lt;!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('&lt;%')
+      .join('\t')
+  ); --&gt;</span>
+<span class="nt">&lt;span</span> <span class="na">data-message=</span><span class="s">'	= '</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">%</span><span class="nt">&gt;</span>'&gt;     	 print('hello msg'); %&gt;     	= name ? name: 1+1+1 %&gt;     	 print('hello msg'); %&gt;    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>这个正则表达式里面，这个表达式是 <code class="language-plaintext highlighter-rouge">Group1</code>，而 <code class="language-plaintext highlighter-rouge">(^|%&gt;)</code> 是 <code class="language-plaintext highlighter-rouge">Group2</code>，最后还有一个 <code class="language-plaintext highlighter-rouge">'</code> 符号
+<code class="language-plaintext highlighter-rouge">Group2</code> 查找开头或者 <code class="language-plaintext highlighter-rouge">%&gt;</code> 字符串，而 <code class="language-plaintext highlighter-rouge">[^\t]*</code> 找的是除了 <code class="language-plaintext highlighter-rouge">\t</code> 以外的 0 个或者更多的任意字符，最终使用</p>
+
+<p><code class="language-plaintext highlighter-rouge">Group1</code> 和 <code class="language-plaintext highlighter-rouge">\r</code> 字符串进行替换，去掉了最后的 <code class="language-plaintext highlighter-rouge">'</code>，得到了下面的结果。</p>
+
+<p>其实这里最主要就是找到对应的位置，把模板标识符 <code class="language-plaintext highlighter-rouge">%&gt;</code> 附近的 <code class="language-plaintext highlighter-rouge">'</code> 给去掉了，使用 <code class="language-plaintext highlighter-rouge">\r</code> 来表示它</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>  <span class="c">&lt;!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('&lt;%')
+      .join('\t')
+      .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')
+  ); --&gt;</span>
+
+<span class="nt">&lt;span</span> <span class="na">data-message=
+	</span><span class="s">=</span> <span class="err">'</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">%</span><span class="nt">&gt;</span>
+&gt;     	 print('hello msg'); %&gt;     	= name ? name: 1+1+1 %&gt;     	 print('hello msg'); %&gt;    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p><code class="language-plaintext highlighter-rouge">replace(/\t=(.*?)%&gt;/g, "',$1,'")</code>，主要是把表达式解析出来，然后去掉它们两边的 <code class="language-plaintext highlighter-rouge">\t=</code> 和 <code class="language-plaintext highlighter-rouge">%&gt;</code> 符号，使用 <code class="language-plaintext highlighter-rouge">',</code> 和 <code class="language-plaintext highlighter-rouge">',</code> 两边填充，这里的 <code class="language-plaintext highlighter-rouge">,</code> 其实是 <code class="language-plaintext highlighter-rouge">push</code> 函数参数的分隔符</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="c">&lt;!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('&lt;%')
+      .join('\t')
+      .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%&gt;/g, "',$1,'")
+  ); --&gt;</span>
+
+<span class="nt">&lt;span</span> <span class="na">data-message=
+</span><span class="s">', '</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">,'</span>
+<span class="nt">&gt;</span>     	 print('hello msg'); %&gt;     ', name ? name: 1+1+1 ,'     	 print('hello msg'); %&gt;    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>简单的通过制表符分隔，获取到我们几块剩下的字符模板，制表符代表我们的 <code class="language-plaintext highlighter-rouge">&lt;%</code></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="c1">// console.log(</span>
+<span class="c1">//   str</span>
+<span class="c1">//     .replace(/[\r\t\n]/g, ' ')</span>
+<span class="c1">//     .split('&lt;%')</span>
+<span class="c1">//     .join('\t')</span>
+<span class="c1">//     .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')</span>
+<span class="c1">//     .replace(/\t=(.*?)%&gt;/g, "',$1,'")</span>
+<span class="c1">//     .split('\t')</span>
+<span class="c1">// );</span>
+<span class="p">[</span>
+  <span class="dl">"</span><span class="s2">&lt;span data-message=</span><span class="se">\r</span><span class="s2">', 'hello' + 'world' ,'</span><span class="se">\r</span><span class="s2">&gt;     </span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2"> print('hello msg'); %&gt;     ', name ? name: 1+1+1 ,'     </span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2"> print('hello msg'); %&gt;    &lt;/span&gt;</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>使用 <code class="language-plaintext highlighter-rouge">');</code> 进行拼接</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>  <span class="c">&lt;!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('&lt;%')
+      .join('\t')
+      .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%&gt;/g, "',$1,'")
+      .split('\t')
+      .join("');")
+  ); --&gt;</span>
+
+<span class="nt">&lt;span</span> <span class="na">data-message=
+</span><span class="s">', '</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">,'</span>
+<span class="nt">&gt;</span>     '); print('hello msg'); %&gt;     ', name ? name: 1+1+1 ,'     '); print('hello msg'); %&gt;    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>又通过 <code class="language-plaintext highlighter-rouge">.split('%&gt;')</code> 把它们拆分</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="c1">// console.log(</span>
+<span class="c1">//   str</span>
+<span class="c1">//     .replace(/[\r\t\n]/g, ' ')</span>
+<span class="c1">//     .split('&lt;%')</span>
+<span class="c1">//     .join('\t')</span>
+<span class="c1">//     .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')</span>
+<span class="c1">//     .replace(/\t=(.*?)%&gt;/g, "',$1,'")</span>
+<span class="c1">//     .split('\t')</span>
+<span class="c1">//     .join("');")</span>
+<span class="c1">//     .split('%&gt;')</span>
+<span class="c1">// );</span>
+
+<span class="p">[</span>
+  <span class="dl">"</span><span class="s2">&lt;span data-message=</span><span class="se">\r</span><span class="s2">', 'hello' + 'world' ,'</span><span class="se">\r</span><span class="s2">&gt;     '); print('hello msg'); </span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">     ', name ? name: 1+1+1 ,'     '); print('hello msg'); </span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">    &lt;/span&gt;</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>通过 <code class="language-plaintext highlighter-rouge">.join("p.push('")</code> 拼接</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>  <span class="c">&lt;!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('&lt;%')
+      .join('\t')
+      .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%&gt;/g, "',$1,'")
+      .split('\t')
+      .join("');")
+      .split('%&gt;')
+      .join("p.push('")
+  ); --&gt;</span>
+
+<span class="nt">&lt;span</span> <span class="na">data-message=
+</span><span class="s">', '</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">,'</span>
+<span class="nt">&gt;</span>     '); print('hello msg'); p.push('     ', name ? name: 1+1+1 ,'     '); print('hello msg'); p.push('    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>通过 <code class="language-plaintext highlighter-rouge">.split('\r')</code> chaifen</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="c1">// console.log(</span>
+<span class="c1">//   str</span>
+<span class="c1">//     .replace(/[\r\t\n]/g, ' ')</span>
+<span class="c1">//     .split('&lt;%')</span>
+<span class="c1">//     .join('\t')</span>
+<span class="c1">//     .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')</span>
+<span class="c1">//     .replace(/\t=(.*?)%&gt;/g, "',$1,'")</span>
+<span class="c1">//     .split('\t')</span>
+<span class="c1">//     .join("');")</span>
+<span class="c1">//     .split('%&gt;')</span>
+<span class="c1">//     .join("p.push('")</span>
+<span class="c1">//     .split('\r')</span>
+<span class="c1">// );</span>
+
+<span class="p">[</span>
+  <span class="dl">'</span><span class="s1">&lt;span data-message=</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">', 'hello' + 'world' ,'</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">&gt;     '); print('hello msg'); p.push('     ', name ? name: 1+1+1 ,'     '); print('hello msg'); p.push('    &lt;/span&gt;</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">];</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>  <span class="c">&lt;!-- console.log(
+    str
+      .replace(/[\r\t\n]/g, ' ')
+      .split('&lt;%')
+      .join('\t')
+      .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')
+      .replace(/\t=(.*?)%&gt;/g, "',$1,'")
+      .split('\t')
+      .join("');")
+      .split('%&gt;')
+      .join("p.push('")
+      .split('\r')
+      .join("\\'")
+  ); --&gt;</span>
+<span class="nt">&lt;span</span> <span class="na">data-message=</span><span class="s">\'',</span> <span class="err">'</span><span class="na">hello</span><span class="err">'</span> <span class="err">+</span> <span class="err">'</span><span class="na">world</span><span class="err">'</span> <span class="err">,'\'</span><span class="nt">&gt;</span>     '); print('hello msg'); p.push('     ', name ? name: 1+1+1 ,'     '); print('hello msg'); p.push('    <span class="nt">&lt;/span&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<hr />
+
+<p>最终得到下面的结果。。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="rouge-code"><pre><span class="c1">// console.log(</span>
+<span class="c1">//     "with(obj){p.push('" +</span>
+<span class="c1">//       // Convert the template into pure JavaScript</span>
+<span class="c1">//       str</span>
+<span class="c1">//         .replace(/[\r\t\n]/g, ' ')</span>
+<span class="c1">//         .split('&lt;%')</span>
+<span class="c1">//         .join('\t')</span>
+<span class="c1">//         .replace(/((^|%&gt;)[^\t]*)'/g, '$1\r')</span>
+<span class="c1">//         .replace(/\t=(.*?)%&gt;/g, "',$1,'")</span>
+<span class="c1">//         .split('\t')</span>
+<span class="c1">//         .join("');")</span>
+<span class="c1">//         .split('%&gt;')</span>
+<span class="c1">//         .join("p.push('")</span>
+<span class="c1">//         .split('\r')</span>
+<span class="c1">//         .join("\\'") +</span>
+<span class="c1">//       "');}return p.join('');"</span>
+<span class="c1">//   );</span>
+
+<span class="kd">with</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">&lt;span data-message='</span><span class="dl">"</span><span class="p">,</span> <span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">world</span><span class="dl">'</span><span class="p">,</span> <span class="dl">"</span><span class="s2">'&gt;     </span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">print</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello msg</span><span class="dl">'</span><span class="p">);</span>
+  <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">'</span><span class="s1">     </span><span class="dl">'</span><span class="p">,</span> <span class="nx">name</span> <span class="p">?</span> <span class="nx">name</span> <span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">'</span><span class="s1">     </span><span class="dl">'</span><span class="p">);</span>
+  <span class="nx">print</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello msg</span><span class="dl">'</span><span class="p">);</span>
+  <span class="nx">p</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">'</span><span class="s1">    &lt;/span&gt;</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="末尾语">末尾语</h2>
+
+<p>虽然正则都看得懂，但是很难想到他为什么会想到这样子去做。。。还要好好消化下</p>
+
+<p>其实整体下来想要做的事情就是三个：</p>
+
+<ul>
+  <li>&lt;% 转成 ‘)</li>
+  <li>%&gt; 转成 p.push(‘</li>
+  <li>= 转成 ,$1,</li>
+</ul>
+
+<p>然后拼接字符串</p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/18/ts-introduction/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="TypeScript 入门笔记"
+            >
+              Previous<br />
+              <span>TypeScript 入门笔记</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/20/vue-cli-github-pages/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Vue CLI 项目使用 Github Pages 自动部署静态页面"
+            >
+              Next<br />
+              <span>Vue CLI 项目使用 Github Pages 自动部署静态页面</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/19/template";
+  var disqus_url = "https://cody1991.cn/2021/03/19/template/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

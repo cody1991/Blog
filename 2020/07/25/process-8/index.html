@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="从输入URL到页面加载的过程（8） - CSS的可视化格式模型 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="from 从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！
+"
+  />
+   <meta property="article:published_time" content="2020-07-25T00:00:00Z">   
+  <meta property="article:tag" content="Process" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2020/07/25/process-8/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    从输入URL到页面加载的过程（8） - CSS的可视化格式模型 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2020/07/25/process-8/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Process" title="Process">Process</a>
+                        
+                    </div>
+                    <h1>从输入URL到页面加载的过程（8） - CSS的可视化格式模型</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on July 25, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>from <a href="http://www.dailichun.com/2018/03/12/whenyouenteraurl.html">从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！</a></p>
+
+<p>作为进阶回头再来看看：<a href="http://fex.baidu.com/blog/2014/05/what-happen/">从输入 URL 到页面加载完成的过程中都发生了什么事情？</a></p>
+
+<p>这一篇基本是 <code class="language-plaintext highlighter-rouge">copy</code> 下来的，对于这部分 <code class="language-plaintext highlighter-rouge">css</code> 不打算投入太多去看</p>
+
+<h1 id="css-的可视化格式模型">CSS 的可视化格式模型</h1>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">CSS</code> 中规定每一个元素都有自己的盒子模型（相当于规定了这个元素如何显示）</li>
+  <li>然后可视化格式模型则是把这些盒子按照规则摆放到页面上，也就是如何布局</li>
+  <li>换句话说，盒子模型规定了怎么在页面里摆放盒子，盒子的相互作用等等</li>
+</ul>
+
+<p>总结一句话：<code class="language-plaintext highlighter-rouge">CSS</code> 的可视化格式模型就是规定了浏览器在页面中如何处理文档树</p>
+
+<h1 id="包含块containing-block">包含块（Containing Block）</h1>
+
+<p>一个元素的 <code class="language-plaintext highlighter-rouge">box</code> 的定位和尺寸，会与某一矩形框有关，这个框就称之为包含块。</p>
+
+<p>元素会为它的子孙元素创建包含块，但是，并不是说元素的包含块就是它的父元素，元素的包含块与它的祖先元素的样式等有关系</p>
+
+<ul>
+  <li>根元素是最顶端的元素，它没有父节点，它的包含块就是初始包含块</li>
+  <li><code class="language-plaintext highlighter-rouge">static</code> 和 <code class="language-plaintext highlighter-rouge">relative</code> 的包含块由它最近的块级、单元格或者行内块祖先元素的内容框（<code class="language-plaintext highlighter-rouge">content</code>）创建</li>
+  <li><code class="language-plaintext highlighter-rouge">fixed</code> 的包含块是当前可视窗口</li>
+  <li><code class="language-plaintext highlighter-rouge">absolute</code> 的包含块由它最近的 <code class="language-plaintext highlighter-rouge">position</code> 属性为 <code class="language-plaintext highlighter-rouge">absolute</code>、<code class="language-plaintext highlighter-rouge">relative</code> 或者 <code class="language-plaintext highlighter-rouge">fixed</code> 的祖先元素创建</li>
+  <li>如果其祖先元素是行内元素，则包含块取决于其祖先元素的 <code class="language-plaintext highlighter-rouge">direction</code> 特性</li>
+  <li>如果祖先元素不是行内元素，那么包含块的区域应该是祖先元素的内边距边界</li>
+</ul>
+
+<h1 id="控制框controlling-box">控制框（Controlling Box）</h1>
+
+<p>块级元素和块框以及行内元素和行框的相关概念</p>
+
+<h3 id="块框">块框:</h3>
+
+<ul>
+  <li>块级元素会生成一个块框（<code class="language-plaintext highlighter-rouge">Block Box</code>），块框会占据一整行，用来包含子 <code class="language-plaintext highlighter-rouge">box</code> 和生成的内容</li>
+  <li>块框同时也是一个块包含框 （<code class="language-plaintext highlighter-rouge">Containing Box</code>），里面要么只包含块框，要么只包含行内框（不能混杂），如果块框内部有块级元素也有行内元素，那么行内元素会被匿名块框包围</li>
+</ul>
+
+<p>关于匿名块框的生成，示例：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;div&gt;</span>
+  Some text
+  <span class="nt">&lt;p&gt;</span>More text<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">div</code> 生成了一个块框，包含了另一个块框 <code class="language-plaintext highlighter-rouge">p</code> 以及文本内容 <code class="language-plaintext highlighter-rouge">Some text</code>，此时 <code class="language-plaintext highlighter-rouge">Some text</code> 文本会被强制加到一个匿名的块框里面，被 <code class="language-plaintext highlighter-rouge">div</code> 生成的块框包含（其实这个就是 <code class="language-plaintext highlighter-rouge">IFC</code> 中提到的行框，包含这些行内框的这一行匿名块形成的框，行框和行内框不同）</p>
+
+<p>换句话说:</p>
+
+<p>如果一个块框在其中包含另外一个块框，那么我们强迫它只能包含块框，因此其它文本内容生成出来的都是匿名块框（而不是匿名行内框）</p>
+
+<h3 id="行内框">行内框：</h3>
+
+<ul>
+  <li>一个行内元素生成一个行内框</li>
+  <li>行内元素能排在一行，允许左右有其它元素</li>
+</ul>
+
+<p>关于匿名行内框的生成，示例：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;p&gt;</span>Some <span class="nt">&lt;em&gt;</span>emphasized<span class="nt">&lt;/em&gt;</span> text<span class="nt">&lt;/p&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">P</code> 元素生成一个块框，其中有几个行内框（如 <code class="language-plaintext highlighter-rouge">EM</code>），以及文本 <code class="language-plaintext highlighter-rouge">Some</code> ， <code class="language-plaintext highlighter-rouge">text</code>，此时会专门为这些文本生成匿名行内框</p>
+
+<h3 id="display-属性的影响">display 属性的影响</h3>
+
+<p>display 的几个属性也可以影响不同框的生成：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">block</code>，元素生成一个块框</li>
+  <li><code class="language-plaintext highlighter-rouge">inline</code>，元素产生一个或多个的行内框</li>
+  <li><code class="language-plaintext highlighter-rouge">inline-block</code>，元素产生一个行内级块框，行内块框的内部会被当作块块来格式化，而此元素本身会被当作行内级框来格式化（这也是为什么会产生 <code class="language-plaintext highlighter-rouge">BFC</code>）</li>
+  <li><code class="language-plaintext highlighter-rouge">none</code>，不生成框，不再格式化结构中，当然了，另一个 <code class="language-plaintext highlighter-rouge">visibility: hidden</code> 则会产生一个不可见的框</li>
+</ul>
+
+<h3 id="总结">总结</h3>
+
+<ul>
+  <li>如果一个框里，有一个块级元素，那么这个框里的内容都会被当作块框来进行格式化，因为只要出现了块级元素，就会将里面的内容分块几块，每一块独占一行（出现行内可以用匿名块框解决）</li>
+  <li>如果一个框里，没有任何块级元素，那么这个框里的内容会被当成行内框来格式化，因为里面的内容是按照顺序成行的排列</li>
+</ul>
+
+<h1 id="bfcblock-formatting-context">BFC（Block Formatting Context）</h1>
+
+<p><code class="language-plaintext highlighter-rouge">FC</code>（格式上下文）？</p>
+
+<p><code class="language-plaintext highlighter-rouge">FC</code> 即格式上下文，它定义框内部的元素渲染规则，比较抽象，譬如</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">FC</code> 像是一个大箱子，里面装有很多元素</li>
+  <li>箱子可以隔开里面的元素和外面的元素（所以外部并不会影响 <code class="language-plaintext highlighter-rouge">FC</code> 内部的渲染）</li>
+  <li>内部的规则可以是：如何定位，宽高计算，margin 折叠等等</li>
+</ul>
+
+<p>不同类型的框参与的 <code class="language-plaintext highlighter-rouge">FC</code> 类型不同，譬如块级框对应 <code class="language-plaintext highlighter-rouge">BFC</code>，行内框对应 <code class="language-plaintext highlighter-rouge">IFC</code></p>
+
+<p>注意，并不是说所有的框都会产生 <code class="language-plaintext highlighter-rouge">FC</code>，而是符合特定条件才会产生，只有产生了对应的 <code class="language-plaintext highlighter-rouge">FC</code> 后才会应用对应渲染规则</p>
+
+<h2 id="bfc-规则">BFC 规则：</h2>
+
+<ul>
+  <li>在块格式化上下文中</li>
+  <li>每一个元素左外边与包含块的左边相接触（对于从右到左的格式化，右外边接触右边）</li>
+  <li>即使存在浮动也是如此（所以浮动元素正常会直接贴近它的包含块的左边，与普通元素重合）</li>
+  <li>除非这个元素也创建了一个新的 <code class="language-plaintext highlighter-rouge">BFC</code></li>
+</ul>
+
+<h2 id="总结几点-bfc-特点">总结几点 BFC 特点</h2>
+
+<ul>
+  <li>内部 box 在垂直方向，一个接一个的放置</li>
+  <li>box 的垂直方向由 margin 决定，属于同一个 BFC 的两个 box 间的 margin 会重叠</li>
+  <li>BFC 区域不会与 float box 重叠（可用于排版)</li>
+  <li>BFC 就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素。反之也如此</li>
+  <li>计算 BFC 的高度时，浮动元素也参与计算（不会浮动坍塌）</li>
+</ul>
+
+<h2 id="如何触发-bfc">如何触发 BFC？</h2>
+
+<ul>
+  <li>根元素</li>
+  <li>float 属性不为 none</li>
+  <li>position 为 absolute 或 fixed</li>
+  <li>display 为 inline-block, flex, inline-flex，table，table-cell，table-caption</li>
+  <li>overflow 不为 visible</li>
+</ul>
+
+<p>这里提下，display: table，它本身不产生 BFC，但是它会产生匿名框（包含 display: table-cell 的框），而这个匿名框产生 BFC</p>
+
+<h1 id="ifcinline-formatting-context">IFC（Inline Formatting Context）</h1>
+
+<p>IFC 即行内框产生的格式上下文</p>
+
+<h2 id="ifc-规则">IFC 规则</h2>
+
+<ul>
+  <li>在行内格式化上下文中</li>
+  <li>框一个接一个地水平排列，起点是包含块的顶部。</li>
+  <li>水平方向上的 margin，border 和 padding 在框之间得到保留</li>
+  <li>框在垂直方向上可以以不同的方式对齐：它们的顶部或底部对齐，或根据其中文字的基线对齐</li>
+</ul>
+
+<h2 id="行框">行框</h2>
+
+<ul>
+  <li>包含那些框的长方形区域，会形成一行，叫做行框 -行框的宽度由它的包含块和其中的浮动元素决定，高度的确定由行高度计算规则决定</li>
+</ul>
+
+<h2 id="行框的规则">行框的规则：</h2>
+
+<ul>
+  <li>如果几个行内框在水平方向无法放入一个行框内，它们可以分配在两个或多个垂直堆叠的行框中（即行内框的分割）</li>
+  <li>行框在堆叠时没有垂直方向上的分割且永不重叠</li>
+  <li>行框的高度总是足够容纳所包含的所有框。不过，它可能高于它包含的最高的框（例如，框对齐会引起基线对齐）</li>
+  <li>行框的左边接触到其包含块的左边，右边接触到其包含块的右边。</li>
+</ul>
+
+<h2 id="结合补充下-ifc-规则">结合补充下 IFC 规则：</h2>
+
+<ul>
+  <li>浮动元素可能会处于包含块边缘和行框边缘之间</li>
+  <li>尽管在相同的行内格式化上下文中的行框通常拥有相同的宽度（包含块的宽度），它们可能会因浮动元素缩短了可用宽度，而在宽度上发生变化</li>
+  <li>同一行内格式化上下文中的行框通常高度不一样（如，一行包含了一个高的图形，而其它行只包含文本）</li>
+  <li>当一行中行内框宽度的总和小于包含它们的行框的宽，它们在水平方向上的对齐，取决于 <code class="language-plaintext highlighter-rouge">text-align</code> 特性</li>
+  <li>空的行内框应该被忽略，即不包含文本，保留空白符，margin/padding/border 非 0 的行内元素，
+以及其他常规流中的内容(比如，图片，inline blocks 和 inline tables)，
+并且不是以换行结束的行框，
+必须被当作零高度行框对待</li>
+</ul>
+
+<h2 id="总结-1">总结：</h2>
+
+<ul>
+  <li>行内元素总是会应用 IFC 渲染规则</li>
+  <li>行内元素会应用 IFC 规则渲染，譬如 text-align 可以用来居中等</li>
+  <li>块框内部，对于文本这类的匿名元素，会产生匿名行框包围，而行框内部就应用 IFC 渲染规则</li>
+  <li>行内框内部，对于那些行内元素，一样应用 IFC 渲染规则</li>
+  <li>另外，inline-block，会在元素外层产生 IFC（所以这个元素是可以通过 text-align 水平居中的），当然，它内部则按照 BFC 规则渲染</li>
+</ul>
+
+<p>相比 BFC 规则来说，IFC 可能更加抽象（因为没有那么条理清晰的规则和触发条件）</p>
+
+<p>但总的来说，它就是行内元素自身如何显示以及在框内如何摆放的渲染规则，这样描述应该更容易理解</p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/07/25/process-7/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="从输入URL到页面加载的过程（7） - 解析页面流程"
+            >
+              Previous<br />
+              <span>从输入URL到页面加载的过程（7） - 解析页面流程</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2020/07/28/algorithm-learn/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="算法学习"
+            >
+              Next<br />
+              <span>算法学习</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2020/07/25/process-8";
+  var disqus_url = "https://cody1991.cn/2020/07/25/process-8/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

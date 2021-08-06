@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《浏览器工作原理与实践》系列笔记 - V8工作原理 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="栈空间和堆空间：数据是如何存储的
+"
+  />
+   <meta property="article:published_time" content="2021-03-24T00:00:00Z">   
+  <meta property="article:tag" content="browser" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/24/browser-working-principle-v8/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《浏览器工作原理与实践》系列笔记 - V8工作原理 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/24/browser-working-principle-v8/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=browser" title="browser">browser</a>
+                        
+                    </div>
+                    <h1>《浏览器工作原理与实践》系列笔记 - V8工作原理</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 24, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="栈空间和堆空间数据是如何存储的">栈空间和堆空间：数据是如何存储的</h1>
+
+<h2 id="让人疑惑的代码">让人疑惑的代码</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+  <span class="nx">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span> <span class="p">};</span>
+  <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+  <span class="nx">a</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>执行第一段代码，打印出来 a 的值是 2，b 的值是 1</p>
+
+<p>再执行第二段代码，最终 a 和 b 打印出来的值都是{name:”极客邦”}</p>
+
+<h2 id="javascript-是什么类型的语言">JavaScript 是什么类型的语言</h2>
+
+<p>比如 C 语言在定义变量之前，就需要确定变量的类型，你可以看下面这段 C 代码：</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+   <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+   <span class="kt">char</span><span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="s">" 极客时间 "</span><span class="p">;</span>
+   <span class="kt">bool</span> <span class="n">c</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上述代码声明变量的特点是：在声明变量之前需要先定义变量类型。我们把这种在使用之前就需要确认其变量数据类型的称为静态语言</p>
+
+<p>我们把在运行过程中需要检查数据类型的语言称为动态语言。比如我们所讲的 JavaScript 就是动态语言，因为在声明变量之前并不需要确认其数据类型</p>
+
+<p>虽然 C 语言是静态，但是在 C 语言中，我们可以把其他类型数据赋予给一个声明好的变量，如：</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">c</span> <span class="o">=</span> <span class="n">a</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>前面代码中，我们把 int 型的变量 a 赋值给了 bool 型的变量 c，这段代码也是可以编译执行的，因为在赋值过程中，C 编译器会把 int 型的变量悄悄转换为 bool 型的变量，我们通常把这种偷偷转换的操作称为隐式类型转换。</p>
+
+<p>而支持隐式类型转换的语言称为弱类型语言，不支持隐式类型转换的语言称为强类型语言。在这点上，C 和 JavaScript 都是弱类型语言。</p>
+
+<p><img src="/img/posts/browser/v8/1.png" alt="" /></p>
+
+<h2 id="javascript-的数据类型">JavaScript 的数据类型</h2>
+
+<ul>
+  <li>弱类型，意味着你不需要告诉 JavaScript 引擎这个或那个变量是什么数据类型，JavaScript 引擎在运行代码的时候自己会计算出来</li>
+  <li>动态，意味着你可以使用同一个变量保存不同类型的数据</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">bar</span><span class="p">;</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span> <span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">bar</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">bar</span><span class="p">);</span> <span class="c1">//undefined</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">bar</span><span class="p">);</span> <span class="c1">//number</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">bar</span><span class="p">);</span> <span class="c1">//string</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">bar</span><span class="p">);</span> <span class="c1">//boolean</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">bar</span><span class="p">);</span> <span class="c1">//object</span>
+<span class="nx">bar</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span> <span class="p">};</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">bar</span><span class="p">);</span> <span class="c1">//object</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>JavaScript 中的数据类型一种有 8 种</p>
+
+<p><img src="/img/posts/browser/v8/2.png" alt="" /></p>
+
+<ul>
+  <li>使用 typeof 检测 Null 类型时，返回的是 Object</li>
+  <li>Object 类型比较特殊，它是由上述 7 种类型组成的一个包含了 key-value 对的数据类型</li>
+  <li>我们把前面的 7 种数据类型称为原始类型，把最后一个对象类型称为引用类型</li>
+</ul>
+
+<p>把它们区分为两种不同的类型，是因为它们在内存中存放的位置不一样，看看 JavaScript 的原始类型和引用类型到底是怎么储存的</p>
+
+<h2 id="内存空间">内存空间</h2>
+
+<p><img src="/img/posts/browser/v8/3.png" alt="" /></p>
+
+<p>在 JavaScript 的执行过程中， 主要有三种类型内存空间，分别是代码空间、栈空间和堆空间。</p>
+
+<h2 id="栈空间和堆空间">栈空间和堆空间</h2>
+
+<p>这里的栈空间就是我们之前反复提及的调用栈，是用来存储执行上下文的</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span> <span class="p">};</span>
+  <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">c</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>执行一段代码时，需要先编译，并创建执行上下文，然后再按照顺序执行代码</p>
+
+<p>当执行到第 3 行代码时，其调用栈的状态</p>
+
+<p><img src="/img/posts/browser/v8/4.png" alt="" /></p>
+
+<p>变量 a 和变量 b 的值都被保存在执行上下文中，而执行上下文又被压入到栈中，所以你也可以认为变量 a 和变量 b 的值都是存放在栈中的</p>
+
+<p>执行第 4 行代码，由于 JavaScript 引擎判断右边的值是一个引用类型，这时候处理的情况就不一样了，JavaScript 引擎并不是直接将该对象存放到变量环境中，而是将它分配到堆空间里面，分配后该对象会有一个在“堆”中的地址，然后再将该数据的地址写进 c 的变量值，最终分配好内存的示意图如下所示</p>
+
+<p><img src="/img/posts/browser/v8/5.png" alt="" /></p>
+
+<p>对象类型是存放在堆空间的，在栈空间中只是保留了对象的引用地址，当 JavaScript 需要访问该数据的时候，是通过栈中的引用地址来访问的，相当于多了一道转手流程</p>
+
+<p>所以，<strong>原始类型的数据值都是直接保存在“栈”中的，引用类型的值是存放在“堆”中的</strong></p>
+
+<p>为什么一定要分“堆”和“栈”两个存储空间呢？所有数据直接存放在“栈”中不就可以了吗？</p>
+
+<p>这是因为 JavaScript 引擎需要用栈来维护程序执行期间上下文的状态，如果栈空间大了话，所有的数据都存放在栈空间里面，那么会影响到上下文切换的效率，进而又影响到整个程序的执行效率</p>
+
+<p>比如文中的 foo 函数执行结束了，JavaScript 引擎需要离开当前的执行上下文，只需要将指针下移到上个执行上下文的地址就可以了</p>
+
+<p><img src="/img/posts/browser/v8/6.png" alt="" /></p>
+
+<p>通常情况下，栈空间都不会设置太大，主要用来存放一些原始类型的小数据。而引用类型的数据占用的空间都比较大，所以这一类数据会被存放到堆中，堆空间很大，能存放很多大的数据，不过缺点是分配内存和回收内存都会占用一定的时间</p>
+
+<p>看看它最后一步将变量 c 赋值给变量 d 是怎么执行的？</p>
+
+<p>赋值操作和其他语言有很大的不同，原始类型的赋值会完整复制变量值，而引用类型的赋值是复制引用地址</p>
+
+<p>所以 d=c 的操作就是把 c 的引用地址赋值给 d</p>
+
+<p><img src="/img/posts/browser/v8/7.png" alt="" /></p>
+
+<p>变量 c 和变量 d 都指向了同一个堆中的对象，所以这就很好地解释了文章开头的那个问题，通过 c 修改 name 的值，变量 d 的值也跟着改变，归根结底它们是同一个对象</p>
+
+<h2 id="再谈闭包">再谈闭包</h2>
+
+<p>你知道了作用域内的原始类型数据会被存储到栈空间，引用类型会被存储到堆空间，基于这两点的认知，我们再深入一步，探讨下闭包的内存模型</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">test1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">test2</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">innerBar</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">setName</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newName</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">myName</span> <span class="o">=</span> <span class="nx">newName</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="na">getName</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test1</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">myName</span><span class="p">;</span>
+    <span class="p">},</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">innerBar</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">();</span>
+<span class="nx">bar</span><span class="p">.</span><span class="nx">setName</span><span class="p">(</span><span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">bar</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">bar</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>当 JavaScript 引擎执行到 foo 函数时，首先会编译，并创建一个空执行上下文</li>
+  <li>在编译过程中，遇到内部函数 setName，JavaScript 引擎还要对内部函数做一次快速的词法扫描，发现该内部函数引用了 foo - 函数中的 myName 变量，由于是内部函数引用了外部函数的变量，所以 JavaScript 引擎判断这是一个闭包，于是在堆空间创建换一个“closure(foo)”的对象（这是一个内部对象，JavaScript 是无法访问的），用来保存 myName 变量。</li>
+  <li>接着继续扫描到 getName 方法时，发现该函数内部还引用变量 test1，于是 JavaScript 引擎又将 test1 添加到“closure(foo)”对象中。这时候堆中的“closure(foo)”对象中就包含了 myName 和 test1 两个变量了。</li>
+  <li>由于 test2 并没有被内部函数引用，所以 test2 依然保存在调用栈中</li>
+</ul>
+
+<p>画出执行到 foo 函数中“return innerBar”语句时的调用栈状态</p>
+
+<p><img src="/img/posts/browser/v8/8.png" alt="" /></p>
+
+<p>当执行到 foo 函数时，闭包就产生了</p>
+
+<p>当 foo 函数执行结束之后，返回的 getName 和 setName 方法都引用“clourse(foo)”对象，所以即使 foo 函数退出了，“clourse(foo)”依然被其内部的 getName 和 setName 方法引用。所以在下次调用 bar.setName 或者 bar.getName 时，创建的执行上下文中就包含了“clourse(foo)”。</p>
+
+<p>innerBar 返回后，含有 setName 和 getName 对象，这两个对象里面包含了堆中的 closure(foo)的引用。虽然 foo 执行上下文销毁了，foo 函数中的对 closure(foo)的引用也断开了，但是 setName 和 getName 里面又重新建立起来了对 closure(foo)引用。</p>
+
+<p>产生闭包的核心有两步：</p>
+
+<ol>
+  <li>第一步是需要预扫描内部函数</li>
+  <li>第二步是把内部函数引用的外部变量保存到堆中</li>
+</ol>
+
+<h1 id="垃圾回收垃圾数据如何自动回收">垃圾回收：垃圾数据如何自动回收</h1>
+
+<h2 id="不同语言的垃圾回收策略">不同语言的垃圾回收策略</h2>
+
+<p>垃圾回收一般分手动和自动回收两种策略</p>
+
+<p>C/C++是手动回收的策略，什么时候分配内存，销毁内存都是代码控制</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="c1">// 在堆中分配内存</span>
+<span class="kt">char</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span>  <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">2048</span><span class="p">);</span>  <span class="c1">// 在堆空间中分配 2048 字节的空间，并将分配后的引用地址保存到 p 中</span>
+
+ <span class="c1">// 使用 p 指向的内存</span>
+ <span class="p">{</span>
+   <span class="c1">//....</span>
+ <span class="p">}</span>
+
+<span class="c1">// 使用结束后，销毁这段内存</span>
+<span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="err">；</span>
+<span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="err">；</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们先 malloc 分配内存，然后使用，不再需要的时候 free 释放内存</p>
+
+<p>另外一种是自动垃圾回收，比如 JavaScript Java Python 等，垃圾数据由垃圾回收器释放，不需要手动释放</p>
+
+<p>因为数据存储在栈和堆两种内存空间，我们分两个唯独来分析</p>
+
+<h2 id="调用栈中数据是如何回收的">调用栈中数据是如何回收的</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客邦 </span><span class="dl">'</span> <span class="p">};</span>
+  <span class="kd">function</span> <span class="nx">showName</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span> <span class="p">};</span>
+  <span class="p">}</span>
+  <span class="nx">showName</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>当执行到第六行的时候，调用栈和堆空间状态如下</p>
+
+<p><img src="/img/posts/browser/v8/9.png" alt="" /></p>
+
+<p>原始类型分配到栈中，引用类型分配到堆中</p>
+
+<p>执行到到 showName 函数的时候，引擎会创建 showName 上下文呢，压入到调用栈中，最终执行到 showName 函数时，调用栈就如上图所示。</p>
+
+<p>还有一个记录当前执行状态的指针，叫做 ESP，指向了调用栈中 showName 函数的执行上下文，表示正在执行 showName</p>
+
+<p>执行完毕以后，进入到 foo 函数，这个时候销毁 showName 函数的执行上下文，ESP 就帮上忙了，会把 ESP 下移到 foo 函数执行的上下文，下移操作就是销毁 showName 函数执行上下文的过程</p>
+
+<p><img src="/img/posts/browser/v8/10.png" alt="" /></p>
+
+<p>showName 函数执行完毕后，ESP 向下移动到了 foo 函数的执行上下文，showName 的执行上下文虽然保存在占内存中，但是已经无效内存了</p>
+
+<p>当 foo 再次调用另外一个函数的时候，这个内容会被直接覆盖，存放另外一个函数的上下文</p>
+
+<p>所以一个函数执行完毕以后，引擎通过向下移动 ESP 销毁函数保存在栈中的上下文</p>
+
+<h2 id="堆中数据是如何回收的">堆中数据是如何回收的</h2>
+
+<p>foo 结束以后，ESP 应该是指向全局执行上下文的，showName 和 foo 函数的执行上下文都处于无效的状态，不过保存在堆中的对象依然占据空间</p>
+
+<p><img src="/img/posts/browser/v8/11.png" alt="" /></p>
+
+<h2 id="代际假说和分代收集">代际假说和分代收集</h2>
+
+<p>代际假说特点：</p>
+
+<ul>
+  <li>大部分对象在内存存在时间很短，很多对象已经分配内存，很快就不可访问了</li>
+  <li>不死的对象会或者更久</li>
+</ul>
+
+<p>V8 把 堆 分为新生代和老生代两个区域，新生代存放时间短的对象，老生代存放生存时间长的对象</p>
+
+<p>新生代一般支持 1 ～ 8M，老生代支持容量很大</p>
+
+<ul>
+  <li>副垃圾回收器，负责新生代垃圾回收</li>
+  <li>主垃圾回收期，负责老生代垃圾回收</li>
+</ul>
+
+<h2 id="垃圾回收的工作流程">垃圾回收的工作流程</h2>
+
+<ol>
+  <li>标记空间中的活动对象和非活动对象，活动对象就是还在使用的，非活动对象就是可以进行垃圾回收的对象</li>
+  <li>回收非活动对象的内存，在所有标记完成以后，统一清理内存中被标记为可回收的对象</li>
+  <li>整理内存，一般频繁回收对象，会存在大量不连续的空间，叫做空间碎片，后面如果还有分配连续大内存可能会出现内存不足的情。所以最后一步是整理内存碎片，但是不是必须的</li>
+</ol>
+
+<h2 id="副垃圾回收器">副垃圾回收器</h2>
+
+<p>大多数小的对象分配到了新生区，区域不大，但是回收比较频繁</p>
+
+<p>新生区使用 scavenge 算法处理：把空间对半分为两个区域，一个是对象区域，一个是空闲区域</p>
+
+<p><img src="/img/posts/browser/v8/12.png" alt="" /></p>
+
+<p>新生区加入对象的时候放到了对象区域，对象区域快满的时候，执行一次垃圾回收</p>
+
+<p>首先对垃圾做标记，标记完以后进入垃圾清理阶段，副垃圾回收器会把存活的对象复制到空闲区域，并把他们有序的排列起来。所以复制过程也相当于完成了内存整理操作。再也没有内存碎片了</p>
+
+<p>完成复制后，对象区域和空闲区域角色反转，可以一直无限重复使用下去</p>
+
+<p>如果新生区设置太大的话，清理时间过长，为了执行效率，一般设的比较小</p>
+
+<p>不过太小的话容易填满，也正是因为这样，还采取了对象晋升策略，如果两次垃圾回收后还存活对对象，移到了老生区</p>
+
+<h2 id="主垃圾回收器">主垃圾回收器</h2>
+
+<p>一般大的对象直接分配到老生区，它对象占用空间大，存活时间长</p>
+
+<p>如果按照 scavenge 算法，复制大对象很浪费时间，效率不高，还浪费了一半空间，所以不采用。主垃圾回收器采用标记 - 清除的算法进行垃圾回收</p>
+
+<p>首先是标记阶段，从一组根元素开始，递归遍历这组根元素，遍历过程能达到的对象称为活动对象，没有达到的称为垃圾数据</p>
+
+<p>比如 showName 执行退出以后，调用栈和堆空间如下</p>
+
+<p><img src="/img/posts/browser/v8/13.png" alt="" /></p>
+
+<p>这个时候 ESP 向下移动指向了 foo 函数上下文，如果遍历调用栈是找不到饮用 100 地址的变量，所以 1003 这块数据为垃圾数据，标记红色</p>
+
+<p>1050 这块数据被变量 B 引用了，标记为活动对象</p>
+
+<p>接下来是垃圾清除阶段：</p>
+
+<p><img src="/img/posts/browser/v8/14.png" alt="" /></p>
+
+<p>不过一块内存多次执行 标记 - 清除算法后产生了大量不连续的内存碎片，于是有 标记 - 整理算法，后续不是直接对可回收对象进行清理，而是让所有存活的对象向一端移动，然后清除掉端边界以外的内存</p>
+
+<p><img src="/img/posts/browser/v8/15.png" alt="" /></p>
+
+<h2 id="全停顿">全停顿</h2>
+
+<p>我们知道了 V8 是使用副垃圾回收器和主垃圾回收器处理垃圾回收的，不过 JavaScript 运行在主线程，执行垃圾回收算法都需要让正在执行的 JavaScript 代码停止下来，回收完毕后在恢复，这种行为叫做全停顿</p>
+
+<p>比如 1.5G 垃圾 V8 实现一次完整回收要 1s，那么应用的性能和响应都直线下降</p>
+
+<p><img src="/img/posts/browser/v8/16.png" alt="" /></p>
+
+<p>新生代因为空间小影响不大，老生代就不一样了。</p>
+
+<p>为了降低老生代回收造成的卡顿，V8 把标记过程分为一个个的子过程，让回收标记和 JavaScript 代码逻辑交替运行，直到标记阶段完成。叫做增量标记算法</p>
+
+<p><img src="/img/posts/browser/v8/17.png" alt="" /></p>
+
+<p>把垃圾回收任务分为很多小任务，小任务时间段，穿插在其他任务中执行，不会感觉有明显的卡顿</p>
+
+<h1 id="编译器和解析器v8-如何执行一段-javascript-代码的">编译器和解析器：V8 如何执行一段 JavaScript 代码的</h1>
+
+<p>要深入理解 V8 的工作原理，你需要搞清楚一些概念和原理，比如接下来我们要详细讲解的编译器（Compiler）、解释器（Interpreter）、抽象语法树（AST）、字节码（Bytecode）、即时编译器（JIT）等概念，都是你需要重点关注的</p>
+
+<h2 id="编译器与解释器">编译器与解释器</h2>
+
+<p>机器不能直接理解我们的代码，需要在执行程序之前，把代码翻译成机器能读懂的机器语言。</p>
+
+<p>按语言执行的流程可以分为解释型语言和编译型语言</p>
+
+<p>编译型语言在执行前需要编译器的编译过程，编译后直接保留机器能读懂的二进制文件。后面运行程序就不需要执行二进制文件了，也不需要重新编译，比如 C/C++，GO 等编译型语言</p>
+
+<p>编译型语言编写的程序每次运行都需要经过解释器对程序进行动态解释和执行，比如 Python 和 JavaScript 等解释型语言</p>
+
+<p><img src="/img/posts/browser/v8/18.png" alt="" /></p>
+
+<ul>
+  <li>编译型语言的编译过程中，依次对源代码进行词法分析，语法分析，生成了抽象语法树（AST），然后优化代码，生成机器码</li>
+  <li>解释型语言，对源代码进行词法分析，语法分析，生成 AST，基于 AST 生成字节码，根据字节码执行程序</li>
+</ul>
+
+<h2 id="v8-是如何执行一段-javascript-代码的">V8 是如何执行一段 JavaScript 代码的</h2>
+
+<p><img src="/img/posts/browser/v8/19.png" alt="" /></p>
+
+<h3 id="生成-ast-和执行上下文">生成 AST 和执行上下文</h3>
+
+<p>解释型语言还是编译型预研都会生成 AST，这和渲染引擎把 HTML 转为计算机可以理解的 DOM 树情况类似</p>
+
+<p>我们看看下面的代码：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1"> 极客时间 </span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">23</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">geektime</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">foo</span><span class="p">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它生成的 AST 是这样的</p>
+
+<p><img src="/img/posts/browser/v8/20.png" alt="" /></p>
+
+<p>AST 和代码结构很类似，可以看成是代码结构化的表示。后续的工作都依赖于 AST</p>
+
+<p>AST 是一个很重要的数据结构，在很多地方被应用</p>
+
+<p>比如 babel 代码转换器，把 es6 代码转成了 es5 代码，先把 es6 源代码转成 ast，然后把 es6 语法的 ast 转成 es5 愈发的 ast，最终生成 es5 的源代码</p>
+
+<p>eslint 是检查 js 编写规范的差距，也是把源代码转换成 ast，然后通过 ast 检查代码规范化问题</p>
+
+<p>生成 ast 有两个阶段</p>
+
+<p>词法分析，把一行行的源代码拆解成一个个的 token，token 是语法上不能再分的，最小的单个字符串</p>
+
+<p><img src="/img/posts/browser/v8/21.png" alt="" /></p>
+
+<p>上图</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">极客时间</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>简单地定义了一个变量。关键词 var 标识符 myName 赋值运算符 = 和 字符串四个都是 token，代表不同的属性</p>
+
+<p>语法分析，是第二阶段，把第一阶段的 token 数据，转成了 ast。如果出现错误的话，会抛出语法错误</p>
+
+<p>所以整个生成的步骤就是先分词，再解析</p>
+
+<p>接下来是生成字节码，解释器 Ignition 登场了。它会根据 ast 生成字节码，解释执行字节码</p>
+
+<p>V8 一开始没有字节码，直接转成了机器码，效率很高但是随着在手机上发布以后，运行在 512M 等第内存的手机上，内存占用问题就出现了，因为需要使用大量的内存去存放转换后的机器码。</p>
+
+<p>V8 大幅重构了引擎架构，引入了字节码</p>
+
+<p>字节码是介于 AST 和机器码之间的代码，与特定类型的机器码无关，字节码需要通过解释器把转换为机器码后才能执行</p>
+
+<p><img src="/img/posts/browser/v8/22.png" alt="" /></p>
+
+<p>字节码占用的空间远远超过了字节码</p>
+
+<p>接下来就是执行代码的阶段了</p>
+
+<p>解释器 Ignition 会逐条解释执行。如果发现有热点代码，比如重复执行多次，编译器 TurboFan 就会把该段热点的字节码编译为高效的机器码。然后再次执行这段代码的时候就直接使用编译后的机器码就好了。大大提升了代码效率</p>
+
+<p>解释器 Ignition 是点火器的意思，编译器 TurboFan 是涡轮增压的意思，寓意着代码启动时通过点火器慢慢发动，一旦启动，涡轮增压介入，其执行效率随着执行时间越来越高效率，因为热点代码都被编译器 TurboFan 转换了机器码，直接执行机器码就省去了字节码“翻译”为机器码的过程。</p>
+
+<p>解释器配合编译器是最近很火的技术， Java 和 Python 的虚拟机也都是基于这种技术实现的，这种技术叫做即时编译 JIT</p>
+
+<p><img src="/img/posts/browser/v8/23.png" alt="" /></p>
+
+<h2 id="javascript-的性能优化">JavaScript 的性能优化</h2>
+
+<ul>
+  <li>提升单词脚本执行速度，避免 长任务 霸占主线程，可以快速响应交互</li>
+  <li>减少 文件体积</li>
+</ul>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/23/browser-working-principle-page/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 浏览器中的页面"
+            >
+              Previous<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 浏览器中的页面</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/25/v8/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《图解 Google V8》系列笔记 - 宏观视角"
+            >
+              Next<br />
+              <span>《图解 Google V8》系列笔记 - 宏观视角</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/24/browser-working-principle-v8";
+  var disqus_url = "https://cody1991.cn/2021/03/24/browser-working-principle-v8/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

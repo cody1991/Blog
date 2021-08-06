@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《现代 JavaScript 教程》阅读进度 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="始于 2021 年 01 月 18 号
+"
+  />
+   <meta property="article:published_time" content="2021-01-18T00:00:00Z">   
+  <meta property="article:tag" content="JavaScript" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/01/18/javascript-info/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《现代 JavaScript 教程》阅读进度 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/01/18/javascript-info/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=JavaScript" title="JavaScript">JavaScript</a>
+                        
+                    </div>
+                    <h1>《现代 JavaScript 教程》阅读进度</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on January 18, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <p>始于 2021 年 01 月 18 号</p>
+
+<p>来自 <a href="https://zh.javascript.info/">现代 JavaScript 教程</a></p>
+
+<ul>
+  <li>
+    <p>JavaScript 编程语言 (02.02 读完第一部分～)</p>
+
+    <ul>
+      <li>
+        <p>简介</p>
+
+        <ul>
+          <li>JavaScript 简介 (01.18)</li>
+          <li>手册与规范 (01.18)</li>
+          <li>代码编辑器 (01.18)</li>
+          <li>开发者控制台 (01.18)</li>
+        </ul>
+      </li>
+      <li>
+        <p>JavaScript 基础知识</p>
+
+        <ul>
+          <li>Hello, world! (01.18)</li>
+          <li>代码结构 (01.18)</li>
+          <li>现代模式，”use strict” (01.18)</li>
+          <li>变量 (01.18)</li>
+          <li>数据类型 (01.19)</li>
+          <li>交互：alert、prompt 和 confirm (01.19)</li>
+          <li>类型转换 (01.19)</li>
+          <li>基础运算符，数学 (01.19)</li>
+          <li>值的比较 (01.19)</li>
+          <li>条件分支：if 和 ‘?’ (01.19)</li>
+          <li>逻辑运算符 (01.20)</li>
+          <li>空值合并运算符 ‘??’ (01.20)</li>
+          <li>循环：while 和 for (01.20)</li>
+          <li>“switch” 语句 (01.20)</li>
+          <li>函数 (01.20)</li>
+          <li>函数表达式 (01.20)</li>
+          <li>箭头函数，基础知识 (01.20)</li>
+          <li>JavaScript 特性 (01.20)</li>
+        </ul>
+      </li>
+      <li>
+        <p>代码质量</p>
+
+        <ul>
+          <li>在 Chrome 中调试 (01.20)</li>
+          <li>代码风格 (01.20)</li>
+          <li>注释 (01.20)</li>
+          <li>忍者代码 (01.20)</li>
+          <li>使用 Mocha 进行自动化测试 (01.21)</li>
+          <li>Polyfill (01.21)</li>
+        </ul>
+      </li>
+      <li>
+        <p>Object（对象）：基础知识</p>
+
+        <ul>
+          <li>对象 (01.21)</li>
+          <li>对象引用和复制 (01.21)</li>
+          <li>垃圾回收 (01.21)</li>
+          <li>对象方法，”this” (01.21)</li>
+          <li>构造器和操作符 “new” (01.21)</li>
+          <li>可选链 “?.” (01.21)</li>
+          <li>Symbol 类型 (01.21)</li>
+          <li>对象 — 原始值转换 (01.21)</li>
+        </ul>
+      </li>
+      <li>
+        <p>数据类型</p>
+
+        <ul>
+          <li>原始类型的方法 (01.21)</li>
+          <li>数字类型 (01.21)</li>
+          <li>字符串 (01.21)</li>
+          <li>数组 (01.21)</li>
+          <li>数组方法 (01.21)</li>
+          <li>Iterable object（可迭代对象） (01.25)</li>
+          <li>Map and Set（映射和集合） (01.25)</li>
+          <li>WeakMap and WeakSet（弱映射和弱集合） (01.25)</li>
+          <li>Object.keys，values，entries (01.26)</li>
+          <li>解构赋值 (01.26)</li>
+          <li>日期和时间 (01.26)</li>
+          <li>JSON 方法，toJSON (01.26)</li>
+        </ul>
+      </li>
+      <li>
+        <p>函数进阶内容</p>
+
+        <ul>
+          <li>递归和堆栈 (01.27)</li>
+          <li>Rest 参数与 Spread 语法 (01.27)</li>
+          <li>变量作用域，闭包 (01.27)</li>
+          <li>旧时的 “var” (01.27)</li>
+          <li>全局对象 (01.27)</li>
+          <li>函数对象，NFE (01.27)</li>
+          <li>“new Function” 语法 (01.27)</li>
+          <li>调度：setTimeout 和 setInterval (01.28)</li>
+          <li>装饰器模式和转发，call/apply (01.28)</li>
+          <li>函数绑定 (01.28)</li>
+          <li>深入理解箭头函数 (01.28)</li>
+        </ul>
+      </li>
+      <li>
+        <p>对象属性配置</p>
+
+        <ul>
+          <li>属性标志和属性描述符 (01.29)</li>
+          <li>属性的 getter 和 setter (01.29)</li>
+        </ul>
+      </li>
+      <li>
+        <p>原型，继承</p>
+
+        <ul>
+          <li>原型继承 (01.30)</li>
+          <li>F.prototype (01.30)</li>
+          <li>原生的原型 (01.30)</li>
+          <li>原型方法，没有 <strong>proto</strong> 的对象 (01.30)</li>
+        </ul>
+      </li>
+      <li>
+        <p>类</p>
+
+        <ul>
+          <li>Class 基本语法 (01.30)</li>
+          <li>类继承 (01.30)</li>
+          <li>静态属性和静态方法 (01.30)</li>
+          <li>私有的和受保护的属性和方法 (01.30)</li>
+          <li>扩展内建类 (01.30)</li>
+          <li>类检查：”instanceof” (01.30)</li>
+          <li>Mixin 模式 (01.30)</li>
+        </ul>
+      </li>
+      <li>
+        <p>错误处理</p>
+
+        <ul>
+          <li>错误处理，”try..catch” (01.30)</li>
+          <li>自定义 Error，扩展 Error (01.30)</li>
+        </ul>
+      </li>
+      <li>
+        <p>Promise，async/await</p>
+
+        <ul>
+          <li>简介：回调 (02.01)</li>
+          <li>Promise (02.01)</li>
+          <li>Promise 链 (02.01)</li>
+          <li>使用 promise 进行错误处理 (02.01)</li>
+          <li>Promise API (02.01)</li>
+          <li>Promisification (02.01)</li>
+          <li>微任务（Microtask） (02.01)</li>
+          <li>Async/await (02.01)</li>
+        </ul>
+      </li>
+      <li>
+        <p>Generator，高级 iteration</p>
+
+        <ul>
+          <li>Generator (跳过)</li>
+          <li>异步迭代和 generator (跳过)</li>
+        </ul>
+      </li>
+      <li>
+        <p>模块</p>
+
+        <ul>
+          <li>模块 (Module) 简介 (02.02)</li>
+          <li>导出和导入 (02.02)</li>
+          <li>动态导入 (02.02)</li>
+        </ul>
+      </li>
+      <li>
+        <p>杂项</p>
+
+        <ul>
+          <li>Proxy 和 Reflect (02.02)</li>
+          <li>Eval：执行代码字符串 (02.02)</li>
+          <li>柯里化（Currying） (02.02)</li>
+          <li>Reference Type (02.02)</li>
+          <li>BigInt (02.02)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>浏览器：文档，事件，接口 (02.09 读完第二部分～)</p>
+
+    <ul>
+      <li>
+        <p>Document</p>
+
+        <ul>
+          <li>浏览器环境，规格 (02.02)</li>
+          <li>DOM 树 (02.02)</li>
+          <li>遍历 DOM (02.02)</li>
+          <li>搜索：getElement<em>，querySelector</em> (02.02)</li>
+          <li>节点属性：type，tag 和 content (02.02)</li>
+          <li>特性和属性（Attributes and properties） (02.02)</li>
+          <li>修改文档（document） (02.02)</li>
+          <li>样式和类 (02.04)</li>
+          <li>元素大小和滚动 (02.04)</li>
+          <li>Window 大小和滚动 (02.04)</li>
+          <li>坐标 (02.04)</li>
+        </ul>
+      </li>
+      <li>
+        <p>事件简介</p>
+
+        <ul>
+          <li>浏览器事件简介 (02.05)</li>
+          <li>冒泡和捕获 (02.05)</li>
+          <li>事件委托 (02.05)</li>
+          <li>浏览器默认行为 (02.05)</li>
+          <li>创建自定义事件 (02.05)</li>
+        </ul>
+      </li>
+      <li>
+        <p>UI 事件</p>
+
+        <ul>
+          <li>鼠标事件 (02.08)</li>
+          <li>移动鼠标：mouseover/out，mouseenter/leave (02.08)</li>
+          <li>鼠标拖放事件 (02.08)</li>
+          <li>指针事件 (02.08)</li>
+          <li>键盘：keydown 和 keyup (02.08)</li>
+          <li>滚动 (02.08)</li>
+        </ul>
+      </li>
+      <li>
+        <p>表单，控件</p>
+
+        <ul>
+          <li>表单属性和方法 (02.08)</li>
+          <li>聚焦：focus/blur (02.08)</li>
+          <li>事件：change，input，cut，copy，paste (02.08)</li>
+          <li>表单：事件和方法提交 (02.08)</li>
+        </ul>
+      </li>
+      <li>
+        <p>加载文档和其他资源</p>
+
+        <ul>
+          <li>页面生命周期：DOMContentLoaded，load，beforeunload，unload (02.09)</li>
+          <li>脚本：async，defer (02.09)</li>
+          <li>资源加载：onload，onerror (02.09)</li>
+        </ul>
+      </li>
+      <li>
+        <p>杂项</p>
+
+        <ul>
+          <li>DOM 变动观察器（Mutation observer） (02.09)</li>
+          <li>选择（Selection）和范围（Range） (02.09)</li>
+          <li>事件循环：微任务和宏任务 (02.09)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>其他文章</p>
+
+    <ul>
+      <li>
+        <p>Frame 和 window</p>
+
+        <ul>
+          <li>弹窗和 window 的方法</li>
+          <li>跨窗口通信</li>
+          <li>点击劫持攻击</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2020/12/27/life-list/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="生活清单"
+            >
+              Previous<br />
+              <span>生活清单</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/16/running/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="跑起来～～"
+            >
+              Next<br />
+              <span>跑起来～～</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/01/18/javascript-info";
+  var disqus_url = "https://cody1991.cn/2021/01/18/javascript-info/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

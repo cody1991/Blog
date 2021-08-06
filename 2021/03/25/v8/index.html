@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="google-site-verification"
+    content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="description" content="cody1991的博客" />
+  <meta name="keywords" content="cody1991, blog" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="《图解 Google V8》系列笔记 - 宏观视角 - cody1991的博客 | cody1991 Blog"
+  />
+  
+  <meta property="og:type" content="article" />
+  <meta
+    property="og:description"
+    content="什么是 V8
+"
+  />
+   <meta property="article:published_time" content="2021-03-25T00:00:00Z">   
+  <meta property="article:tag" content="V8" />
+   
+  <meta property="og:image" content="https://cody1991.cn/img/cody1991.jpeg" />
+  <meta property="og:url" content="https://cody1991.cn/2021/03/25/v8/" />
+  <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
+
+  <title>
+    《图解 Google V8》系列笔记 - 宏观视角 - cody1991的博客 | cody1991 Blog
+  </title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/pwa/manifest.json" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+
+  <!-- Canonical URL -->
+  <link
+    rel="canonical"
+    href="https://cody1991.cn/2021/03/25/v8/"
+  />
+
+  <!-- Bootstrap Core CSS -->
+  <link
+    rel="stylesheet"
+    href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css"
+  />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/hux-blog.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/codytang-blog.css">
+
+  <!-- Custom Fonts -->
+  <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+  <!-- Hux change font-awesome CDN to qiniu -->
+  <link
+    href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- ga & ba script hoook -->
+  <script></script>
+
+  <script>
+    (function () {
+      var src = '//cdn.jsdelivr.net/npm/eruda';
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem('active-eruda') != 'true'
+      )
+        return;
+      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+    })();
+  </script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">cody1991</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=V8" title="V8">V8</a>
+                        
+                    </div>
+                    <h1>《图解 Google V8》系列笔记 - 宏观视角</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by cody1991 on March 25, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+  <div class="container">
+    <div class="row">
+      <!-- Post Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container"
+      >
+        <!-- Multi-Lingual -->
+         <h1 id="什么是-v8">什么是 V8</h1>
+
+<p>V8 是 JavaScript 虚拟机的一种，可以简单的把它理解成一个翻译程序：</p>
+
+<p>把人类能理解的 编程语言 JavaScript 翻译成机器能够理解的 机器语言</p>
+
+<p><img src="/img/posts/v8/macro/1.jpeg" alt="" /></p>
+
+<p>现在市场上很多 JavaScript 引擎，比如 SpiderMonkey，V8，JavaScriptCore。</p>
+
+<p>谷歌开发的 V8 是当下应用最广泛的 JavaScript 虚拟机</p>
+
+<p>V8 出现之前，所有的虚拟机用的都是解释执行的方式，这是 js 运行慢的一个原因</p>
+
+<p>V8 率先引入了即时编译 JIT 的双轮驱动设计，这是一种权衡策略，混合编译执行和解释执行两种方法，给 js 的执行效率提高了很多</p>
+
+<p>V8 的出现给 js 虚拟机技术推向新的高度</p>
+
+<p>单纯使用 js 调用 web api，但是不了解虚拟机内部是如何工作的，那么遇到很多问题可能得不到解决</p>
+
+<p>比如项目占用内存高，页面响应速度慢，nodejs 执行任务被阻塞问题，都和 V8 的运行机制有关系，如果我们熟悉 V8 的工作机制，就能系统性的解决这些问题</p>
+
+<p>V8 的主要功能，结合 js 的语言特性和本质执行编译它，通过学习 V8，也会对 js 语言的本质和设计思想有比较深的感觉。这些设计思想是更加级别的工具，掌握了它，提升了语言使用和架构的能力</p>
+
+<h1 id="怎么学习-v8">怎么学习 V8</h1>
+
+<p>V8 主要是执行 js 代码，那我们先要了解 js 的基本特性和设计思想</p>
+
+<p>js 借鉴了很多优秀语言的特性，比如</p>
+
+<ul>
+  <li>C 语言的基本语法</li>
+  <li>Java 的类型系统和内存管理</li>
+  <li>Scheme 函数作为一等公民 first class function</li>
+  <li>Self 基于原型 prototype 的继承机制</li>
+</ul>
+
+<p><img src="/img/posts/v8/macro/2.jpeg" alt="" /></p>
+
+<p>不过 js 也存在很多问题，历史原因很多设计不合理的地方还保留着。我们后面会慢慢认识到</p>
+
+<p>V8 是 js 的实现，在学习 V8 的时候，格外注意 js 这些独特设计思想背后的实现</p>
+
+<p>比如为了实现一等公民，采取了基于对象的策略</p>
+
+<p>为了实现原型链，V8 给每个对象增加了 <code class="language-plaintext highlighter-rouge">__proto__</code> 属性</p>
+
+<p>深入分析 js 后，我们可以学习 v8 执行 js 的整体流程了，叫做 v8 的编译流水线</p>
+
+<p><img src="/img/posts/v8/macro/3.jpeg" alt="" /></p>
+
+<p>流水线看上去不复杂，但是涉及到了 JIT，延迟解析，隐藏类，内联缓存等等，这些影响着 js 代码是否可以正常运行，以及它的效率</p>
+
+<p>比如 v8 使用 隐藏类 hide class，这是把 js 的动态类型转化成静态类型的技术，消除动态类型执行过慢的问题。如果我们熟悉 v8 的工作机制，可以在编写 js 的时候，充分利用好隐藏类这种强大的特别来编写更加高效的代码</p>
+
+<p>v8 实现了 js 的惰性解析，为了加速代码的启动速度，通过对惰性解析工作机制的学习，优化代码来更加适应，提高程序的效率</p>
+
+<p>为了充分理解 v8 是怎么运行的，我们还要了解另外两个特性：事件循环系统和垃圾回收机制</p>
+
+<p>事件循环系统和 js 的异步编程密切相关，js 是单线程的，所有 js 代码都在一个线程上执行，同时发送多个 js 执行请求，就需要排队，进行异步编程</p>
+
+<p>v8 的事件循环系统会调度这些排队任务，保证 js 代码被 v8 有序的执行，事件循环系统是 v8 的心脏，驱动了 v8 的持续工作</p>
+
+<p>js 是自动回收垃圾的语言，执行回收垃圾的时候会占用主线程的资源，如果我们频繁的触发垃圾回收，无疑会阻塞主线程。我们需要直到 v8 是怎么分配内存的，数据如何被回收的，打通这个链路，建立完整的系统。如果下次还出现内存的问题，就知道如何排查了</p>
+
+<p><img src="/img/posts/v8/macro/4.jpeg" alt="" /></p>
+
+<p>上面是 v8 学习的路径</p>
+
+<ul>
+  <li>先从 js 的设计思想开始，讨论主要的特性，以及 v8 是怎么实现的</li>
+  <li>然后分析 v8 的编译流水线，穿插内存分配的知识，因为函数变量，变量声明，参数传递或者参数的返回值都涉及到了内存分配</li>
+  <li>介绍事件循环系统和垃圾回收机制</li>
+</ul>
+
+<h1 id="v8-是如何执行一段-js-代码的">v8 是如何执行一段 js 代码的</h1>
+
+<h2 id="什么是-v8-1">什么是 v8</h2>
+
+<p>v8 是 谷歌开源的 js 引擎，目前用在 chrome 浏览器和 nodejs 中，功能是执行易于人类理解的 js 语言</p>
+
+<p><img src="/img/posts/v8/macro/5.jpeg" alt="" /></p>
+
+<p>v8 是如何执行 js 代码的呢</p>
+
+<p>分为编译和执行两个阶段</p>
+
+<p>首先把 js 转成低级中间代码或者机器能够理解的机器码，在执行转换后的代码和输出结果</p>
+
+<p><img src="/img/posts/v8/macro/6.jpeg" alt="" /></p>
+
+<p>可以把它看作虚拟出来的计算机，也叫做虚拟机。虚拟机通过模拟实际计算机的各种功能来实现代码的运行</p>
+
+<p>比如模拟实际计算机的 CPU，堆栈，寄存器等，虚拟机还有自己一套指令系统</p>
+
+<p>对于 js 来说，v8 是它的整个世界。v8 执行 js 的时候不需要当心操作系统的不同，不必担心系统架构不同的计算机，只需要按照虚拟机的规范写代码就可以来</p>
+
+<p>我们看看为什么要对 js 高级语言进行编译，以及看看编译后是怎么运行的</p>
+
+<h2 id="高效代码为什么需要先编译再执行">高效代码为什么需要先编译再执行</h2>
+
+<p>我们先从 CPU 是如何执行机器代码说起。</p>
+
+<p>CPU 可以看作一个很小的运算机器，通过二进制的指令和 CPU 进行通信，比如我给 CPU 发出了 1000100111011000 的二进制指令，告诉寄存器把数据移动到另外一个寄存器，处理器执行这条指令的时候，按照指令的意思去实现相关操作</p>
+
+<p>为了完成复杂的工作工程师给 CPU 提供了一堆的指令，实现各种功能，这些就叫做指令集，也叫做机器语言</p>
+
+<p>CPU 只能识别二进制语言，对于程序员来说二进制语言难以阅读理解。我们把二进制语言指令集转成人类可以识别和记忆的符号，就叫做汇编指令集</p>
+
+<p>CPU 能识别汇编语言吗？不能</p>
+
+<p>所以我们写汇编语言的话，还需要一个汇编编译器。把汇编代码编程为机器码</p>
+
+<p><img src="/img/posts/v8/macro/7.jpeg" alt="" /></p>
+
+<p>虽然汇编语言做了一层抽象，但是依然繁琐复杂。可能一个简单的功能都需要编写很多的汇编语言。主要原因如下：</p>
+
+<ul>
+  <li>
+    <p>不同的 CPU 有不同的指令集，只要是机器语言或者汇编语言实现功能，需要为每个结构的 CPU 编写特定的汇编语言。非常繁琐枯燥</p>
+
+    <p><img src="/img/posts/v8/macro/8.jpeg" alt="" /></p>
+  </li>
+  <li>
+    <p>编写硬件的时候还需要直到处理器架构相关的硬件知识，需要使用寄存器，内存，操作 CPU 等等。程序员一般只想处理业务逻辑，不想过多的了解处理器架构相关的细节</p>
+  </li>
+</ul>
+
+<p>所以我们需要一个能应用不同 CPU 架构的语言，专心处理业务逻辑。比如 c c++ java js 等等，这些高级语言应运而生</p>
+
+<p>处理器也不能直接识别 js 代码。需要两种方式执行</p>
+
+<ul>
+  <li>
+    <p>解释执行 把输入的源代码通过解释器编译成中间代码，解释器执行代码输出结果</p>
+
+    <p><img src="/img/posts/v8/macro/9.jpeg" alt="" /></p>
+  </li>
+  <li>
+    <p>编译执行 源代码转成中间代码，再把中间代码转成机器码，通常编译出来的机器代码是二进制文件存放，需要执行的时候直接打开二进制代码文件就好了。还可以用虚拟机把编译后的机器代码放到内存中，直接在内存执行</p>
+
+    <p><img src="/img/posts/v8/macro/10.jpeg" alt="" /></p>
+  </li>
+</ul>
+
+<h2 id="v8-是怎么执行-js-代码的">V8 是怎么执行 js 代码的</h2>
+
+<p>v8 混合 编译执行和解释执行，把这种混合技术叫做 JIT</p>
+
+<p>这是一种权衡的策略，因为它们各有优缺点</p>
+
+<p>解释执行启动快，但是执行慢</p>
+
+<p>编译执行启动慢，但是执行快</p>
+
+<p><img src="/img/posts/v8/macro/11.jpeg" alt="" /></p>
+
+<p>最左边 v8 启动的时候需要准备一些基础环境，包括了堆空间，栈空间，全局执行上下文，全局作用域，消息循环系统，内置函数等等</p>
+
+<ul>
+  <li>全局执行上下文 包括了执行过程中的全部信息，比如内置函数,全局变量</li>
+  <li>全局作用域包含一些全局变量，执行过程中都要放到内存</li>
+  <li>v8 采用经典的栈堆管理内存模式，所以需要初始化内存中的堆和栈</li>
+  <li>v8 系统活起来还需要初始化消息循环系统，包括了消息驱动器和消息队列，不断接受消息并决定怎么去处理</li>
+</ul>
+
+<p>v8 之后开始接收代码，不过对于 v8 来说他们只是一段字符串，需要结构化它。结构化指的是信息经过处理以后分解成相互关联的组成部分，各个部门有明确的层次结构，方便使用和维护</p>
+
+<p>v8 源代码结构化后，便形成了 ast 抽象语法树，它是 v8 理解的数据结构</p>
+
+<p>生成 ast 的同时会生成对应的作用域，作用域中存放着变量</p>
+
+<p>有了 ast 和作用域就可以去生成字节码了，它是介于源码和机器码之间的代码，与特定的机器类型无关，解释器可以直接运行字节码，或者通过编译器把它编译成二进制在进行执行</p>
+
+<p>生成了字节码，解释器就登场了，按照顺序执行字节码，输出结果</p>
+
+<p>而在执行字节码的同时，如果发现有重复执行的代码，标为热点代码</p>
+
+<p>热点代码会被扔给优化编译器，优化编译器会把它转成二进制，然后再对编译后的二进制进行优化，二进制代码的执行效率会非常高</p>
+
+<p>下次在执行这段代码的时候，v8 会选择二进制代码进行运行</p>
+
+<p>不过 js 是非常灵活的代码，对象的结构和属性都可以随时变更，优化编译器只能对固定的结构进行优化，当对象的结构发生变化了优化代码就变成了无效代码，所以优化编译器也需要去进行反优化操作，下次执行的时候就会回退到解释器进行运行</p>
+
+<h2 id="跟踪一段实际代码的运行">跟踪一段实际代码的运行</h2>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">cody</span><span class="dl">'</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>首先被解析结构化为 ast，我们看下这里的 ast 长什么样子</p>
+
+<p>要看中间生成的结构可以用 v8 提供的 d8 工具查看，我们执行下</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>d8 <span class="nt">--print-ast</span> test.js
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="o">---</span> <span class="nx">AST</span> <span class="o">---</span>
+<span class="nx">FUNC</span> <span class="nx">at</span> <span class="mi">0</span>
+<span class="p">.</span> <span class="nx">KIND</span> <span class="mi">0</span>
+<span class="p">.</span> <span class="nx">LITERAL</span> <span class="nx">ID</span> <span class="mi">0</span>
+<span class="p">.</span> <span class="nx">SUSPEND</span> <span class="nx">COUNT</span> <span class="mi">0</span>
+<span class="p">.</span> <span class="nx">NAME</span> <span class="dl">""</span>
+<span class="p">.</span> <span class="nx">INFERRED</span> <span class="nx">NAME</span> <span class="dl">""</span>
+<span class="p">.</span> <span class="nx">DECLS</span>
+<span class="p">.</span> <span class="p">.</span> <span class="nx">VARIABLE</span> <span class="p">(</span><span class="mh">0x7ff0e3022298</span><span class="p">)</span> <span class="p">(</span><span class="nx">mode</span> <span class="o">=</span> <span class="nx">VAR</span><span class="p">,</span> <span class="nx">assigned</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span> <span class="dl">"</span><span class="s2">test</span><span class="dl">"</span>
+<span class="p">.</span> <span class="nx">BLOCK</span> <span class="nx">NOCOMPLETIONS</span> <span class="nx">at</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">.</span> <span class="p">.</span> <span class="nx">EXPRESSION</span> <span class="nx">STATEMENT</span> <span class="nx">at</span> <span class="mi">11</span>
+<span class="p">.</span> <span class="p">.</span> <span class="p">.</span> <span class="nx">INIT</span> <span class="nx">at</span> <span class="mi">11</span>
+<span class="p">.</span> <span class="p">.</span> <span class="p">.</span> <span class="p">.</span> <span class="nx">VAR</span> <span class="nx">PROXY</span> <span class="nx">unallocated</span> <span class="p">(</span><span class="mh">0x7ff0e3022298</span><span class="p">)</span> <span class="p">(</span><span class="nx">mode</span> <span class="o">=</span> <span class="nx">VAR</span><span class="p">,</span> <span class="nx">assigned</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span> <span class="dl">"</span><span class="s2">test</span><span class="dl">"</span>
+<span class="p">.</span> <span class="p">.</span> <span class="p">.</span> <span class="p">.</span> <span class="nx">LITERAL</span> <span class="dl">"</span><span class="s2">GeekTime</span><span class="dl">"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>它是 js 源代码结构化的表示，ast 其实是个属性结构，直观理解可以转成一棵树</p>
+
+<p><img src="/img/posts/v8/macro/12.jpeg" alt="" /></p>
+
+<p>ast 和代码结构也是一一对应的，后续的操作都会直接或者间接的基于它来实现</p>
+
+<p>生成 ast 的同时生成了作用域，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>d8 <span class="nt">--print-scopes</span> test.js
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们看看变成了下面的样子</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nx">Global</span> <span class="nx">scope</span><span class="p">:</span>
+<span class="nb">global</span> <span class="p">{</span> <span class="c1">// (0x7fd974022048) (0, 24)</span>
+  <span class="c1">// will be compiled</span>
+  <span class="c1">// 1 stack slots</span>
+  <span class="c1">// temporary vars:</span>
+  <span class="nx">TEMPORARY</span> <span class="p">.</span><span class="nx">result</span><span class="p">;</span>  <span class="c1">// (0x7fd9740223c8) local[0]</span>
+  <span class="c1">// local vars:</span>
+  <span class="nx">VAR</span> <span class="nx">test</span><span class="p">;</span>  <span class="c1">// (0x7fd974022298)</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上面是一个全局的作用域，test 被加入到了作用域空间</p>
+
+<p>有了作用域和 ast 就可以解释器生成字节码了</p>
+
+<p>同样用 v8 打印看看</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>d8 <span class="nt">--print-bytecode</span> test.js
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>得到了下面的结果</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="p">[</span><span class="nx">generated</span> <span class="nx">bytecode</span> <span class="k">for</span> <span class="kd">function</span><span class="p">:</span>  <span class="p">(</span><span class="mh">0x2b510824fd55</span> <span class="o">&lt;</span><span class="nx">SharedFunctionInfo</span><span class="o">&gt;</span><span class="p">)]</span>
+<span class="nx">Parameter</span> <span class="nx">count</span> <span class="mi">1</span>
+<span class="nx">Register</span> <span class="nx">count</span> <span class="mi">4</span>
+<span class="nx">Frame</span> <span class="nx">size</span> <span class="mi">32</span>
+         <span class="mh">0x2b510824fdd2</span> <span class="p">@</span>    <span class="mi">0</span> <span class="p">:</span> <span class="nx">a7</span>                <span class="nx">StackCheck</span>
+         <span class="mh">0x2b510824fdd3</span> <span class="p">@</span>    <span class="mi">1</span> <span class="p">:</span> <span class="mi">12</span> <span class="mi">00</span>             <span class="nx">LdaConstant</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+         <span class="mh">0x2b510824fdd5</span> <span class="p">@</span>    <span class="mi">3</span> <span class="p">:</span> <span class="mi">26</span> <span class="nx">fa</span>             <span class="nx">Star</span> <span class="nx">r1</span>
+         <span class="mh">0x2b510824fdd7</span> <span class="p">@</span>    <span class="mi">5</span> <span class="p">:</span> <span class="mi">0</span><span class="nx">b</span>                <span class="nx">LdaZero</span>
+         <span class="mh">0x2b510824fdd8</span> <span class="p">@</span>    <span class="mi">6</span> <span class="p">:</span> <span class="mi">26</span> <span class="nx">f9</span>             <span class="nx">Star</span> <span class="nx">r2</span>
+         <span class="mh">0x2b510824fdda</span> <span class="p">@</span>    <span class="mi">8</span> <span class="p">:</span> <span class="mi">27</span> <span class="nx">fe</span> <span class="nx">f8</span>          <span class="nx">Mov</span> <span class="o">&lt;</span><span class="nx">closure</span><span class="o">&gt;</span><span class="p">,</span> <span class="nx">r3</span>
+         <span class="mh">0x2b510824fddd</span> <span class="p">@</span>   <span class="mi">11</span> <span class="p">:</span> <span class="mi">61</span> <span class="mi">32</span> <span class="mi">01</span> <span class="nx">fa</span> <span class="mi">03</span>    <span class="nx">CallRuntime</span> <span class="p">[</span><span class="nx">DeclareGlobals</span><span class="p">],</span> <span class="nx">r1</span><span class="o">-</span><span class="nx">r3</span>
+         <span class="mh">0x2b510824fde2</span> <span class="p">@</span>   <span class="mi">16</span> <span class="p">:</span> <span class="mi">12</span> <span class="mi">01</span>             <span class="nx">LdaConstant</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+         <span class="mh">0x2b510824fde4</span> <span class="p">@</span>   <span class="mi">18</span> <span class="p">:</span> <span class="mi">15</span> <span class="mi">02</span> <span class="mi">02</span>          <span class="nx">StaGlobal</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+         <span class="mh">0x2b510824fde7</span> <span class="p">@</span>   <span class="mi">21</span> <span class="p">:</span> <span class="mi">0</span><span class="nx">d</span>                <span class="nx">LdaUndefined</span>
+         <span class="mh">0x2b510824fde8</span> <span class="p">@</span>   <span class="mi">22</span> <span class="p">:</span> <span class="nx">ab</span>                <span class="nx">Return</span>
+<span class="nx">Constant</span> <span class="nx">pool</span> <span class="p">(</span><span class="nx">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span class="mh">0x2b510824fd9d</span><span class="p">:</span> <span class="p">[</span><span class="nx">FixedArray</span><span class="p">]</span> <span class="k">in</span> <span class="nx">OldSpace</span>
+ <span class="o">-</span> <span class="nx">map</span><span class="p">:</span> <span class="mh">0x2b51080404b1</span> <span class="o">&lt;</span><span class="nb">Map</span><span class="o">&gt;</span>
+ <span class="o">-</span> <span class="nx">length</span><span class="p">:</span> <span class="mi">3</span>
+           <span class="mi">0</span><span class="p">:</span> <span class="mh">0x2b510824fd7d</span> <span class="o">&lt;</span><span class="nx">FixedArray</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">&gt;</span>
+           <span class="mi">1</span><span class="p">:</span> <span class="mh">0x2b510824fd1d</span> <span class="o">&lt;</span><span class="nb">String</span><span class="p">[</span><span class="err">#</span><span class="mi">8</span><span class="p">]:</span> <span class="nx">GeekTime</span><span class="o">&gt;</span>
+           <span class="mi">2</span><span class="p">:</span> <span class="mh">0x2b51081c8549</span> <span class="o">&lt;</span><span class="nb">String</span><span class="p">[</span><span class="err">#</span><span class="mi">4</span><span class="p">]:</span> <span class="nx">test</span><span class="o">&gt;</span>
+<span class="nx">Handler</span> <span class="nx">Table</span> <span class="p">(</span><span class="nx">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nx">Source</span> <span class="nx">Position</span> <span class="nx">Table</span> <span class="p">(</span><span class="nx">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>解释器开始执行这段代码，如果有重复的标记为热点代码，交给编译器优化</p>
+
+<p>我们可以通过这样去查看哪些被优化了</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>d8 <span class="nt">--trace-opt</span> test.js
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>如果要查看哪些代码被反复优化，使用</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>pt <span class="nt">--trace-deopt</span> test.js
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>不过上面的代码太简单了没有触发优化</p>
+
+<h2 id="总结">总结</h2>
+
+<ul>
+  <li>v8 是 chrome 开发的 js 引擎，也是虚拟机，模拟计算机各种功能来实现代码的编译和执行</li>
+  <li>由于计算机只认得二进制，所以执行高级语言的时候第一种方法是转成二进制的机器码再让计算机执行，第二种方法是安装解释器，由解释器来解释执行</li>
+  <li>解释器启动快，执行慢；编译器启动慢，执行快，v8 在启动时使用解释器执行，但是某个代码频繁执行的话采用优化编译器把它编译成更加高效的机器代码</li>
+</ul>
+
+<p>整个流程是：</p>
+
+<ul>
+  <li>初始化环境</li>
+  <li>解释代码生成 ast 和作用域</li>
+  <li>根据 ast 和作用域生成字节码</li>
+  <li>解释执行字节码</li>
+  <li>监听热点代码</li>
+  <li>优化热点代码为二进制机器语言</li>
+  <li>反优化生成的二进制机器语言</li>
+</ul>
+
+<p>js 是一门动态语言，有些被优化的代码可能被 js 调整了结构，导致了之前的优化失效了，那么编译器会采取反优化的操作</p>
+
+
+        <hr style="visibility: hidden;" />
+        <ul class="pager">
+          
+          <li class="previous">
+            <a
+              href="/2021/03/24/browser-working-principle-v8/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - V8工作原理"
+            >
+              Previous<br />
+              <span>《浏览器工作原理与实践》系列笔记 - V8工作原理</span>
+            </a>
+          </li>
+           
+          <li class="next">
+            <a
+              href="/2021/03/27/browser-working-principle-loop/"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="《浏览器工作原理与实践》系列笔记 - 循环系统"
+            >
+              Next<br />
+              <span>《浏览器工作原理与实践》系列笔记 - 循环系统</span>
+            </a>
+          </li>
+          
+        </ul>
+        <hr style="visibility: hidden;" />
+
+        
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+          <div id="disqus_thread" class="disqus-thread"></div>
+        </div>
+        <!-- disqus 评论框 end -->
+         
+      </div>
+
+      <!-- Side Catalog Container -->
+      
+      <div
+        class="col-lg-2 col-lg-offset-0 visible-lg-block sidebar-container catalog-container"
+      >
+        <div class="side-catalog">
+          <hr class="hidden-sm hidden-xs" />
+          <h5>
+            <a class="catalog-toggle" href="#">CATALOG</a>
+          </h5>
+          <ul class="catalog-body"></ul>
+        </div>
+      </div>
+      
+
+      <!-- Sidebar Container -->
+      <div
+        class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 sidebar-container"
+      >
+        <!-- Featured Tags -->
+        
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0074" 
+                    href="/archive/?tag=Regular"
+                    title="Regular"
+                    rel="4">Regular</a>
+        
+                <a data-sort="0038" 
+                    href="/archive/?tag=LeetCode"
+                    title="LeetCode"
+                    rel="40">LeetCode</a>
+        
+                <a data-sort="0068" 
+                    href="/archive/?tag=Process"
+                    title="Process"
+                    rel="10">Process</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=browser"
+                    title="browser"
+                    rel="7">browser</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="2">JavaScript</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Performance"
+                    title="Performance"
+                    rel="2">Performance</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=V8"
+                    title="V8"
+                    rel="2">V8</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vue"
+                    title="Vue"
+                    rel="2">Vue</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=life"
+                    title="life"
+                    rel="2">life</a>
+    </div>
+</section>
+
+
+        <!-- Friends Blog -->
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+  
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "cody1991-blog";
+  var disqus_identifier = "/2021/03/25/v8";
+  var disqus_url = "https://cody1991.cn/2021/03/25/v8/";
+
+  (function () {
+    var dsq = document.createElement("script");
+    dsq.type = "text/javascript";
+    dsq.async = true;
+    dsq.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+    (
+      document.getElementsByTagName("head")[0] ||
+      document.getElementsByTagName("body")[0]
+    ).appendChild(dsq);
+  })();
+</script>
+<!-- disqus 公共JS代码 end -->
+ 
+<!-- async load function -->
+<script>
+  function async(u, c) {
+    var d = document,
+      t = "script",
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) {
+      o.addEventListener(
+        "load",
+        function (e) {
+          c(null, e);
+        },
+        false
+      );
+    }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+  async(
+    "//cdn.bootcdn.net/ajax/libs/anchor-js/1.1.1/anchor.min.js",
+    function () {
+      anchors.options = {
+        visible: "hover",
+        placement: "right",
+        // icon: '#'
+      };
+      anchors
+        .add()
+        .remove(".intro-header h1")
+        .remove(".subheading")
+        .remove(".sidebar-container h5");
+    }
+  );
+</script>
+<style>
+  /* place left on bigger screen */
+  @media all and (min-width: 800px) {
+    .anchorjs-link {
+      position: absolute;
+      left: -0.75em;
+      font-size: 1.1em;
+      margin-top: -0.1em;
+    }
+  }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/cody19910828">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/zexiong.tang">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/cody1991">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; cody1991 2021
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="//cdn.bootcdn.net/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="//cdn.bootcdn.net/ajax/libs/simple-jekyll-search/1.7.12/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("//cdn.bootcdn.net/ajax/libs/jquery-one-page-nav/3.0.0/jquery.nav.min.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
