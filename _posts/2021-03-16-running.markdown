@@ -2,7 +2,6 @@
 layout: post
 title: 跑起来～～
 tags: [life]
-top: true
 ---
 
 始于 2021 年 03 月 16 号
