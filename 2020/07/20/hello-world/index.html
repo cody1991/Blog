@@ -31,7 +31,7 @@
   <meta property="article:tag" content="Hello" />
    
   <meta property="og:image" content="https://cody1991.github.io/Blog/img/cody1991.jpeg" />
-  <meta property="og:url" content="https://cody1991.github.io/Blog//2020/07/20/hello-world/" />
+  <meta property="og:url" content="https://cody1991.github.io/Blog/2020/07/20/hello-world/" />
   <meta property="og:site_name" content="cody1991的博客 | cody1991 Blog" />
 
   <title>
@@ -47,7 +47,7 @@
   <!-- Canonical URL -->
   <link
     rel="canonical"
-    href="https://cody1991.github.io/Blog//Blog/2020/07/20/hello-world/"
+    href="https://cody1991.github.io/Blog/Blog/2020/07/20/hello-world/"
   />
 
   <!-- Bootstrap Core CSS -->
@@ -423,7 +423,7 @@
   /* * * CONFIGURATION VARIABLES * * */
   var disqus_shortname = "cody1991-blog";
   var disqus_identifier = "/2020/07/20/hello-world";
-  var disqus_url = "https://cody1991.github.io/Blog//2020/07/20/hello-world/";
+  var disqus_url = "https://cody1991.github.io/Blog/2020/07/20/hello-world/";
 
   (function () {
     var dsq = document.createElement("script");
@@ -719,7 +719,7 @@
     SimpleJekyllSearch({
         searchInput: document.getElementById('search-input'),
         resultsContainer: document.getElementById('search-results'),
-        json: 'search.json',
+        json: '/Blog' + '/search.json',
         searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
         noResultsText: 'No results',
         limit: 50,
@@ -765,7 +765,11 @@
 </script>
 
     <!-- Image to hack wechat -->
-    <img src="img/icon_wechat.png" width="0" height="0" />
+    <img
+      src="/Blog/img/icon_wechat.png"
+      width="0"
+      height="0"
+    />
     <!-- Migrate from head to bottom, no longer block render and still work -->
   </body>
 </html>
