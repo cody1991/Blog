@@ -3,10 +3,10 @@
   <channel>
     <title>cody1991</title>
     <description>cody1991的博客</description>
-    <link>https://cody1991.github.io/Blog/Blog/</link>
-    <atom:link href="https://cody1991.github.io/Blog/Blog/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 06 Aug 2021 12:01:25 +0800</pubDate>
-    <lastBuildDate>Fri, 06 Aug 2021 12:01:25 +0800</lastBuildDate>
+    <link>http://codytang.cn/</link>
+    <atom:link href="http://codytang.cn/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Fri, 06 Aug 2021 12:28:43 +0800</pubDate>
+    <lastBuildDate>Fri, 06 Aug 2021 12:28:43 +0800</lastBuildDate>
     <generator>Jekyll v4.2.0</generator>
     
       <item>
@@ -7351,8 +7351,8 @@ Pop 3 from the stack.
 &lt;p&gt;为了验证配置的正确性，你可以修改一些 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;app.ts&lt;/code&gt; 中的代码，然后你将会在控制台看到一些输出&lt;/p&gt;
 </description>
         <pubDate>Wed, 04 Aug 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/08/04/typescript-tutorial/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/08/04/typescript-tutorial/</guid>
+        <link>http://codytang.cn/2021/08/04/typescript-tutorial/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/08/04/typescript-tutorial/</guid>
         
         <category>TypeScript</category>
         
@@ -9384,8 +9384,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;p&gt;最后 webpack 和 source map 的关系，也只是 webpack 支持 source map，而不是 webpack 独有的功能&lt;/p&gt;
 </description>
         <pubDate>Sat, 24 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/24/webpack-demo/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/24/webpack-demo/</guid>
+        <link>http://codytang.cn/2021/04/24/webpack-demo/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/24/webpack-demo/</guid>
         
         <category>webpack</category>
         
@@ -9411,8 +9411,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;h1 id=&quot;相邻模板最大面积&quot;&gt;相邻模板最大面积&lt;/h1&gt;
 </description>
         <pubDate>Thu, 22 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/22/algo-1/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/22/algo-1/</guid>
+        <link>http://codytang.cn/2021/04/22/algo-1/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/22/algo-1/</guid>
         
         <category>algo</category>
         
@@ -9448,8 +9448,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;p&gt;对象在运行的时候可以修改内容，造就了它非常灵活的特性&lt;/p&gt;
 </description>
         <pubDate>Sun, 11 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/11/v8-js/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/11/v8-js/</guid>
+        <link>http://codytang.cn/2021/04/11/v8-js/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/11/v8-js/</guid>
         
         <category>V8</category>
         
@@ -9546,8 +9546,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sun, 11 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-350/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-350/</guid>
+        <link>http://codytang.cn/2021/04/11/leetcode-350/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/11/leetcode-350/</guid>
         
         <category>LeetCode</category>
         
@@ -9659,8 +9659,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sun, 11 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-189/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-189/</guid>
+        <link>http://codytang.cn/2021/04/11/leetcode-189/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/11/leetcode-189/</guid>
         
         <category>LeetCode</category>
         
@@ -9755,8 +9755,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sun, 11 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-14/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-14/</guid>
+        <link>http://codytang.cn/2021/04/11/leetcode-14/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/11/leetcode-14/</guid>
         
         <category>LeetCode</category>
         
@@ -9818,8 +9818,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sun, 11 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-122/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/11/leetcode-122/</guid>
+        <link>http://codytang.cn/2021/04/11/leetcode-122/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/11/leetcode-122/</guid>
         
         <category>LeetCode</category>
         
@@ -9876,8 +9876,8 @@ webpack 5.35.1 compiled successfully &lt;span class=&quot;k&quot;&gt;in &lt;/spa
 &lt;p&gt;&lt;img src=&quot;/img/posts/mp/6.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 06 Apr 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/04/06/mp/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/04/06/mp/</guid>
+        <link>http://codytang.cn/2021/04/06/mp/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/04/06/mp/</guid>
         
         <category>miniprogram</category>
         
@@ -10237,8 +10237,8 @@ defer：在 DOMContentLoad 前加载，但是加载之前所有的 DOM 解析肯
 &lt;p&gt;把这些数据在内存中存储一份，这样只要可以直接从内存中读书，速度更快，性能更好&lt;/p&gt;
 </description>
         <pubDate>Sun, 28 Mar 2021 00:00:00 +0800</pubDate>
-        <link>https://cody1991.github.io/Blog/Blog/2021/03/28/performance/</link>
-        <guid isPermaLink="true">https://cody1991.github.io/Blog/Blog/2021/03/28/performance/</guid>
+        <link>http://codytang.cn/2021/03/28/performance/</link>
+        <guid isPermaLink="true">http://codytang.cn/2021/03/28/performance/</guid>
         
         <category>Performance</category>
         
